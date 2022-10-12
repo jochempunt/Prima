@@ -1,0 +1,348 @@
+{
+  "MeshQuad|2022-10-11T14:43:32.388Z|73955": {
+    "ƒ.MeshQuad": {
+      "idResource": "MeshQuad|2022-10-11T14:43:32.388Z|73955",
+      "name": "MeshQuad"
+    }
+  },
+  "Material|2022-10-11T14:42:27.159Z|09945": {
+    "ƒ.Material": {
+      "name": "background",
+      "idResource": "Material|2022-10-11T14:42:27.159Z|09945",
+      "shader": "ShaderLitTextured",
+      "coat": {
+        "ƒ.CoatTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-10-11T14:43:14.354Z|98252"
+        }
+      }
+    }
+  },
+  "TextureImage|2022-10-11T14:43:14.354Z|98252": {
+    "ƒ.TextureImage": {
+      "url": "Images\\BackgroundFactory.png",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-10-11T14:43:14.354Z|98252",
+        "name": "Images\\BackgroundFactory.png",
+        "mipmap": "CRISP"
+      }
+    }
+  },
+  "Graph|2022-10-11T14:32:57.611Z|28804": {
+    "ƒ.Graph": {
+      "name": "Level",
+      "active": true,
+      "components": {},
+      "children": [
+        {
+          "ƒ.Node": {
+            "name": "floors",
+            "active": true,
+            "components": {
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, -1.5999994277954102, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ]
+            },
+            "children": [
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[-1.9999998807907104, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[1.9999998807907104, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[0, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Background",
+            "active": true,
+            "components": {
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshQuad|2022-10-11T14:43:32.388Z|73955",
+                    "pivot": {
+                      "translation": "[0, -1, -1]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[12, 7, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2022-10-11T14:42:27.159Z|09945"
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Mario",
+            "active": true,
+            "components": {
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshQuad|2022-10-11T14:48:20.382Z|60842",
+                    "pivot": {
+                      "translation": "[0, -0.6399998664855957, 0.10000000149011612]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[-0.31999993324279785, 0]",
+                      "rotation": 1,
+                      "scaling": "[0.03800034895539284, 0.0820000022649765]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2022-10-11T14:48:40.275Z|80642"
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
+        }
+      ],
+      "idResource": "Graph|2022-10-11T14:32:57.611Z|28804",
+      "type": "Graph"
+    }
+  },
+  "MeshQuad|2022-10-11T14:34:39.910Z|20649": {
+    "ƒ.MeshQuad": {
+      "idResource": "MeshQuad|2022-10-11T14:34:39.910Z|20649",
+      "name": "MeshQuad"
+    }
+  },
+  "Material|2022-10-11T14:35:02.516Z|82329": {
+    "ƒ.Material": {
+      "name": "",
+      "idResource": "Material|2022-10-11T14:35:02.516Z|82329",
+      "shader": "ShaderLitTextured",
+      "coat": {
+        "ƒ.CoatTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-10-11T14:35:11.112Z|53482"
+        }
+      }
+    }
+  },
+  "TextureImage|2022-10-11T14:35:11.112Z|53482": {
+    "ƒ.TextureImage": {
+      "url": "Images\\generalFloor.jpg",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-10-11T14:35:11.112Z|53482",
+        "name": "Images\\generalFloor.jpg",
+        "mipmap": "CRISP"
+      }
+    }
+  },
+  "Graph|2022-10-11T14:37:49.455Z|84946": {
+    "ƒ.Graph": {
+      "name": "floor",
+      "active": true,
+      "components": {
+        "ComponentMesh": [
+          {
+            "ƒ.ComponentMesh": {
+              "idMesh": "MeshQuad|2022-10-11T14:34:39.910Z|20649",
+              "pivot": {
+                "translation": "[0, 0, 0]",
+                "rotation": "[0, 0, 0]",
+                "scaling": "[2, 1, 1]"
+              },
+              "Component": {
+                "active": true
+              }
+            }
+          }
+        ],
+        "ComponentMaterial": [
+          {
+            "ƒ.ComponentMaterial": {
+              "sortForAlpha": false,
+              "clrPrimary": "[1, 1, 1, 1]",
+              "clrSecondary": "[1, 1, 1, 1]",
+              "pivot": {
+                "translation": "[0, 0]",
+                "rotation": 0,
+                "scaling": "[1, 1]"
+              },
+              "Component": {
+                "active": true
+              },
+              "idMaterial": "Material|2022-10-11T14:35:02.516Z|82329"
+            }
+          }
+        ]
+      },
+      "children": [],
+      "idResource": "Graph|2022-10-11T14:37:49.455Z|84946",
+      "type": "Graph"
+    }
+  },
+  "MeshQuad|2022-10-11T14:48:20.382Z|60842": {
+    "ƒ.MeshQuad": {
+      "idResource": "MeshQuad|2022-10-11T14:48:20.382Z|60842",
+      "name": "mario"
+    }
+  },
+  "Material|2022-10-11T14:48:40.275Z|80642": {
+    "ƒ.Material": {
+      "name": "shaderMario",
+      "idResource": "Material|2022-10-11T14:48:40.275Z|80642",
+      "shader": "ShaderLitTextured",
+      "coat": {
+        "ƒ.CoatTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-10-11T14:50:25.143Z|89457"
+        }
+      }
+    }
+  },
+  "TextureImage|2022-10-11T14:50:25.143Z|89457": {
+    "ƒ.TextureImage": {
+      "url": "Images\\characters.gif",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-10-11T14:50:25.143Z|89457",
+        "name": "Images\\characters.gif",
+        "mipmap": "CRISP"
+      }
+    }
+  }
+}
