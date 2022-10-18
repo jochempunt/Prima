@@ -57,9 +57,16 @@ var Script;
     }
     async function hndLoad() {
         //let root: ƒ.Node = new ƒ.Node("root");
-        let imgSpriteSheet = new ƒ.TextureImage();
-        await imgSpriteSheet.load("./images/mario_walk2.png");
+        let imgSpriteSheet;
+        try {
+            imgSpriteSheet = new ƒ.TextureImage();
+            await imgSpriteSheet.load("./Images/mario_walk2.png");
+        }
+        catch (e) {
+            console.log(e);
+        }
         let coat = new ƒ.CoatTextured(undefined, imgSpriteSheet);
+        console.log(coat);
         let animation = new ƒAid.SpriteSheetAnimation("Walk", coat);
         animation.generateByGrid(ƒ.Rectangle.GET(3, 0, 17, 33), 4, 11, ƒ.ORIGIN2D.BOTTOMCENTER, ƒ.Vector2.X(17));
         //todo jump
