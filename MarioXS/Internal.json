@@ -29,6 +29,36 @@
       }
     }
   },
+  "MeshQuad|2022-10-11T14:48:20.382Z|60842": {
+    "ƒ.MeshQuad": {
+      "idResource": "MeshQuad|2022-10-11T14:48:20.382Z|60842",
+      "name": "mario"
+    }
+  },
+  "Material|2022-10-11T14:48:40.275Z|80642": {
+    "ƒ.Material": {
+      "name": "shaderMario",
+      "idResource": "Material|2022-10-11T14:48:40.275Z|80642",
+      "shader": "ShaderLitTextured",
+      "coat": {
+        "ƒ.CoatTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-10-11T14:50:25.143Z|89457"
+        }
+      }
+    }
+  },
+  "TextureImage|2022-10-11T14:50:25.143Z|89457": {
+    "ƒ.TextureImage": {
+      "url": "Images\\characters.gif",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-10-11T14:50:25.143Z|89457",
+        "name": "Images\\characters.gif",
+        "mipmap": "CRISP"
+      }
+    }
+  },
   "Graph|2022-10-11T14:32:57.611Z|28804": {
     "ƒ.Graph": {
       "name": "Level",
@@ -44,7 +74,7 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[0, -1.5999994277954102, 0]",
+                      "translation": "[2, -1.7099969387054443, 0]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
@@ -196,15 +226,14 @@
         },
         {
           "ƒ.Node": {
-            "name": "Mario",
+            "name": "MarioTransform",
             "active": true,
             "components": {
-              "ComponentMesh": [
+              "ComponentTransform": [
                 {
-                  "ƒ.ComponentMesh": {
-                    "idMesh": "MeshQuad|2022-10-11T14:48:20.382Z|60842",
-                    "pivot": {
-                      "translation": "[0, -0.6399998664855957, 0.10000000149011612]",
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, -0.6999999284744263, 0]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
@@ -213,27 +242,52 @@
                     }
                   }
                 }
-              ],
-              "ComponentMaterial": [
-                {
-                  "ƒ.ComponentMaterial": {
-                    "sortForAlpha": false,
-                    "clrPrimary": "[1, 1, 1, 1]",
-                    "clrSecondary": "[1, 1, 1, 1]",
-                    "pivot": {
-                      "translation": "[-0.31999993324279785, 0]",
-                      "rotation": 1,
-                      "scaling": "[0.03800034895539284, 0.0820000022649765]"
-                    },
-                    "Component": {
-                      "active": true
-                    },
-                    "idMaterial": "Material|2022-10-11T14:48:40.275Z|80642"
-                  }
-                }
               ]
             },
-            "children": []
+            "children": [
+              {
+                "ƒ.Node": {
+                  "name": "Mario",
+                  "active": true,
+                  "components": {
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshQuad|2022-10-11T14:48:20.382Z|60842",
+                          "pivot": {
+                            "translation": "[0, -0.2699998617172241, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 2, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[-0.31999993324279785, 1]",
+                            "rotation": 1,
+                            "scaling": "[0.03800034895539284, 0.0820000022649765]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-10-11T14:48:40.275Z|80642"
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
+              }
+            ]
           }
         }
       ],
@@ -313,36 +367,6 @@
       "children": [],
       "idResource": "Graph|2022-10-11T14:37:49.455Z|84946",
       "type": "Graph"
-    }
-  },
-  "MeshQuad|2022-10-11T14:48:20.382Z|60842": {
-    "ƒ.MeshQuad": {
-      "idResource": "MeshQuad|2022-10-11T14:48:20.382Z|60842",
-      "name": "mario"
-    }
-  },
-  "Material|2022-10-11T14:48:40.275Z|80642": {
-    "ƒ.Material": {
-      "name": "shaderMario",
-      "idResource": "Material|2022-10-11T14:48:40.275Z|80642",
-      "shader": "ShaderLitTextured",
-      "coat": {
-        "ƒ.CoatTextured": {
-          "color": "[1, 1, 1, 1]",
-          "idTexture": "TextureImage|2022-10-11T14:50:25.143Z|89457"
-        }
-      }
-    }
-  },
-  "TextureImage|2022-10-11T14:50:25.143Z|89457": {
-    "ƒ.TextureImage": {
-      "url": "Images\\characters.gif",
-      "type": "TextureImage",
-      "Texture": {
-        "idResource": "TextureImage|2022-10-11T14:50:25.143Z|89457",
-        "name": "Images\\characters.gif",
-        "mipmap": "CRISP"
-      }
     }
   }
 }
