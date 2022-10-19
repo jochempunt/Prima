@@ -46,6 +46,9 @@ var Script;
     let marioTransformNode;
     let marioNode;
     let spriteNode;
+    let marioSpeed = 0.0;
+    let walkSpeed = 3.0;
+    let sprintSpeed = 10;
     function start(_event) {
         viewport = _event.detail;
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
@@ -70,7 +73,7 @@ var Script;
         let animation = new ƒAid.SpriteSheetAnimation("Walk", coat);
         animation.generateByGrid(ƒ.Rectangle.GET(3, 0, 17, 33), 4, 11, ƒ.ORIGIN2D.BOTTOMCENTER, ƒ.Vector2.X(17));
         //todo jump
-        spriteNode = new ƒAid.NodeSprite;
+        spriteNode = new ƒAid.NodeSprite("MarioSprite");
         spriteNode.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
         spriteNode.setAnimation(animation);
         spriteNode.setFrameDirection(1);
@@ -88,18 +91,28 @@ var Script;
         //document.forms[0].addEventListener("change", handleChange);
     }
     let directionRight = true;
+    let distance = 0;
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
         console.log("update");
+        console.log(ƒ.Loop.timeFrameGame);
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT])) {
+            marioSpeed = sprintSpeed;
+        }
+        else {
+            marioSpeed = walkSpeed;
+        }
+        distance = marioSpeed / 1000 * ƒ.Loop.timeFrameGame;
+        console.log(marioSpeed);
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D])) {
-            marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.translateX(0.1);
+            marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.translateX(distance);
             if (!directionRight) {
                 spriteNode.getComponent(ƒ.ComponentTransform).mtxLocal.rotateY(180);
                 directionRight = true;
             }
         }
         else if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.A])) {
-            marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.translateX(-0.1);
+            marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.translateX(-distance);
             if (directionRight) {
                 spriteNode.getComponent(ƒ.ComponentTransform).mtxLocal.rotateY(180);
                 directionRight = false;
