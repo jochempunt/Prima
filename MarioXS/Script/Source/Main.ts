@@ -7,7 +7,7 @@ namespace Script {
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   let marioTransformNode: ƒ.Node;
-  let marioNode: ƒ.Node;
+  //let marioNode: ƒ.Node;
   let spriteNode: ƒAid.NodeSprite;
 
   let marioSpeed = 0.0;
@@ -26,7 +26,7 @@ namespace Script {
     let branch: ƒ.Node = viewport.getBranch();
     marioTransformNode = branch.getChildrenByName("MarioTransform")[0];
 
-    marioNode = marioTransformNode.getChildrenByName("Mario")[0];
+    //marioNode = marioTransformNode.getChildrenByName("Mario")[0];
 
     hndLoad();
 
@@ -74,7 +74,7 @@ namespace Script {
   //viewport.draw();
 
   //ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-  ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 30);
+  ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME);
 
   //document.forms[0].addEventListener("change", handleChange);
 }
@@ -87,16 +87,21 @@ let directionRight: boolean = true;
 
 
 let distance : number =0;
+
+
+
+
 function update(_event: Event): void {
   // ƒ.Physics.simulate();  // if physics is included and used
+
   
-  console.log("update");
-  console.log(ƒ.Loop.timeFrameGame);
 
   if(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT])){
     marioSpeed = sprintSpeed;
+    spriteNode.framerate = 22;
   }else{
     marioSpeed = walkSpeed
+    spriteNode.framerate = 12;
   }
   distance = marioSpeed/1000 * ƒ.Loop.timeFrameGame;
 
@@ -119,9 +124,9 @@ function update(_event: Event): void {
   else {
     spriteNode.showFrame(1);
   }
-
-
   viewport.draw();
+
+  
   ƒ.AudioManager.default.update();
 }
 }

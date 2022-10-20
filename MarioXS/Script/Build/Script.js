@@ -44,7 +44,7 @@ var Script;
     let viewport;
     document.addEventListener("interactiveViewportStarted", start);
     let marioTransformNode;
-    let marioNode;
+    //let marioNode: ƒ.Node;
     let spriteNode;
     let marioSpeed = 0.0;
     let walkSpeed = 3.0;
@@ -55,7 +55,7 @@ var Script;
         //ƒ.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
         let branch = viewport.getBranch();
         marioTransformNode = branch.getChildrenByName("MarioTransform")[0];
-        marioNode = marioTransformNode.getChildrenByName("Mario")[0];
+        //marioNode = marioTransformNode.getChildrenByName("Mario")[0];
         hndLoad();
     }
     async function hndLoad() {
@@ -87,20 +87,20 @@ var Script;
         marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.scaleY(0.5);
         //viewport.draw();
         //ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-        ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME, 30);
+        ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME);
         //document.forms[0].addEventListener("change", handleChange);
     }
     let directionRight = true;
     let distance = 0;
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
-        console.log("update");
-        console.log(ƒ.Loop.timeFrameGame);
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT])) {
             marioSpeed = sprintSpeed;
+            spriteNode.framerate = 22;
         }
         else {
             marioSpeed = walkSpeed;
+            spriteNode.framerate = 12;
         }
         distance = marioSpeed / 1000 * ƒ.Loop.timeFrameGame;
         console.log(marioSpeed);
