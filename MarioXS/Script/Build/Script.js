@@ -56,7 +56,6 @@ var Script;
     const gravity = -80;
     const jumpForce = 18;
     //------------- variables ------------//
-    let currentAnim = undefined;
     let onGround = true;
     let spriteRotation = 0;
     let direction = 1;
@@ -66,6 +65,13 @@ var Script;
     let distanceX = 0;
     let distanceY = 0;
     let deltaTime = 0;
+    let lastDirection = 0;
+    //------------- Animation Variables ------------//
+    let currentAnim = undefined;
+    let animFrames = undefined;
+    let animWalk = undefined;
+    let animMoves = undefined;
+    //------------- functions ------------//
     function start(_event) {
         viewport = _event.detail;
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
@@ -73,9 +79,6 @@ var Script;
         marioTransformNode = branch.getChildrenByName("MarioTransform")[0];
         hndLoad();
     }
-    let animFrames = undefined;
-    let animWalk = undefined;
-    let animMoves = undefined;
     async function hndLoad() {
         let imgSpriteSheetWalk;
         let imgSpriteSheetFrames;
@@ -108,14 +111,9 @@ var Script;
         spriteNode.framerate = 1;
         marioTransformNode.removeAllChildren();
         marioTransformNode.appendChild(spriteNode);
-        //root.addChild(spriteNode);
-        // setup viewport
         marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.scaleX(0.5);
         marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.scaleY(0.5);
-        //viewport.draw();
-        //ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME);
-        //document.forms[0].addEventListener("change", handleChange);
     }
     // function inspired by unitys "mathf.MoveTowards()" function
     function moveTowards(currentN, targetN, maxDelta) {
@@ -124,7 +122,6 @@ var Script;
         }
         return currentN + Math.sign(targetN - currentN) * maxDelta;
     }
-    let lastDirection = 0;
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
         let tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
@@ -135,12 +132,11 @@ var Script;
         }
         else {
             currMarioSpeed = walkSpeed;
-            // spriteNode.framerate = frameRtWalk;
         }
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround) {
             marioVelocityY = jumpForce;
         }
-        //distanceX = currMarioSpeed * deltaTime;
+        // !!Old way:    distanceX = currMarioSpeed * deltaTime;
         marioVelocityY += gravity * deltaTime;
         distanceY = marioVelocityY * deltaTime;
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.A])) {
@@ -153,11 +149,19 @@ var Script;
                 currentAnim = animWalk;
             }
             if (onGround) {
-                marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioAccellartionX * currMarioSpeed * deltaTime);
                 if (Math.sign(marioVelocityX) != Math.sign(direction) || (marioVelocityX == 0)) {
                     spriteNode.setAnimation(animMoves);
                     spriteNode.showFrame(0);
                     currentAnim = animMoves;
+                }
+                if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.S])) {
+                    spriteNode.setAnimation(animFrames);
+                    spriteNode.showFrame(1);
+                    currentAnim = animFrames;
+                    marioVelocityX = moveTowards(marioVelocityX, 0, marioAccellartionX * currMarioSpeed * deltaTime);
+                }
+                else {
+                    marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioAccellartionX * currMarioSpeed * deltaTime);
                 }
             }
             else {
@@ -173,16 +177,19 @@ var Script;
             direction = 0;
             marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioDeccellerationX * currMarioSpeed * deltaTime);
         }
-        console.log("lastiDirection =" + lastDirection);
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.S])) {
+            spriteNode.setAnimation(animFrames);
+            spriteNode.showFrame(1);
+            currentAnim = animFrames;
+        }
         spriteRotation = (lastDirection == -1) ? -180 : 0;
         spriteNode.getComponent(ƒ.ComponentTransform).mtxLocal.rotation = new ƒ.Vector3(0, spriteRotation, 0);
         distanceX = marioVelocityX * deltaTime;
         tranformComponentMario.mtxLocal.translation = new ƒ.Vector3(tranformComponentMario.mtxLocal.translation.x + distanceX, tranformComponentMario.mtxLocal.translation.y + distanceY, tranformComponentMario.mtxLocal.translation.z);
-        //tranformComponentMario.mtxLocal.translateX(distanceX);
-        //tranformComponentMario.mtxLocal.translateY(distanceY);
         //mutatoren
         if (tranformComponentMario.mtxLocal.translation.y <= -0.7) {
             tranformComponentMario.mtxLocal.translation = new ƒ.Vector3(tranformComponentMario.mtxLocal.translation.x, -0.7, tranformComponentMario.mtxLocal.translation.z);
+            marioVelocityY = 0;
             onGround = true;
         }
         else {
