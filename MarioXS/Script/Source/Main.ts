@@ -97,7 +97,6 @@ namespace Script {
       return targetN;
     }
     return currentN + Math.sign(targetN - currentN) * maxDelta;
-
   }
 
   let tranformComponentMario = undefined;
@@ -127,7 +126,7 @@ namespace Script {
 
     if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.A])) {
       direction = (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D]) ? 1 : -1);
-      console.log("direction:" + direction);
+      //console.log("direction:" + direction);
       lastDirection = Number(direction);
       if (currentAnim != animWalk) {
         spriteNode.setAnimation(animWalk);

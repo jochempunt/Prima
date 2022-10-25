@@ -123,9 +123,10 @@ var Script;
         }
         return currentN + Math.sign(targetN - currentN) * maxDelta;
     }
+    let tranformComponentMario = undefined;
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
-        let tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
+        tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
         deltaTime = ƒ.Loop.timeFrameGame / 1000;
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT])) {
             currMarioSpeed = sprintSpeed;
@@ -146,7 +147,7 @@ var Script;
         distanceY = marioVelocityY * deltaTime;
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.A])) {
             direction = (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D]) ? 1 : -1);
-            console.log("direction:" + direction);
+            //console.log("direction:" + direction);
             lastDirection = Number(direction);
             if (currentAnim != animWalk) {
                 spriteNode.setAnimation(animWalk);
