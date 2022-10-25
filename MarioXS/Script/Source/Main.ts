@@ -31,6 +31,7 @@ namespace Script {
   let distanceY: number = 0;
   let deltaTime = 0;
   let lastDirection: number = 0;
+  let hasJumped = false;
   //------------- Animation Variables ------------//
   let currentAnim: ƒAid.SpriteSheetAnimation = undefined;
   let animFrames: ƒAid.SpriteSheetAnimation = undefined;
@@ -113,8 +114,11 @@ namespace Script {
       currMarioSpeed = walkSpeed;
     }
 
-    if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround) {
+    if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround && !hasJumped) {
       marioVelocityY = jumpForce;
+      hasJumped = true;
+    } else if (!ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])){
+      hasJumped = false;
     }
     // !!Old way:    distanceX = currMarioSpeed * deltaTime;
 
@@ -131,19 +135,19 @@ namespace Script {
         currentAnim = animWalk;
       }
       if (onGround) {
-        
+
         if (Math.sign(marioVelocityX) != Math.sign(direction) || (marioVelocityX == 0)) {
           spriteNode.setAnimation(animMoves);
           spriteNode.showFrame(0);
           currentAnim = animMoves;
         }
 
-        if(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.S])){
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.S])) {
           spriteNode.setAnimation(animFrames);
           spriteNode.showFrame(1);
           currentAnim = animFrames;
           marioVelocityX = moveTowards(marioVelocityX, 0, marioAccellartionX * currMarioSpeed * deltaTime);
-        }else{
+        } else {
           marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioAccellartionX * currMarioSpeed * deltaTime);
         }
       } else {
@@ -160,7 +164,7 @@ namespace Script {
     }
 
 
-    if(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.S])){
+    if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.S])) {
       spriteNode.setAnimation(animFrames);
       spriteNode.showFrame(1);
       currentAnim = animFrames;
@@ -183,7 +187,6 @@ namespace Script {
       spriteNode.setAnimation(animMoves);
       currentAnim = animMoves;
       spriteNode.showFrame(1);
-
     }
 
     viewport.draw();

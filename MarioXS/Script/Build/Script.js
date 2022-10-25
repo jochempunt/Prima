@@ -66,6 +66,7 @@ var Script;
     let distanceY = 0;
     let deltaTime = 0;
     let lastDirection = 0;
+    let hasJumped = false;
     //------------- Animation Variables ------------//
     let currentAnim = undefined;
     let animFrames = undefined;
@@ -133,8 +134,12 @@ var Script;
         else {
             currMarioSpeed = walkSpeed;
         }
-        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround) {
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround && !hasJumped) {
             marioVelocityY = jumpForce;
+            hasJumped = true;
+        }
+        else if (!ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])) {
+            hasJumped = false;
         }
         // !!Old way:    distanceX = currMarioSpeed * deltaTime;
         marioVelocityY += gravity * deltaTime;
