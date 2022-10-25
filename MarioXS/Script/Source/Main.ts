@@ -100,11 +100,11 @@ namespace Script {
 
   }
 
-
+  let tranformComponentMario = undefined;
 
   function update(_event: Event): void {
     // ƒ.Physics.simulate();  // if physics is included and used
-    let tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
+    tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
     deltaTime = ƒ.Loop.timeFrameGame / 1000;
 
     if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT])) {
@@ -117,7 +117,7 @@ namespace Script {
     if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround && !hasJumped) {
       marioVelocityY = jumpForce;
       hasJumped = true;
-    } else if (!ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])){
+    } else if (!ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])) {
       hasJumped = false;
     }
     // !!Old way:    distanceX = currMarioSpeed * deltaTime;
