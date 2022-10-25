@@ -150,7 +150,7 @@ namespace Script {
           marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioAccellartionX * currMarioSpeed * deltaTime);
         }
       } else {
-        marioVelocityX = moveTowards(marioVelocityX, 0.9 * direction * currMarioSpeed, 0);
+        marioVelocityX = moveTowards(marioVelocityX, 0.9 * direction * currMarioSpeed,0);
       }
     } else {
       if (onGround) {
@@ -159,7 +159,7 @@ namespace Script {
         spriteNode.showFrame(0);
       }
       direction = 0;
-      marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioDeccellerationX * currMarioSpeed * deltaTime);
+      marioVelocityX = moveTowards(marioVelocityX, direction *currMarioSpeed, marioDeccellerationX * currMarioSpeed * deltaTime);
     }
 
 
