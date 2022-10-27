@@ -8,7 +8,7 @@ namespace Script {
 
   let marioTransformNode: ƒ.Node;
   let spriteNode: ƒAid.NodeSprite;
-
+  let floorNodes: ƒ.Node[];
   //------- animation Framerates -------//
   const frameRtWalk: number = 12;
   const frameRtSprint: number = 16;
@@ -32,6 +32,10 @@ namespace Script {
   let deltaTime = 0;
   let lastDirection: number = 0;
   let hasJumped = false;
+
+
+
+  let tranformComponentMario: ƒ.ComponentTransform = undefined;
   //------------- Animation Variables ------------//
   let currentAnim: ƒAid.SpriteSheetAnimation = undefined;
   let animFrames: ƒAid.SpriteSheetAnimation = undefined;
@@ -44,6 +48,10 @@ namespace Script {
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     let branch: ƒ.Node = viewport.getBranch();
     marioTransformNode = branch.getChildrenByName("MarioTransform")[0];
+    let floor: ƒ.Node = branch.getChildrenByName("floors")[0];
+
+    floorNodes = floor.getChildren();
+    console.log(floorNodes);
     hndLoad();
   }
 
@@ -87,6 +95,9 @@ namespace Script {
     marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.scaleX(0.5);
     marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.scaleY(0.5);
 
+
+    tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
+
     ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME);
   }
 
@@ -99,11 +110,35 @@ namespace Script {
     return currentN + Math.sign(targetN - currentN) * maxDelta;
   }
 
-  let tranformComponentMario = undefined;
+
+
+  function inAir(): void {
+    onGround = false;
+
+  }
+
+  function checkCollision(): void {
+    let pos: ƒ.Vector3 = marioTransformNode.mtxLocal.translation;
+    for (let floor of floorNodes) {
+      let posBlock: ƒ.Vector3 = floor.mtxLocal.translation;
+      if (Math.abs(pos.x - posBlock.x) < 1) {
+        if (pos.y < posBlock.y + 0.5 && pos.y > posBlock.y - 0.5 ) {
+          pos.y = posBlock.y + 0.5;
+          marioTransformNode.mtxLocal.translation = pos;
+          marioVelocityY = 0;
+          onGround = true;
+        } else {
+          //inAir();
+        }
+      }
+    }
+  }
+
+
 
   function update(_event: Event): void {
     // ƒ.Physics.simulate();  // if physics is included and used
-    tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
+
     deltaTime = ƒ.Loop.timeFrameGame / 1000;
 
     if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT])) {
@@ -116,6 +151,7 @@ namespace Script {
     if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround && !hasJumped) {
       marioVelocityY = jumpForce;
       hasJumped = true;
+      inAir();
     } else if (!ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE])) {
       hasJumped = false;
     }
@@ -150,7 +186,7 @@ namespace Script {
           marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioAccellartionX * currMarioSpeed * deltaTime);
         }
       } else {
-        marioVelocityX = moveTowards(marioVelocityX, 0.9 * direction * currMarioSpeed,0);
+        marioVelocityX = moveTowards(marioVelocityX, 0.9 * direction * currMarioSpeed, 0);
       }
     } else {
       if (onGround) {
@@ -159,7 +195,7 @@ namespace Script {
         spriteNode.showFrame(0);
       }
       direction = 0;
-      marioVelocityX = moveTowards(marioVelocityX, direction *currMarioSpeed, marioDeccellerationX * currMarioSpeed * deltaTime);
+      marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioDeccellerationX * currMarioSpeed * deltaTime);
     }
 
 
@@ -173,22 +209,35 @@ namespace Script {
     spriteNode.getComponent(ƒ.ComponentTransform).mtxLocal.rotation = new ƒ.Vector3(0, spriteRotation, 0);
 
     distanceX = marioVelocityX * deltaTime;
-
     tranformComponentMario.mtxLocal.translation = new ƒ.Vector3(tranformComponentMario.mtxLocal.translation.x + distanceX, tranformComponentMario.mtxLocal.translation.y + distanceY, tranformComponentMario.mtxLocal.translation.z);
-    //mutatoren
+    
 
-    if (tranformComponentMario.mtxLocal.translation.y <= -0.7) {
-      tranformComponentMario.mtxLocal.translation = new ƒ.Vector3(tranformComponentMario.mtxLocal.translation.x, -0.7, tranformComponentMario.mtxLocal.translation.z);
-      marioVelocityY = 0;
-      onGround = true;
-    } else {
-      onGround = false;
+    if (!onGround) {
       spriteNode.setAnimation(animMoves);
       currentAnim = animMoves;
       spriteNode.showFrame(1);
     }
 
-    viewport.draw();
+   
+    //mutatoren
+    /*
+        if (tranformComponentMario.mtxLocal.translation.y <= -0.7) {
+          tranformComponentMario.mtxLocal.translation = new ƒ.Vector3(tranformComponentMario.mtxLocal.translation.x, -0.7, tranformComponentMario.mtxLocal.translation.z);
+          marioVelocityY = 0;
+          onGround = true;
+        } else {
+          onGround = false;
+          spriteNode.setAnimation(animMoves);
+          currentAnim = animMoves;
+          spriteNode.showFrame(1);
+        }
+    */
+    checkCollision();
+
+    //checkCollision(); --> bei scheißformen AABB(mehr rechenaufwand)  ||oder kreise ; d<radius1 + radius2
+    viewport.draw(); // test rectangle
+
+    // für Y collison .> inverse world transform  [Hirnen!!]
     ƒ.AudioManager.default.update();
   }
 }

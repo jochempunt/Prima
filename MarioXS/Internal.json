@@ -74,7 +74,7 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[2, -1.7099969387054443, 0]",
+                      "translation": "[2, -1, 0]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
@@ -95,7 +95,7 @@
                       {
                         "ƒ.ComponentTransform": {
                           "local": {
-                            "translation": "[-1.9999998807907104, 0, 0]",
+                            "translation": "[-1.9999998807907104, -1.3999996185302734, 0.10000000149011612]",
                             "rotation": "[0, 0, 0]",
                             "scaling": "[1, 1, 1]"
                           },
@@ -126,7 +126,7 @@
                       {
                         "ƒ.ComponentTransform": {
                           "local": {
-                            "translation": "[1.9999998807907104, 0, 0]",
+                            "translation": "[1.9999998807907104, -1.4000005722045898, 0.10000000149011612]",
                             "rotation": "[0, 0, 0]",
                             "scaling": "[1, 1, 1]"
                           },
@@ -157,7 +157,100 @@
                       {
                         "ƒ.ComponentTransform": {
                           "local": {
-                            "translation": "[0, 0, 0]",
+                            "translation": "[0, -1.4000005722045898, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[4, -1.4000005722045898, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[-4, -1.3999996185302734, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[2, -0.3999990224838257, 0.10000000149011612]",
                             "rotation": "[0, 0, 0]",
                             "scaling": "[1, 1, 1]"
                           },
@@ -192,9 +285,9 @@
                   "ƒ.ComponentMesh": {
                     "idMesh": "MeshQuad|2022-10-11T14:43:32.388Z|73955",
                     "pivot": {
-                      "translation": "[0, -1, -1]",
+                      "translation": "[0, 1.100000023841858, 0]",
                       "rotation": "[0, 0, 0]",
-                      "scaling": "[12, 7, 1]"
+                      "scaling": "[9.999993324279785, 6.800000190734863, 1]"
                     },
                     "Component": {
                       "active": true
@@ -233,7 +326,7 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[0, -0.6999999284744263, 0]",
+                      "translation": "[0, -0.6999999284744263, 0.10000000149011612]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
@@ -335,7 +428,7 @@
             "ƒ.ComponentMesh": {
               "idMesh": "MeshQuad|2022-10-11T14:34:39.910Z|20649",
               "pivot": {
-                "translation": "[0, 0, 0]",
+                "translation": "[-2, 0.5, 0]",
                 "rotation": "[0, 0, 0]",
                 "scaling": "[2, 1, 1]"
               },
