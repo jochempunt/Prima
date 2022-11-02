@@ -68,17 +68,20 @@ var Script;
     let deltaTime = 0;
     let lastDirection = 0;
     let hasJumped = false;
+    let cmpAudioMario;
+    let audioJump;
     let tranformComponentMario = undefined;
     //------------- Animation Variables ------------//
     let currentAnim = undefined;
     let animFrames = undefined;
     let animWalk = undefined;
     let animMoves = undefined;
+    let branch = undefined;
     //------------- functions ------------//
     function start(_event) {
         viewport = _event.detail;
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
-        let branch = viewport.getBranch();
+        branch = viewport.getBranch();
         marioTransformNode = branch.getChildrenByName("MarioTransform")[0];
         let floor = branch.getChildrenByName("floors")[0];
         floorNodes = floor.getChildren();
@@ -120,6 +123,12 @@ var Script;
         marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.scaleX(0.5);
         marioTransformNode.getComponent(ƒ.ComponentTransform).mtxLocal.scaleY(0.5);
         tranformComponentMario = marioTransformNode.getComponent(ƒ.ComponentTransform);
+        audioJump = new ƒ.Audio("./Sounds/JumpSound.mp3");
+        cmpAudioMario = new ƒ.ComponentAudio(audioJump, false, false);
+        cmpAudioMario.connect(true);
+        let cmpAudio = branch.getComponent(ƒ.ComponentAudio);
+        console.log(cmpAudio);
+        cmpAudio.volume = 1;
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_GAME);
     }
     // function inspired by unitys "mathf.MoveTowards()" function
@@ -137,7 +146,7 @@ var Script;
         for (let floor of floorNodes) {
             let posBlock = floor.mtxLocal.translation;
             if (Math.abs(pos.x - posBlock.x) < 1) {
-                if (pos.y < posBlock.y + 0.5 && pos.y > posBlock.y - 0.5) {
+                if (pos.y < posBlock.y + 0.5 && pos.y > posBlock.y - 0.8) {
                     pos.y = posBlock.y + 0.5;
                     marioTransformNode.mtxLocal.translation = pos;
                     marioVelocityY = 0;
@@ -161,6 +170,7 @@ var Script;
         }
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SPACE]) && onGround && !hasJumped) {
             marioVelocityY = jumpForce;
+            cmpAudioMario.play(true);
             hasJumped = true;
             inAir();
         }

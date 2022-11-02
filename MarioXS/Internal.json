@@ -63,7 +63,19 @@
     "ƒ.Graph": {
       "name": "Level",
       "active": true,
-      "components": {},
+      "components": {
+        "ComponentAudio": [
+          {
+            "ƒ.ComponentAudio": {
+              "active": true,
+              "idResource": "Audio|2022-10-27T12:34:42.212Z|23010",
+              "playing": true,
+              "loop": true,
+              "volume": 1
+            }
+          }
+        ]
+      },
       "children": [
         {
           "ƒ.Node": {
@@ -460,6 +472,14 @@
       "children": [],
       "idResource": "Graph|2022-10-11T14:37:49.455Z|84946",
       "type": "Graph"
+    }
+  },
+  "Audio|2022-10-27T12:34:42.212Z|23010": {
+    "ƒ.Audio": {
+      "url": "Sounds\\Overworld Theme New Super Mario Bros DS.mp3",
+      "idResource": "Audio|2022-10-27T12:34:42.212Z|23010",
+      "name": "Sounds\\Overworld Theme New Super Mario Bros DS.mp3",
+      "type": "Audio"
     }
   }
 }
