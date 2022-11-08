@@ -54,7 +54,7 @@ var Script;
     const sprintSpeed = 15.0;
     const marioAccellartionX = 3.7;
     const marioDeccellerationX = 7;
-    const gravity = -80;
+    let gravity = -80;
     const jumpForce = 18;
     //------------- variables ------------//
     let onGround = true;
@@ -70,6 +70,9 @@ var Script;
     let hasJumped = false;
     let cmpAudioMario;
     let audioJump;
+    let audioDeath;
+    let cmpAudio;
+    let marioMutator;
     let tranformComponentMario = undefined;
     //------------- Animation Variables ------------//
     let currentAnim = undefined;
@@ -126,9 +129,12 @@ var Script;
         cmpCamera = viewport.camera;
         tranformComponentMario = marioTransformNode.getComponent(f_.ComponentTransform);
         audioJump = new f_.Audio("./Sounds/JumpSound.mp3");
+        audioDeath = new f_.Audio("./Sounds/death_sound.mp3");
         cmpAudioMario = new f_.ComponentAudio(audioJump, false, false);
         cmpAudioMario.connect(true);
-        let cmpAudio = branch.getComponent(f_.ComponentAudio);
+        marioMutator = tranformComponentMario.getMutator();
+        console.log(marioMutator.mtxLocal.translation);
+        cmpAudio = branch.getComponent(f_.ComponentAudio);
         // 
         console.log("full branch");
         console.log(viewport.getBranch().getAllComponents());
@@ -156,17 +162,32 @@ var Script;
         for (let floor of floorNodes) {
             let posBlock = floor.mtxLocal.translation;
             if (Math.abs(pos.x - posBlock.x) < 1) {
-                if (pos.y < posBlock.y + 0.5 && pos.y > posBlock.y - 0.5) {
+                if (pos.y < posBlock.y + 0.5 && pos.y > posBlock.y - 0.1) {
                     pos.y = posBlock.y + 0.5;
                     marioTransformNode.mtxLocal.translation = pos;
                     marioVelocityY = 0;
                     onGround = true;
                 }
                 else {
-                    //inAir();
+                    onGround = false;
                 }
             }
         }
+    }
+    let gameOver = false;
+    function resetLevel() {
+        gravity = 0;
+        marioVelocityY = 0;
+        gameOver = true;
+        setTimeout(marioBack, 2000);
+    }
+    function marioBack() {
+        cmpAudio.play(true);
+        tranformComponentMario.mtxLocal.translation = new f_.Vector3(0, 1, 0);
+        marioVelocityY = 0;
+        //tranformComponentMario.updateMutator(marioMutator);
+        gameOver = false;
+        gravity = -80;
     }
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
@@ -179,7 +200,9 @@ var Script;
             currMarioSpeed = walkSpeed;
         }
         if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.SPACE]) && onGround && !hasJumped) {
+            cmpAudioMario.setAudio(audioJump);
             marioVelocityY = jumpForce;
+            cmpAudioMario.volume = 1;
             cmpAudioMario.play(true);
             hasJumped = true;
             inAir();
@@ -242,6 +265,10 @@ var Script;
             currentAnim = animMoves;
             spriteNode.showFrame(1);
         }
+        if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.ARROW_UP])) {
+            marioMutator.mtxLocal.rotation = new f_.Vector3(marioMutator.mtxLocal.rotation.x, marioMutator.mtxLocal.rotation.y + 2, 0);
+            tranformComponentMario.updateMutator(marioMutator);
+        }
         //mutatoren
         /*
             if (tranformComponentMario.mtxLocal.translation.y <= -0.7) {
@@ -255,6 +282,15 @@ var Script;
               spriteNode.showFrame(1);
             }
         */
+        if (marioTransformNode.mtxLocal.translation.y < -5 && !gameOver) {
+            gameOver = true;
+            cmpAudio.play(false);
+            cmpAudioMario.setAudio(audioDeath);
+            cmpAudioMario.play(true);
+            cmpAudioMario.volume = 5;
+            console.log(marioTransformNode.mtxLocal.translation.y);
+            resetLevel();
+        }
         checkCollision();
         updateCamera();
         //checkCollision(); --> bei scheißformen AABB(mehr rechenaufwand)  ||oder kreise ; d<radius1 + radius2

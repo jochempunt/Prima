@@ -13,8 +13,19 @@
       "coat": {
         "ƒ.CoatTextured": {
           "color": "[1, 1, 1, 1]",
-          "idTexture": "TextureImage|2022-10-11T14:43:14.354Z|98252"
+          "idTexture": "TextureImage|2022-11-05T09:32:41.821Z|28406"
         }
+      }
+    }
+  },
+  "TextureImage|2022-11-05T09:32:41.821Z|28406": {
+    "ƒ.TextureImage": {
+      "url": "Images\\BackgroundFactoryNF.png",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-11-05T09:32:41.821Z|28406",
+        "name": "Images\\BackgroundFactoryNF.png",
+        "mipmap": "CRISP"
       }
     }
   },
@@ -57,6 +68,14 @@
         "name": "Images\\characters.gif",
         "mipmap": "CRISP"
       }
+    }
+  },
+  "Audio|2022-10-27T12:34:42.212Z|23010": {
+    "ƒ.Audio": {
+      "url": "Sounds\\Overworld Theme New Super Mario Bros DS.mp3",
+      "idResource": "Audio|2022-10-27T12:34:42.212Z|23010",
+      "name": "Sounds\\Overworld Theme New Super Mario Bros DS.mp3",
+      "type": "Audio"
     }
   },
   "Graph|2022-10-11T14:32:57.611Z|28804": {
@@ -262,7 +281,193 @@
                       {
                         "ƒ.ComponentTransform": {
                           "local": {
-                            "translation": "[2, -0.3999990224838257, 0.10000000149011612]",
+                            "translation": "[7.399999618530273, -1.3999996185302734, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[9.400003433227539, -1.3999996185302734, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[11.400009155273438, -1.3999996185302734, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[13.400014877319336, -1.3999996185302734, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[15.400019645690918, -1.3999996185302734, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[18.800031661987305, -0.39999961853027344, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "ƒ.GraphInstance": {
+                        "deserializeFromSource": true,
+                        "name": "floor",
+                        "idSource": "Graph|2022-10-11T14:37:49.455Z|84946"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "FloorPosition",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[20.800039291381836, -0.39999961853027344, 0.10000000149011612]",
                             "rotation": "[0, 0, 0]",
                             "scaling": "[1, 1, 1]"
                           },
@@ -285,48 +490,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "ƒ.Node": {
-            "name": "Background",
-            "active": true,
-            "components": {
-              "ComponentMesh": [
-                {
-                  "ƒ.ComponentMesh": {
-                    "idMesh": "MeshQuad|2022-10-11T14:43:32.388Z|73955",
-                    "pivot": {
-                      "translation": "[0, 1.100000023841858, 0]",
-                      "rotation": "[0, 0, 0]",
-                      "scaling": "[9.999993324279785, 6.800000190734863, 1]"
-                    },
-                    "Component": {
-                      "active": true
-                    }
-                  }
-                }
-              ],
-              "ComponentMaterial": [
-                {
-                  "ƒ.ComponentMaterial": {
-                    "sortForAlpha": false,
-                    "clrPrimary": "[1, 1, 1, 1]",
-                    "clrSecondary": "[1, 1, 1, 1]",
-                    "pivot": {
-                      "translation": "[0, 0]",
-                      "rotation": 0,
-                      "scaling": "[1, 1]"
-                    },
-                    "Component": {
-                      "active": true
-                    },
-                    "idMaterial": "Material|2022-10-11T14:42:27.159Z|09945"
-                  }
-                }
-              ]
-            },
-            "children": []
           }
         },
         {
@@ -385,6 +548,156 @@
                             "active": true
                           },
                           "idMaterial": "Material|2022-10-11T14:48:40.275Z|80642"
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Backgrounds",
+            "active": true,
+            "components": {
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ]
+            },
+            "children": [
+              {
+                "ƒ.Node": {
+                  "name": "Background",
+                  "active": true,
+                  "components": {
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshQuad|2022-10-11T14:43:32.388Z|73955",
+                          "pivot": {
+                            "translation": "[0, 1.100000023841858, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[9.999993324279785, 6.800000190734863, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[0, 0]",
+                            "rotation": 0,
+                            "scaling": "[1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-10-11T14:42:27.159Z|09945"
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "Background",
+                  "active": true,
+                  "components": {
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshQuad|2022-10-11T14:43:32.388Z|73955",
+                          "pivot": {
+                            "translation": "[9.899999618530273, 1.100000023841858, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[9.999993324279785, 6.800000190734863, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[0, 0]",
+                            "rotation": 0,
+                            "scaling": "[1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-10-11T14:42:27.159Z|09945"
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "Background",
+                  "active": true,
+                  "components": {
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshQuad|2022-10-11T14:43:32.388Z|73955",
+                          "pivot": {
+                            "translation": "[19.899999618530273, 1.100000023841858, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[9.999993324279785, 6.800000190734863, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[0, 0]",
+                            "rotation": 0,
+                            "scaling": "[1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-10-11T14:42:27.159Z|09945"
                         }
                       }
                     ]
@@ -472,14 +785,6 @@
       "children": [],
       "idResource": "Graph|2022-10-11T14:37:49.455Z|84946",
       "type": "Graph"
-    }
-  },
-  "Audio|2022-10-27T12:34:42.212Z|23010": {
-    "ƒ.Audio": {
-      "url": "Sounds\\Overworld Theme New Super Mario Bros DS.mp3",
-      "idResource": "Audio|2022-10-27T12:34:42.212Z|23010",
-      "name": "Sounds\\Overworld Theme New Super Mario Bros DS.mp3",
-      "type": "Audio"
     }
   }
 }
