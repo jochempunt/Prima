@@ -35,6 +35,14 @@
       }
     }
   },
+  "MeshObj|2022-11-17T13:53:48.944Z|02177": {
+    "ƒ.MeshObj": {
+      "idResource": "MeshObj|2022-11-17T13:53:48.944Z|02177",
+      "name": "Objects3d\\startship2.obj",
+      "type": "MeshObj",
+      "url": "Objects3d\\startship2.obj"
+    }
+  },
   "Graph|2022-11-16T16:21:56.400Z|64252": {
     "ƒ.Graph": {
       "name": "bossLevel",
@@ -154,14 +162,6 @@
           "color": "[1, 1, 1, 1]"
         }
       }
-    }
-  },
-  "MeshObj|2022-11-17T13:53:48.944Z|02177": {
-    "ƒ.MeshObj": {
-      "idResource": "MeshObj|2022-11-17T13:53:48.944Z|02177",
-      "name": "Objects3d\\startship2.obj",
-      "type": "MeshObj",
-      "url": "Objects3d\\startship2.obj"
     }
   }
 }
