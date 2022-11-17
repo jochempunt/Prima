@@ -73,7 +73,7 @@
                 {
                   "ƒ.ComponentMaterial": {
                     "sortForAlpha": false,
-                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrPrimary": "[0.4588235294117647, 0.4392156862745098, 0.4392156862745098, 1]",
                     "clrSecondary": "[1, 1, 1, 1]",
                     "pivot": {
                       "translation": "[0, 0]",
@@ -101,12 +101,29 @@
                   "ƒ.ComponentLight": {
                     "pivot": {
                       "translation": "[0, 0, 0]",
-                      "rotation": "[200, 0, 0]",
+                      "rotation": "[100, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
                     "light": {
                       "ƒ.LightDirectional": {
-                        "color": "[1, 1, 1, 1]"
+                        "color": "[0.3686274509803922, 0.592156862745098, 0.7294117647058823, 1]"
+                      }
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                },
+                {
+                  "ƒ.ComponentLight": {
+                    "pivot": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "light": {
+                      "ƒ.LightAmbient": {
+                        "color": "[0.596078431372549, 0.3137254901960784, 0.2627450980392157, 1]"
                       }
                     },
                     "Component": {
@@ -146,6 +163,48 @@
             },
             "children": []
           }
+        },
+        {
+          "ƒ.Node": {
+            "name": "terrain",
+            "active": true,
+            "components": {
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshTerrain|2022-11-17T14:13:11.157Z|12773",
+                    "pivot": {
+                      "translation": "[0, -7, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[100, 11, 101]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[0.7529411764705882, 0.45098039215686275, 0.16470588235294117, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2022-11-17T14:17:26.492Z|20965"
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
         }
       ],
       "idResource": "Graph|2022-11-16T16:21:56.400Z|64252",
@@ -178,6 +237,30 @@
       "name": "Objects3d\\startship3.obj",
       "type": "MeshObj",
       "url": "Objects3d\\startship3.obj"
+    }
+  },
+  "MeshTerrain|2022-11-17T14:13:11.157Z|12773": {
+    "ƒ.MeshTerrain": {
+      "idResource": "MeshTerrain|2022-11-17T14:13:11.157Z|12773",
+      "name": "MeshTerrain",
+      "type": "MeshTerrain",
+      "seed": 1.02,
+      "scale": "[3, 1]",
+      "resolution": "[100, 100]"
+    }
+  },
+  "Material|2022-11-17T14:17:26.492Z|20965": {
+    "ƒ.Material": {
+      "name": "ShaderFlat",
+      "idResource": "Material|2022-11-17T14:17:26.492Z|20965",
+      "shader": "ShaderFlat",
+      "coat": {
+        "ƒ.CoatRemissive": {
+          "color": "[1, 1, 1, 1]",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
     }
   }
 }
