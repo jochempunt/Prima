@@ -7,6 +7,7 @@ namespace Script {
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   let marioTransformNode: f_.Node;
+  let avatarInstance: Avatar;
   let spriteNode: fAid.NodeSprite;
   let floorNodes: f_.Node[];
   //------- animation Framerates -------//
@@ -44,10 +45,14 @@ namespace Script {
 
   let tranformComponentMario: f_.ComponentTransform = undefined;
   //------------- Animation Variables ------------//
-  let currentAnim: fAid.SpriteSheetAnimation = undefined;
-  let animFrames: fAid.SpriteSheetAnimation = undefined;
-  let animWalk: fAid.SpriteSheetAnimation = undefined;
-  let animMoves: fAid.SpriteSheetAnimation = undefined;
+  let currentAnim: AnimationState = undefined;
+  
+  export enum AnimationState{
+    WALK,FRAMES,MOVES
+  }
+  //let animFramesStr: string = "animFrames";
+ // let animWalk: string = "animWalk";
+  //let animMoves: string = "animMoves";
   let branch: f_.Node = undefined;
 
   let cmpCamera: f_.ComponentCamera = undefined;
@@ -80,32 +85,34 @@ namespace Script {
       console.log(e);
     }
 
-    let coatWalk: f_.CoatTextured = new f_.CoatTextured(undefined, imgSpriteSheetWalk);
-    animWalk = new fAid.SpriteSheetAnimation("Walk", coatWalk);
-    animWalk.generateByGrid(f_.Rectangle.GET(3, 0, 17, 33), 4, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(17));
 
-    let coatFrames: f_.CoatTextured = new f_.CoatTextured(undefined, imgSpriteSheetFrames);
-    animFrames = new fAid.SpriteSheetAnimation("Frames", coatFrames);
-    animFrames.generateByGrid(f_.Rectangle.GET(0, 0, 18, 33), 2, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(19));
 
-    let coatMoveses: f_.CoatTextured = new f_.CoatTextured(undefined, imgSpriteSheetMoves);
-    animMoves = new fAid.SpriteSheetAnimation("Moves", coatMoveses);
-    animMoves.generateByGrid(f_.Rectangle.GET(0, 0, 19, 33), 2, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(17));
 
-    spriteNode = new fAid.NodeSprite("MarioSprite");
-    spriteNode.addComponent(new f_.ComponentTransform(new f_.Matrix4x4()));
-    spriteNode.setAnimation(animMoves);
-    spriteNode.setFrameDirection(1);
-    spriteNode.mtxLocal.translateY(-1);
-    spriteNode.framerate = 1;
+
+    avatarInstance = new Avatar();
+    avatarInstance.initializeAnimations(imgSpriteSheetFrames,imgSpriteSheetWalk,imgSpriteSheetMoves);
+    //spriteNode = new fAid.NodeSprite("MarioSprite");
+    //spriteNode.addComponent(new f_.ComponentTransform(new f_.Matrix4x4()));
+    //spriteNode.setAnimation(animMoves);
+    //spriteNode.setFrameDirection(1);
+    //spriteNode.mtxLocal.translateY(-1);
+    //spriteNode.framerate = 1;
+
 
     marioTransformNode.removeAllChildren();
-    marioTransformNode.appendChild(spriteNode);
+    // marioTransformNode.appendChild(spriteNode);
+    marioTransformNode.appendChild(avatarInstance);
     marioTransformNode.getComponent(f_.ComponentTransform).mtxLocal.scaleX(0.5);
     marioTransformNode.getComponent(f_.ComponentTransform).mtxLocal.scaleY(0.5);
 
 
+
+
     cmpCamera = viewport.camera;
+
+    cmpCamera.mtxPivot.translateZ(-20);
+   // cmpCamera.mtxPivot.rotateY(180);
+   
 
 
     tranformComponentMario = marioTransformNode.getComponent(f_.ComponentTransform);
@@ -145,7 +152,7 @@ namespace Script {
   function updateCamera(): void {
     let pos: f_.Vector3 = marioTransformNode.mtxLocal.translation;
     let origin: f_.Vector3 = cmpCamera.mtxPivot.translation;
-    cmpCamera.mtxPivot.translation = new f_.Vector3(- pos.x, origin.y, origin.z);
+    cmpCamera.mtxPivot.translation = new f_.Vector3( pos.x, origin.y, origin.z);
   }
 
   function inAir(): void {
@@ -182,7 +189,7 @@ namespace Script {
 
   function marioBack(): void {
     cmpAudio.play(true);
-    tranformComponentMario.mtxLocal.translation = new f_.Vector3(0, 1, 0);
+    tranformComponentMario.mtxLocal.translation = new f_.Vector3(0, 1,0);
     marioVelocityY = 0;
     //tranformComponentMario.updateMutator(marioMutator);
     gameOver = false;
@@ -197,7 +204,7 @@ namespace Script {
 
     if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.SHIFT_LEFT])) {
       currMarioSpeed = sprintSpeed;
-      spriteNode.framerate = frameRtSprint;
+      avatarInstance.framerate = frameRtSprint;
     } else {
       currMarioSpeed = walkSpeed;
     }
@@ -222,23 +229,19 @@ namespace Script {
       direction = (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.D]) ? 1 : -1);
       //console.log("direction:" + direction);
       lastDirection = Number(direction);
-      if (currentAnim != animWalk) {
-        spriteNode.setAnimation(animWalk);
-        spriteNode.framerate = frameRtWalk;
-        currentAnim = animWalk;
+      
+      if (avatarInstance.currAnim != AnimationState.WALK) {
+        avatarInstance.setWalk();     
       }
       if (onGround) {
 
         if (Math.sign(marioVelocityX) != Math.sign(direction) || (marioVelocityX == 0)) {
-          spriteNode.setAnimation(animMoves);
-          spriteNode.showFrame(0);
-          currentAnim = animMoves;
+          avatarInstance.setSlide();
+          
         }
 
         if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.S])) {
-          spriteNode.setAnimation(animFrames);
-          spriteNode.showFrame(1);
-          currentAnim = animFrames;
+          avatarInstance.setDuck();
           marioVelocityX = moveTowards(marioVelocityX, 0, marioAccellartionX * currMarioSpeed * deltaTime);
         } else {
           marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioAccellartionX * currMarioSpeed * deltaTime);
@@ -248,9 +251,9 @@ namespace Script {
       }
     } else {
       if (onGround) {
-        spriteNode.setAnimation(animFrames);
-        currentAnim = animFrames;
-        spriteNode.showFrame(0);
+        avatarInstance.setStand();
+        //avatarInstance.setAnimation(animFrames);
+        //avatarInstance.showFrame(0);
       }
       direction = 0;
       marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioDeccellerationX * currMarioSpeed * deltaTime);
@@ -258,22 +261,24 @@ namespace Script {
 
 
     if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.S])) {
-      spriteNode.setAnimation(animFrames);
-      spriteNode.showFrame(1);
-      currentAnim = animFrames;
+      avatarInstance.setDuck();
+      //avatarInstance.setAnimation(animFramesStr);
+      //avatarInstance.showFrame(1);
+      //currentAnim = animFramesStr;
     }
 
     spriteRotation = (lastDirection == -1) ? -180 : 0;
-    spriteNode.getComponent(f_.ComponentTransform).mtxLocal.rotation = new f_.Vector3(0, spriteRotation, 0);
+    avatarInstance.getComponent(f_.ComponentTransform).mtxLocal.rotation = new f_.Vector3(0, spriteRotation, 0);
 
     distanceX = marioVelocityX * deltaTime;
     tranformComponentMario.mtxLocal.translation = new f_.Vector3(tranformComponentMario.mtxLocal.translation.x + distanceX, tranformComponentMario.mtxLocal.translation.y + distanceY, tranformComponentMario.mtxLocal.translation.z);
 
 
     if (!onGround) {
-      spriteNode.setAnimation(animMoves);
-      currentAnim = animMoves;
-      spriteNode.showFrame(1);
+      avatarInstance.setFall();
+      //avatarInstance.setAnimation(animMoves);
+      //avatarInstance.showFrame(1);
+     
     }
 
     if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.ARROW_UP])) {

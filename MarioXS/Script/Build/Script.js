@@ -1,49 +1,66 @@
 "use strict";
 var Script;
 (function (Script) {
-    var ƒ = FudgeCore;
-    ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
-    class CustomComponentScript extends ƒ.ComponentScript {
+    var fAid = FudgeAid;
+    var f_ = FudgeCore;
+    class Avatar extends fAid.NodeSprite {
         constructor() {
-            super();
-            // Properties may be mutated by users in the editor via the automatically created user interface
-            this.message = "CustomComponentScript added to ";
-            // Activate the functions of this component as response to events
-            this.hndEvent = (_event) => {
-                switch (_event.type) {
-                    case "componentAdd" /* COMPONENT_ADD */:
-                        ƒ.Debug.log(this.message, this.node);
-                        break;
-                    case "componentRemove" /* COMPONENT_REMOVE */:
-                        this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
-                        this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
-                        break;
-                    case "nodeDeserialized" /* NODE_DESERIALIZED */:
-                        // if deserialized the node is now fully reconstructed and access to all its components and children is possible
-                        break;
-                }
-            };
-            // Don't start when running in editor
-            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
-                return;
-            // Listen to this component being added to or removed from a node
-            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
-            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
-            this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+            super("Avatar");
+            this.addComponent(new f_.ComponentTransform((new f_.Matrix4x4())));
+            //this.initializeAnimations();
+        }
+        initializeAnimations(sheetFrames, sheetWalk, sheetMoves) {
+            let coatWalk = new f_.CoatTextured(undefined, sheetWalk);
+            this.animWalk = new fAid.SpriteSheetAnimation("Walk", coatWalk);
+            this.animWalk.generateByGrid(f_.Rectangle.GET(3, 0, 17, 33), 4, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(17));
+            let coatFrames = new f_.CoatTextured(undefined, sheetFrames);
+            this.animFrames = new fAid.SpriteSheetAnimation("Frames", coatFrames);
+            this.animFrames.generateByGrid(f_.Rectangle.GET(0, 0, 18, 33), 2, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(19));
+            let coatMoveses = new f_.CoatTextured(undefined, sheetMoves);
+            this.animMoves = new fAid.SpriteSheetAnimation("Moves", coatMoveses);
+            this.animMoves.generateByGrid(f_.Rectangle.GET(0, 0, 19, 33), 2, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(17));
+            this.setAnimation(this.animMoves);
+            this.setFrameDirection(1);
+            this.framerate = 1;
+            this.mtxLocal.translateY(-1);
+        }
+        setWalk() {
+            this.setAnimation(this.animWalk);
+            this.framerate = 12;
+            this.setFrameDirection(1);
+            this.currAnim = Script.AnimationState.WALK;
+        }
+        setFall() {
+            this.setAnimation(this.animMoves);
+            this.showFrame(1);
+            this.currAnim = Script.AnimationState.MOVES;
+        }
+        setSlide() {
+            this.setAnimation(this.animMoves);
+            this.showFrame(0);
+            this.currAnim = Script.AnimationState.MOVES;
+        }
+        setDuck() {
+            this.setAnimation(this.animFrames);
+            this.showFrame(1);
+            this.currAnim = Script.AnimationState.MOVES;
+        }
+        setStand() {
+            this.setAnimation(this.animFrames);
+            this.showFrame(0);
+            this.currAnim = Script.AnimationState.FRAMES;
         }
     }
-    // Register the script as component for use in the editor via drag&drop
-    CustomComponentScript.iSubclass = ƒ.Component.registerSubclass(CustomComponentScript);
-    Script.CustomComponentScript = CustomComponentScript;
+    Script.Avatar = Avatar;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
     var f_ = FudgeCore;
-    var fAid = FudgeAid;
     f_.Debug.info("Main Program Template running!");
     let viewport;
     document.addEventListener("interactiveViewportStarted", start);
     let marioTransformNode;
+    let avatarInstance;
     let spriteNode;
     let floorNodes;
     //------- animation Framerates -------//
@@ -76,9 +93,15 @@ var Script;
     let tranformComponentMario = undefined;
     //------------- Animation Variables ------------//
     let currentAnim = undefined;
-    let animFrames = undefined;
-    let animWalk = undefined;
-    let animMoves = undefined;
+    let AnimationState;
+    (function (AnimationState) {
+        AnimationState[AnimationState["WALK"] = 0] = "WALK";
+        AnimationState[AnimationState["FRAMES"] = 1] = "FRAMES";
+        AnimationState[AnimationState["MOVES"] = 2] = "MOVES";
+    })(AnimationState = Script.AnimationState || (Script.AnimationState = {}));
+    //let animFramesStr: string = "animFrames";
+    // let animWalk: string = "animWalk";
+    //let animMoves: string = "animMoves";
     let branch = undefined;
     let cmpCamera = undefined;
     //------------- functions ------------//
@@ -107,26 +130,22 @@ var Script;
         catch (e) {
             console.log(e);
         }
-        let coatWalk = new f_.CoatTextured(undefined, imgSpriteSheetWalk);
-        animWalk = new fAid.SpriteSheetAnimation("Walk", coatWalk);
-        animWalk.generateByGrid(f_.Rectangle.GET(3, 0, 17, 33), 4, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(17));
-        let coatFrames = new f_.CoatTextured(undefined, imgSpriteSheetFrames);
-        animFrames = new fAid.SpriteSheetAnimation("Frames", coatFrames);
-        animFrames.generateByGrid(f_.Rectangle.GET(0, 0, 18, 33), 2, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(19));
-        let coatMoveses = new f_.CoatTextured(undefined, imgSpriteSheetMoves);
-        animMoves = new fAid.SpriteSheetAnimation("Moves", coatMoveses);
-        animMoves.generateByGrid(f_.Rectangle.GET(0, 0, 19, 33), 2, 11, f_.ORIGIN2D.BOTTOMCENTER, f_.Vector2.X(17));
-        spriteNode = new fAid.NodeSprite("MarioSprite");
-        spriteNode.addComponent(new f_.ComponentTransform(new f_.Matrix4x4()));
-        spriteNode.setAnimation(animMoves);
-        spriteNode.setFrameDirection(1);
-        spriteNode.mtxLocal.translateY(-1);
-        spriteNode.framerate = 1;
+        avatarInstance = new Script.Avatar();
+        avatarInstance.initializeAnimations(imgSpriteSheetFrames, imgSpriteSheetWalk, imgSpriteSheetMoves);
+        //spriteNode = new fAid.NodeSprite("MarioSprite");
+        //spriteNode.addComponent(new f_.ComponentTransform(new f_.Matrix4x4()));
+        //spriteNode.setAnimation(animMoves);
+        //spriteNode.setFrameDirection(1);
+        //spriteNode.mtxLocal.translateY(-1);
+        //spriteNode.framerate = 1;
         marioTransformNode.removeAllChildren();
-        marioTransformNode.appendChild(spriteNode);
+        // marioTransformNode.appendChild(spriteNode);
+        marioTransformNode.appendChild(avatarInstance);
         marioTransformNode.getComponent(f_.ComponentTransform).mtxLocal.scaleX(0.5);
         marioTransformNode.getComponent(f_.ComponentTransform).mtxLocal.scaleY(0.5);
         cmpCamera = viewport.camera;
+        cmpCamera.mtxPivot.translateZ(-20);
+        // cmpCamera.mtxPivot.rotateY(180);
         tranformComponentMario = marioTransformNode.getComponent(f_.ComponentTransform);
         audioJump = new f_.Audio("./Sounds/JumpSound.mp3");
         audioDeath = new f_.Audio("./Sounds/death_sound.mp3");
@@ -152,7 +171,7 @@ var Script;
     function updateCamera() {
         let pos = marioTransformNode.mtxLocal.translation;
         let origin = cmpCamera.mtxPivot.translation;
-        cmpCamera.mtxPivot.translation = new f_.Vector3(-pos.x, origin.y, origin.z);
+        cmpCamera.mtxPivot.translation = new f_.Vector3(pos.x, origin.y, origin.z);
     }
     function inAir() {
         onGround = false;
@@ -194,7 +213,7 @@ var Script;
         deltaTime = f_.Loop.timeFrameGame / 1000;
         if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.SHIFT_LEFT])) {
             currMarioSpeed = sprintSpeed;
-            spriteNode.framerate = frameRtSprint;
+            avatarInstance.framerate = frameRtSprint;
         }
         else {
             currMarioSpeed = walkSpeed;
@@ -217,21 +236,15 @@ var Script;
             direction = (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.D]) ? 1 : -1);
             //console.log("direction:" + direction);
             lastDirection = Number(direction);
-            if (currentAnim != animWalk) {
-                spriteNode.setAnimation(animWalk);
-                spriteNode.framerate = frameRtWalk;
-                currentAnim = animWalk;
+            if (avatarInstance.currAnim != AnimationState.WALK) {
+                avatarInstance.setWalk();
             }
             if (onGround) {
                 if (Math.sign(marioVelocityX) != Math.sign(direction) || (marioVelocityX == 0)) {
-                    spriteNode.setAnimation(animMoves);
-                    spriteNode.showFrame(0);
-                    currentAnim = animMoves;
+                    avatarInstance.setSlide();
                 }
                 if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.S])) {
-                    spriteNode.setAnimation(animFrames);
-                    spriteNode.showFrame(1);
-                    currentAnim = animFrames;
+                    avatarInstance.setDuck();
                     marioVelocityX = moveTowards(marioVelocityX, 0, marioAccellartionX * currMarioSpeed * deltaTime);
                 }
                 else {
@@ -244,26 +257,27 @@ var Script;
         }
         else {
             if (onGround) {
-                spriteNode.setAnimation(animFrames);
-                currentAnim = animFrames;
-                spriteNode.showFrame(0);
+                avatarInstance.setStand();
+                //avatarInstance.setAnimation(animFrames);
+                //avatarInstance.showFrame(0);
             }
             direction = 0;
             marioVelocityX = moveTowards(marioVelocityX, direction * currMarioSpeed, marioDeccellerationX * currMarioSpeed * deltaTime);
         }
         if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.S])) {
-            spriteNode.setAnimation(animFrames);
-            spriteNode.showFrame(1);
-            currentAnim = animFrames;
+            avatarInstance.setDuck();
+            //avatarInstance.setAnimation(animFramesStr);
+            //avatarInstance.showFrame(1);
+            //currentAnim = animFramesStr;
         }
         spriteRotation = (lastDirection == -1) ? -180 : 0;
-        spriteNode.getComponent(f_.ComponentTransform).mtxLocal.rotation = new f_.Vector3(0, spriteRotation, 0);
+        avatarInstance.getComponent(f_.ComponentTransform).mtxLocal.rotation = new f_.Vector3(0, spriteRotation, 0);
         distanceX = marioVelocityX * deltaTime;
         tranformComponentMario.mtxLocal.translation = new f_.Vector3(tranformComponentMario.mtxLocal.translation.x + distanceX, tranformComponentMario.mtxLocal.translation.y + distanceY, tranformComponentMario.mtxLocal.translation.z);
         if (!onGround) {
-            spriteNode.setAnimation(animMoves);
-            currentAnim = animMoves;
-            spriteNode.showFrame(1);
+            avatarInstance.setFall();
+            //avatarInstance.setAnimation(animMoves);
+            //avatarInstance.showFrame(1);
         }
         if (f_.Keyboard.isPressedOne([f_.KEYBOARD_CODE.ARROW_UP])) {
             marioMutator.mtxLocal.rotation = new f_.Vector3(marioMutator.mtxLocal.rotation.x, marioMutator.mtxLocal.rotation.y + 2, 0);
@@ -298,5 +312,49 @@ var Script;
         // für Y collison .> inverse world transform  [Hirnen!!]
         f_.AudioManager.default.update();
     }
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
+    class ScriptRotator extends ƒ.ComponentScript {
+        constructor() {
+            super();
+            // Properties may be mutated by users in the editor via the automatically created user interface
+            this.message = "CustomComponentScript added to ";
+            this.speead = 30;
+            // Activate the functions of this component as response to events
+            this.hndEvent = (_event) => {
+                switch (_event.type) {
+                    case "componentAdd" /* COMPONENT_ADD */:
+                        ƒ.Debug.log(this.message, this.node);
+                        ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update.bind(this));
+                        break;
+                    case "componentRemove" /* COMPONENT_REMOVE */:
+                        this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+                        this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+                        break;
+                    case "nodeDeserialized" /* NODE_DESERIALIZED */:
+                        // if deserialized the node is now fully reconstructed and access to all its components and children is possible
+                        break;
+                }
+            };
+            this.update = () => {
+                //let transformComponent: ƒ.ComponentTransform = this.node.getComponent(ƒ.ComponentTransform);
+                this.node.mtxLocal.rotateY(this.speead * ƒ.Loop.timeFrameGame / 1000);
+                // console.log(this);
+            };
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            // Listen to this component being added to or removed from a node
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+            this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+        }
+    }
+    // Register the script as component for use in the editor via drag&drop
+    ScriptRotator.iSubclass = ƒ.Component.registerSubclass(ScriptRotator);
+    Script.ScriptRotator = ScriptRotator;
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map
