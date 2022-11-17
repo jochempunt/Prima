@@ -57,7 +57,7 @@
               "ComponentMesh": [
                 {
                   "ƒ.ComponentMesh": {
-                    "idMesh": "MeshObj|2022-11-17T13:53:48.944Z|02177",
+                    "idMesh": "MeshObj|2022-11-17T14:02:44.776Z|03508",
                     "pivot": {
                       "translation": "[0, 0, 0]",
                       "rotation": "[0, 0, 0]",
@@ -162,6 +162,14 @@
           "color": "[1, 1, 1, 1]"
         }
       }
+    }
+  },
+  "MeshObj|2022-11-17T14:02:44.776Z|03508": {
+    "ƒ.MeshObj": {
+      "idResource": "MeshObj|2022-11-17T14:02:44.776Z|03508",
+      "name": "Objects3d\\startship2.obj",
+      "type": "MeshObj",
+      "url": "Objects3d\\startship2.obj"
     }
   }
 }
