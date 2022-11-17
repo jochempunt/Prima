@@ -171,5 +171,13 @@
       "type": "MeshObj",
       "url": "Objects3d\\startship2.obj"
     }
+  },
+  "MeshObj|2022-11-17T14:06:07.287Z|82840": {
+    "ƒ.MeshObj": {
+      "idResource": "MeshObj|2022-11-17T14:06:07.287Z|82840",
+      "name": "Objects3d\\startship3.obj",
+      "type": "MeshObj",
+      "url": "Objects3d\\startship3.obj"
+    }
   }
 }
