@@ -165,7 +165,59 @@
                 }
               ]
             },
-            "children": []
+            "children": [
+              {
+                "ƒ.Node": {
+                  "name": "Arches",
+                  "active": true,
+                  "components": {},
+                  "children": [
+                    {
+                      "ƒ.Node": {
+                        "name": "Arch",
+                        "active": true,
+                        "components": {
+                          "ComponentMesh": [
+                            {
+                              "ƒ.ComponentMesh": {
+                                "idMesh": "MeshObj|2022-11-22T14:24:22.741Z|39159",
+                                "pivot": {
+                                  "translation": "[1.200000524520874, 1, 26]",
+                                  "rotation": "[0, 0, 0]",
+                                  "scaling": "[1, 1, 1]"
+                                },
+                                "Component": {
+                                  "active": true
+                                }
+                              }
+                            }
+                          ],
+                          "ComponentMaterial": [
+                            {
+                              "ƒ.ComponentMaterial": {
+                                "sortForAlpha": false,
+                                "clrPrimary": "[0.8274509803921568, 0.5490196078431373, 0.23529411764705882, 1]",
+                                "clrSecondary": "[1, 1, 1, 1]",
+                                "pivot": {
+                                  "translation": "[0, 0]",
+                                  "rotation": 0,
+                                  "scaling": "[1, 1]"
+                                },
+                                "Component": {
+                                  "active": true
+                                },
+                                "idMaterial": "Material|2022-11-22T14:24:16.748Z|82715"
+                              }
+                            }
+                          ]
+                        },
+                        "children": []
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -200,7 +252,7 @@
                           "idMesh": "MeshObj|2022-11-17T14:02:44.776Z|03508",
                           "pivot": {
                             "translation": "[0, 0, 0]",
-                            "rotation": "[0, 0, 0]",
+                            "rotation": "[0, -90, 0]",
                             "scaling": "[1, 1, 1]"
                           },
                           "Component": {
@@ -213,7 +265,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[0.4588235294117647, 0.4392156862745098, 0.4392156862745098, 1]",
+                          "clrPrimary": "[0.4588235294117647, 0.4392156862745098, 0.4392156862745098, 0.89]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -257,6 +309,28 @@
       "name": "Objects3d\\startship3.obj",
       "type": "MeshObj",
       "url": "Objects3d\\startship3.obj"
+    }
+  },
+  "Material|2022-11-22T14:24:16.748Z|82715": {
+    "ƒ.Material": {
+      "name": "ShaderFlat",
+      "idResource": "Material|2022-11-22T14:24:16.748Z|82715",
+      "shader": "ShaderFlat",
+      "coat": {
+        "ƒ.CoatRemissive": {
+          "color": "[1, 1, 1, 1]",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
+    }
+  },
+  "MeshObj|2022-11-22T14:24:22.741Z|39159": {
+    "ƒ.MeshObj": {
+      "idResource": "MeshObj|2022-11-22T14:24:22.741Z|39159",
+      "name": "Objects3d\\SmallArch_Blend.obj",
+      "type": "MeshObj",
+      "url": "Objects3d\\SmallArch_Blend.obj"
     }
   }
 }
