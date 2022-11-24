@@ -29,7 +29,7 @@ namespace Script {
     let posShip = rgdBodyShip.getPosition();
 
     let image: HTMLImageElement = document.createElement("img");
-    image.src = "../images/aim.png";
+    image.src = "./Images/aim.png";
     image.alt = "not found";
     image.classList.add("center");
 
