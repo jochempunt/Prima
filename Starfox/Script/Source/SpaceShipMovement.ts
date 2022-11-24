@@ -19,9 +19,9 @@ namespace Script {
     private yawf: number = 20;
 
 
-  
-    public strafeThrust:number= 2000;
-    public forwardthrust:number = 5000;
+
+    public strafeThrust: number = 2000;
+    public forwardthrust: number = 5000;
 
 
 
@@ -77,19 +77,17 @@ namespace Script {
       }
 
       if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.A])) {
-        this.strafeLeft();
+        this.rollLeft();
       }
 
       if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D])) {
-        this.strafeRight();
+        this.rollRight();
       }
 
 
-
-
-      this.rgdBodySpaceship.applyTorque( new ƒ.Vector3(0,this.xAxis* -10,0));
-      this.rgdBodySpaceship.applyTorque( ƒ.Vector3.SCALE(this.relativeX,this.yAxis * 1.5));
-      this.node.mtxLocal.rotation = new ƒ.Vector3(this.node.mtxLocal.rotation.x,this.node.mtxLocal.rotation.y,0);
+      this.rgdBodySpaceship.applyTorque(new ƒ.Vector3(0, this.xAxis * -10, 0));
+      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
+     
     }
 
 
@@ -99,32 +97,24 @@ namespace Script {
     private width: number = 0;
     private height: number = 0;
     private xAxis: number = 0;
-    private yAxis:number = 0;
+    private yAxis: number = 0;
 
     handleMouse = (e: MouseEvent): void => {
       this.width = window.innerWidth;
       this.height = window.innerHeight;
-      let mousePositionY:number = e.clientY;
-      let mousePositionX:number = e.clientX;
-   
+      let mousePositionY: number = e.clientY;
+      let mousePositionX: number = e.clientX;
 
       this.xAxis = 2 * (mousePositionX / this.width) - 1;
-      this.yAxis= 2 * (mousePositionY / this.height) - 1;
+      this.yAxis = 2 * (mousePositionY / this.height) - 1;
 
     }
-
 
     setRelativeAxes(): void {
       this.relativeZ = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(0, 0, 5), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
       this.relativeY = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(0, 5, 0), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
       this.relativeX = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(5, 0, 0), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
-
     }
-
-
-
-    private activePitch = 0;
-
 
     backwards(): void {
       this.rgdBodySpaceship.applyForce(ƒ.Vector3.SCALE(this.relativeZ, -this.forwardthrust));
@@ -136,15 +126,12 @@ namespace Script {
     }
 
 
-
-
-
-    strafeLeft(): void {
+    rollLeft(): void {
       this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, -1));
     }
 
 
-    strafeRight(): void {
+    rollRight(): void {
       this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, 1))
     }
 

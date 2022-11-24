@@ -35,7 +35,9 @@ namespace Script {
 
     document.body.prepend(image);
 
-    cmpCamera.mtxPivot.translate(new ƒ.Vector3(0,3,-20));
+    //document.body.getElementsByTagName("canvas")[0].classList.add("noCursor");
+
+    cmpCamera.mtxPivot.translate(new ƒ.Vector3(0,2,-15));
 
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

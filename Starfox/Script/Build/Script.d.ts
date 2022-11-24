@@ -24,10 +24,9 @@ declare namespace Script {
         private yAxis;
         handleMouse: (e: MouseEvent) => void;
         setRelativeAxes(): void;
-        private activePitch;
         backwards(): void;
         thrust(): void;
-        strafeLeft(): void;
-        strafeRight(): void;
+        rollLeft(): void;
+        rollRight(): void;
     }
 }

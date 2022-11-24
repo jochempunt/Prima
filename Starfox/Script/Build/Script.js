@@ -23,7 +23,8 @@ var Script;
         image.alt = "not found";
         image.classList.add("center");
         document.body.prepend(image);
-        cmpCamera.mtxPivot.translate(new ƒ.Vector3(0, 3, -20));
+        //document.body.getElementsByTagName("canvas")[0].classList.add("noCursor");
+        cmpCamera.mtxPivot.translate(new ƒ.Vector3(0, 2, -15));
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -80,14 +81,13 @@ var Script;
                     this.backwards();
                 }
                 if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.A])) {
-                    this.strafeLeft();
+                    this.rollLeft();
                 }
                 if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D])) {
-                    this.strafeRight();
+                    this.rollRight();
                 }
                 this.rgdBodySpaceship.applyTorque(new ƒ.Vector3(0, this.xAxis * -10, 0));
                 this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
-                this.node.mtxLocal.rotation = new ƒ.Vector3(this.node.mtxLocal.rotation.x, this.node.mtxLocal.rotation.y, 0);
             };
             this.width = 0;
             this.height = 0;
@@ -101,7 +101,6 @@ var Script;
                 this.xAxis = 2 * (mousePositionX / this.width) - 1;
                 this.yAxis = 2 * (mousePositionY / this.height) - 1;
             };
-            this.activePitch = 0;
             // Don't start when running in editor
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;
@@ -122,10 +121,10 @@ var Script;
             let scaledRotatedDirection = ƒ.Vector3.SCALE(this.relativeZ, this.forwardthrust);
             this.rgdBodySpaceship.applyForce(scaledRotatedDirection);
         }
-        strafeLeft() {
+        rollLeft() {
             this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, -1));
         }
-        strafeRight() {
+        rollRight() {
             this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, 1));
         }
     }
