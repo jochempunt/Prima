@@ -20,55 +20,63 @@ var ƒAid = FudgeAid;
 window.addEventListener("load", init);
 
 // show dialog for startup, user interaction required e.g. for starting audio
-function init(_event)/* : void */ {
-  let dialog/* : HTMLDialogElement */ = document.querySelector("dialog");
-  dialog.querySelector("h1").textContent = document.title;
-  dialog.addEventListener("click", function (_event) {
-    dialog.close();
-    let graphId/* : string */ = document.head.querySelector("meta[autoView]").getAttribute("autoView")
-    startInteractiveViewport(graphId);
-  });
-  dialog.showModal();
+function init(_event) /* : void */ {
+    let dialog /* : HTMLDialogElement */ = document.querySelector("dialog");
+    dialog.querySelector("h1").textContent = document.title;
+    dialog.addEventListener("click", function(_event) {
+        dialog.close();
+        let graphId /* : string */ = document.head.querySelector("meta[autoView]").getAttribute("autoView")
+        startInteractiveViewport(graphId);
+    });
+    dialog.showModal();
 }
 
 // setup and start interactive viewport
-async function startInteractiveViewport(_graphId)/* : void */ {
-  // load resources referenced in the link-tag
-  await ƒ.Project.loadResourcesFromHTML();
-  ƒ.Debug.log("Project:", ƒ.Project.resources);
+async function startInteractiveViewport(_graphId) /* : void */ {
+    // load resources referenced in the link-tag
+    await ƒ.Project.loadResourcesFromHTML();
+    ƒ.Debug.log("Project:", ƒ.Project.resources);
 
-  // get the graph to show from loaded resources
-  let graph/* : ƒ.Graph */ = ƒ.Project.resources[_graphId];
-  ƒ.Debug.log("Graph:", graph);
-  if (!graph) {
-    alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
-    return;
-  }
+    // get the graph to show from loaded resources
+    let graph /* : ƒ.Graph */ = ƒ.Project.resources[_graphId];
+    ƒ.Debug.log("Graph:", graph);
+    if (!graph) {
+        alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
+        return;
+    }
 
-  // setup the viewport
-  let cmpCamera/* : ƒ.ComponentCamera */ = new ƒ.ComponentCamera();
-  let canvas/* : HTMLCanvasElement */ = document.querySelector("canvas");
-  let viewport/* : ƒ.Viewport */ = new ƒ.Viewport();
-  viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
-  ƒ.Debug.log("Viewport:", viewport);  
-  // make the camera interactive (complex method in FudgeAid)
-  let cameraOrbit/* : ƒ.Node */ = ƒAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+    // setup the viewport
+    let cmpCamera /* : ƒ.ComponentCamera */ = new ƒ.ComponentCamera();
 
-  // hide the cursor when interacting, also suppressing right-click menu
-  canvas.addEventListener("mousedown", canvas.requestPointerLock);
-  canvas.addEventListener("mouseup", function () { document.exitPointerLock(); });
+    let canvas /* : HTMLCanvasElement */ = document.querySelector("canvas");
+    let viewport /* : ƒ.Viewport */ = new ƒ.Viewport();
+    viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
 
-  // setup audio
-  let cmpListener/* : ƒ.ComponentAudioListener */ = new ƒ.ComponentAudioListener();
-  cmpCamera.node.addComponent(cmpListener);
-  ƒ.AudioManager.default.listenWith(cmpListener);
-  ƒ.AudioManager.default.listenTo(graph);
-  ƒ.Debug.log("Audio:", ƒ.AudioManager.default);
+    ƒ.Debug.log("Viewport:", viewport);
+    // make the camera interactive (complex method in FudgeAid)
+    //let cameraOrbit /* : ƒ.Node */ = ƒAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+    //graph.addComponent(cmpCamera);
+    // hide the cursor when interacting, also suppressing right-click menu
+    canvas.addEventListener("mousedown", canvas.requestPointerLock);
+    canvas.addEventListener("mouseup", function() { document.exitPointerLock(); });
 
-  // draw viewport once for immediate feedback
-  ƒ.Render.prepare(cameraOrbit);
-  viewport.draw();
+    // setup audio
+    let cmpListener /* : ƒ.ComponentAudioListener */ = new ƒ.ComponentAudioListener();
 
-  // dispatch event to signal startup done
-  canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport }));
+    let rgdBodyShip = graph.getChildrenByName("spaceship")[0];
+    rgdBodyShip.addComponent(cmpCamera);
+    cmpCamera.node.addComponent(cmpListener);
+    //cmpCamera.mtxPivot.translation = new ƒ.Vector3(0, 1.2, 7);
+    //cmpCamera.mtxPivot.rotateY(180);
+    ƒ.AudioManager.default.listenWith(cmpListener);
+
+    ƒ.AudioManager.default.listenTo(graph);
+    ƒ.Debug.log("Audio:", ƒ.AudioManager.default);
+
+    // draw viewport once for immediate feedback
+    ƒ.Render.prepare(graph);
+    viewport.draw();
+
+    // dispatch event to signal startup done
+    canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport }));
 }
