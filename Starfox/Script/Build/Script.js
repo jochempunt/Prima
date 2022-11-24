@@ -19,7 +19,7 @@ var Script;
         cmpCamera = viewport.camera;
         let posShip = rgdBodyShip.getPosition();
         let image = document.createElement("img");
-        image.src = "./Images/aim.png";
+        image.src = "./images/aim.png";
         image.alt = "not found";
         image.classList.add("center");
         document.body.prepend(image);

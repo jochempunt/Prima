@@ -18,6 +18,7 @@ canvas.fullscreen {
 
 .center {
     width: 4%;
+    color: white;
     position: absolute;
     top: 46%;
     -webkit-transform: translateY(-50%);
