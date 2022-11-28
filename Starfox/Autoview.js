@@ -64,6 +64,7 @@ async function startInteractiveViewport(_graphId) /* : void */ {
     let cmpListener /* : ƒ.ComponentAudioListener */ = new ƒ.ComponentAudioListener();
 
     let rgdBodyShip = graph.getChildrenByName("spaceship")[0];
+    //graph.addComponent(cmpCamera);
     rgdBodyShip.addComponent(cmpCamera);
     cmpCamera.node.addComponent(cmpListener);
     //cmpCamera.mtxPivot.translation = new ƒ.Vector3(0, 1.2, 7);

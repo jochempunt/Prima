@@ -7,9 +7,6 @@ declare namespace Script {
         static readonly iSubclass: number;
         message: string;
         private rgdBodySpaceship;
-        private pitchF;
-        private rollF;
-        private yawf;
         strafeThrust: number;
         forwardthrust: number;
         private relativeX;
@@ -26,7 +23,6 @@ declare namespace Script {
         setRelativeAxes(): void;
         backwards(): void;
         thrust(): void;
-        rollLeft(): void;
-        rollRight(): void;
+        roll(dir: number): void;
     }
 }

@@ -1,8 +1,8 @@
 "use strict";
 var Script;
 (function (Script) {
-    var ƒ = FudgeCore;
-    ƒ.Debug.info("Main Program Template running!");
+    var f = FudgeCore;
+    f.Debug.info("Main Program Template running!");
     let viewport;
     let cmpCamera;
     document.addEventListener("interactiveViewportStarted", start);
@@ -11,27 +11,64 @@ var Script;
         return (1 - amt) * start + amt * end;
     }
     Script.lerp = lerp;
+    function generateCubes(n) {
+        let cubes;
+        let cubeMesh = new f.MeshCube("cubeMesh");
+        let material = new f.Material("cubeShader", f.ShaderFlat);
+        let randZ;
+        let randY;
+        let randX;
+        for (let i = 0; i < n; i++) {
+            let nodeCube = new f.Node("cube" + i);
+            randX = f.random.getRange(-240, 240);
+            randY = f.random.getRange(15, 30);
+            randZ = f.random.getRange(-240, 240);
+            let materialComp = new f.ComponentMaterial(material);
+            let componentRigidbody = new f.ComponentRigidbody();
+            componentRigidbody.effectGravity = 0;
+            componentRigidbody.mass = 0.1;
+            componentRigidbody.setScaling(new f.Vector3(5, 5, 5));
+            console.log("Rigidbody:");
+            console.log(componentRigidbody);
+            let componentMesh = new f.ComponentMesh(cubeMesh);
+            let componentTransform = new f.ComponentTransform();
+            componentTransform.mtxLocal.translation = new f.Vector3(randX, randY, randZ);
+            componentTransform.mtxLocal.scale(new f.Vector3(5, 5, 5));
+            nodeCube.addComponent(componentMesh);
+            nodeCube.addComponent(materialComp);
+            nodeCube.addComponent(componentTransform);
+            nodeCube.addComponent(componentRigidbody);
+            viewport.getBranch().addChild(nodeCube);
+        }
+    }
     function start(_event) {
         viewport = _event.detail;
         let branch = viewport.getBranch();
-        rgdBodyShip = branch.getChildrenByName("spaceship")[0].getComponent(ƒ.ComponentRigidbody);
+        rgdBodyShip = branch.getChildrenByName("spaceship")[0].getComponent(f.ComponentRigidbody);
         console.log(rgdBodyShip);
+        console.log(branch);
         cmpCamera = viewport.camera;
         let posShip = rgdBodyShip.getPosition();
+        //cmpCamera.mtxPivot.translation = new f.Vector3(posShip.x,posShip.y+2,posShip.z-30)
         let image = document.createElement("img");
         image.src = "./images/aim.png";
         image.alt = "not found";
         image.classList.add("center");
         document.body.prepend(image);
         //document.body.getElementsByTagName("canvas")[0].classList.add("noCursor");
-        cmpCamera.mtxPivot.translate(new ƒ.Vector3(0, 2, -15));
-        ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
-        ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+        cmpCamera.mtxPivot.translate(new f.Vector3(0, 2, -15));
+        generateCubes(12);
+        f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
+        f.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+    }
+    function updateCamera() {
+        cmpCamera.mtxWorld.rotation = new f.Vector3(0, cmpCamera.mtxWorld.rotation.y, 0);
     }
     function update(_event) {
-        ƒ.Physics.simulate(); // if physics is included and used
+        f.Physics.simulate(); // if physics is included and used
         viewport.draw();
-        ƒ.AudioManager.default.update();
+        f.AudioManager.default.update();
+        updateCamera();
         //rgdBodyShip.applyTorque(new ƒ.Vector3(0,0,0) )
         // rotational impulse
         //linear impulse
@@ -47,9 +84,6 @@ var Script;
             super();
             // Properties may be mutated by users in the editor via the automatically created user interface
             this.message = "SpaceShipMovement added to ";
-            this.pitchF = 20;
-            this.rollF = 20;
-            this.yawf = 20;
             this.strafeThrust = 2000;
             this.forwardthrust = 5000;
             // Activate the functions of this component as response to events
@@ -81,10 +115,10 @@ var Script;
                     this.backwards();
                 }
                 if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.A])) {
-                    this.rollLeft();
+                    this.roll(-1);
                 }
                 if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D])) {
-                    this.rollRight();
+                    this.roll(1);
                 }
                 this.rgdBodySpaceship.applyTorque(new ƒ.Vector3(0, this.xAxis * -10, 0));
                 this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
@@ -110,9 +144,12 @@ var Script;
             this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
         }
         setRelativeAxes() {
-            this.relativeZ = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(0, 0, 5), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
-            this.relativeY = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(0, 5, 0), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
-            this.relativeX = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(5, 0, 0), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
+            this.relativeZ = this.node.mtxWorld.getZ();
+            this.relativeZ.scale(5);
+            this.relativeY = this.node.mtxWorld.getY();
+            this.relativeY.scale(5);
+            this.relativeX = this.node.mtxWorld.getX();
+            this.relativeY.scale(5);
         }
         backwards() {
             this.rgdBodySpaceship.applyForce(ƒ.Vector3.SCALE(this.relativeZ, -this.forwardthrust));
@@ -121,11 +158,8 @@ var Script;
             let scaledRotatedDirection = ƒ.Vector3.SCALE(this.relativeZ, this.forwardthrust);
             this.rgdBodySpaceship.applyForce(scaledRotatedDirection);
         }
-        rollLeft() {
-            this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, -1));
-        }
-        rollRight() {
-            this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, 1));
+        roll(dir) {
+            this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, dir));
         }
     }
     // Register the script as component for use in the editor via drag&drop

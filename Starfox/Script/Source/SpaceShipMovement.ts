@@ -11,15 +11,6 @@ namespace Script {
 
     private rgdBodySpaceship: ƒ.ComponentRigidbody;
 
-
-    private pitchF: number = 20;
-
-    private rollF: number = 20;
-
-    private yawf: number = 20;
-
-
-
     public strafeThrust: number = 2000;
     public forwardthrust: number = 5000;
 
@@ -77,11 +68,11 @@ namespace Script {
       }
 
       if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.A])) {
-        this.rollLeft();
+        this.roll(-1);
       }
 
       if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.D])) {
-        this.rollRight();
+        this.roll(1);
       }
 
 
@@ -89,10 +80,6 @@ namespace Script {
       this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
      
     }
-
-
-
-
 
     private width: number = 0;
     private height: number = 0;
@@ -111,9 +98,15 @@ namespace Script {
     }
 
     setRelativeAxes(): void {
-      this.relativeZ = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(0, 0, 5), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
-      this.relativeY = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(0, 5, 0), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
-      this.relativeX = ƒ.Vector3.TRANSFORMATION(new ƒ.Vector3(5, 0, 0), ƒ.Matrix4x4.ROTATION(this.node.mtxWorld.rotation));
+      this.relativeZ = this.node.mtxWorld.getZ();
+      this.relativeZ.scale(5);
+
+      this.relativeY = this.node.mtxWorld.getY();
+      this.relativeY.scale(5);
+
+      this.relativeX = this.node.mtxWorld.getX();
+      this.relativeY.scale(5);
+     
     }
 
     backwards(): void {
@@ -126,14 +119,11 @@ namespace Script {
     }
 
 
-    rollLeft(): void {
-      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, -1));
+    roll(dir:number): void {
+      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ,dir));
     }
 
 
-    rollRight(): void {
-      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, 1))
-    }
 
 
 
