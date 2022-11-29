@@ -88,6 +88,9 @@ namespace Script {
     generateCubes(12);
 
 
+
+    
+
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
     f.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }

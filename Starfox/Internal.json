@@ -97,6 +97,39 @@
       }
     }
   },
+  "MeshPyramid|2022-11-28T16:41:12.882Z|84808": {
+    "ƒ.MeshPyramid": {
+      "idResource": "MeshPyramid|2022-11-28T16:41:12.882Z|84808",
+      "name": "MeshPyramid",
+      "type": "MeshPyramid"
+    }
+  },
+  "Material|2022-11-28T16:50:54.959Z|87030": {
+    "ƒ.Material": {
+      "name": "ShaderFlatTextured",
+      "idResource": "Material|2022-11-28T16:50:54.959Z|87030",
+      "shader": "ShaderFlatTextured",
+      "coat": {
+        "ƒ.CoatRemissiveTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-11-28T16:50:50.675Z|32002",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
+    }
+  },
+  "TextureImage|2022-11-28T16:50:50.675Z|32002": {
+    "ƒ.TextureImage": {
+      "url": "images\\sandStone.png",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-11-28T16:50:50.675Z|32002",
+        "name": "images\\sandStone.png",
+        "mipmap": "CRISP"
+      }
+    }
+  },
   "Graph|2022-11-16T16:21:56.400Z|64252": {
     "ƒ.Graph": {
       "name": "bossLevel",
@@ -245,87 +278,6 @@
                   "active": true,
                   "components": {},
                   "children": [
-                    {
-                      "ƒ.Node": {
-                        "name": "Pyramid1",
-                        "active": true,
-                        "components": {
-                          "ComponentMesh": [
-                            {
-                              "ƒ.ComponentMesh": {
-                                "idMesh": "MeshPyramid|2022-11-28T16:41:12.882Z|84808",
-                                "pivot": {
-                                  "translation": "[0, 0, 0]",
-                                  "rotation": "[0, 0, 0]",
-                                  "scaling": "[40, 40, 40]"
-                                },
-                                "Component": {
-                                  "active": true
-                                }
-                              }
-                            }
-                          ],
-                          "ComponentMaterial": [
-                            {
-                              "ƒ.ComponentMaterial": {
-                                "sortForAlpha": false,
-                                "clrPrimary": "[1, 1, 1, 1]",
-                                "clrSecondary": "[1, 1, 1, 1]",
-                                "pivot": {
-                                  "translation": "[0, 0]",
-                                  "rotation": 0,
-                                  "scaling": "[1, 1]"
-                                },
-                                "Component": {
-                                  "active": true
-                                },
-                                "idMaterial": "Material|2022-11-28T16:50:54.959Z|87030"
-                              }
-                            }
-                          ],
-                          "ComponentTransform": [
-                            {
-                              "ƒ.ComponentTransform": {
-                                "local": {
-                                  "translation": "[-36, 1, -32]",
-                                  "rotation": "[0, 0, 0]",
-                                  "scaling": "[1, 1, 1]"
-                                },
-                                "Component": {
-                                  "active": true
-                                }
-                              }
-                            }
-                          ],
-                          "ComponentRigidbody": [
-                            {
-                              "ƒ.ComponentRigidbody": {
-                                "initialization": "TO_PIVOT",
-                                "friction": 0.3000000000000007,
-                                "restitution": 0.2,
-                                "mass": 1,
-                                "dampTranslation": 2.0000000000000004,
-                                "dampRotation": 0.1,
-                                "effectGravity": 1,
-                                "typeBody": "STATIC",
-                                "typeCollider": "PYRAMID",
-                                "isTrigger": false,
-                                "id": 0,
-                                "pivot": {
-                                  "translation": "[0, 0, 0]",
-                                  "rotation": "[0, 0, 0]",
-                                  "scaling": "[40, 40, 40]"
-                                },
-                                "Component": {
-                                  "active": true
-                                }
-                              }
-                            }
-                          ]
-                        },
-                        "children": []
-                      }
-                    },
                     {
                       "ƒ.Node": {
                         "name": "Pyramid2",
@@ -501,7 +453,7 @@
                   "ƒ.ComponentRigidbody": {
                     "initialization": "TO_PIVOT",
                     "friction": 0.2,
-                    "restitution": 0.2,
+                    "restitution": 0.1,
                     "mass": 150,
                     "dampTranslation": 1.0999999999999996,
                     "dampRotation": 5,
@@ -532,6 +484,87 @@
                     "height": 0,
                     "xAxis": null,
                     "yAxis": 0
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Pyramid1",
+            "active": true,
+            "components": {
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshPyramid|2022-11-28T16:41:12.882Z|84808",
+                    "pivot": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[40, 40, 40]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2022-11-28T16:50:54.959Z|87030"
+                  }
+                }
+              ],
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[-36, 1, -32]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentRigidbody": [
+                {
+                  "ƒ.ComponentRigidbody": {
+                    "initialization": "TO_PIVOT",
+                    "friction": 0.3000000000000007,
+                    "restitution": 0.2,
+                    "mass": 1,
+                    "dampTranslation": 2.0000000000000004,
+                    "dampRotation": 0.1,
+                    "effectGravity": 1,
+                    "typeBody": "STATIC",
+                    "typeCollider": "PYRAMID",
+                    "isTrigger": false,
+                    "id": 0,
+                    "pivot": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[40, 40, 40]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
                   }
                 }
               ]
@@ -569,39 +602,6 @@
       "idResource": "MeshCube|2022-11-28T16:29:39.705Z|47449",
       "name": "MeshCube",
       "type": "MeshCube"
-    }
-  },
-  "MeshPyramid|2022-11-28T16:41:12.882Z|84808": {
-    "ƒ.MeshPyramid": {
-      "idResource": "MeshPyramid|2022-11-28T16:41:12.882Z|84808",
-      "name": "MeshPyramid",
-      "type": "MeshPyramid"
-    }
-  },
-  "TextureImage|2022-11-28T16:50:50.675Z|32002": {
-    "ƒ.TextureImage": {
-      "url": "images\\sandStone.png",
-      "type": "TextureImage",
-      "Texture": {
-        "idResource": "TextureImage|2022-11-28T16:50:50.675Z|32002",
-        "name": "images\\sandStone.png",
-        "mipmap": "CRISP"
-      }
-    }
-  },
-  "Material|2022-11-28T16:50:54.959Z|87030": {
-    "ƒ.Material": {
-      "name": "ShaderFlatTextured",
-      "idResource": "Material|2022-11-28T16:50:54.959Z|87030",
-      "shader": "ShaderFlatTextured",
-      "coat": {
-        "ƒ.CoatRemissiveTextured": {
-          "color": "[1, 1, 1, 1]",
-          "idTexture": "TextureImage|2022-11-28T16:50:50.675Z|32002",
-          "diffuse": 1,
-          "specular": 0
-        }
-      }
     }
   }
 }
