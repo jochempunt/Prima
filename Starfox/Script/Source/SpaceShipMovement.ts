@@ -76,7 +76,7 @@ namespace Script {
       }
 
 
-      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeY,this.xAxis * -1))
+      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeY,this.xAxis * -0.5))
       //this.rgdBodySpaceship.applyTorque(new ƒ.Vector3(0, this.xAxis * -10, 0));
       //this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
       this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
