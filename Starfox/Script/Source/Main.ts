@@ -14,6 +14,12 @@ namespace Script {
 
   let rgdBodyShip: f.ComponentRigidbody;
 
+  let shipNode: f.Node;
+
+  let terrainMesh: f.MeshTerrain;
+  let cmpMeshTerrain: f.ComponentMesh;
+  let nodeTerrain:f.Node;
+
 
   export function lerp(start: number, end: number, amt: number): number {
     return (1 - amt) * start + amt * end;
@@ -60,13 +66,24 @@ namespace Script {
   function start(_event: CustomEvent): void {
     viewport = _event.detail;
     let branch: f.Node = viewport.getBranch();
-    rgdBodyShip = branch.getChildrenByName("spaceship")[0].getComponent(f.ComponentRigidbody);
+    shipNode =  branch.getChildrenByName("spaceship")[0]
+    rgdBodyShip =shipNode.getComponent(f.ComponentRigidbody);
     console.log(rgdBodyShip);
 
 
 
+    f.Physics.settings.solverIterations = 5000;
 
-    console.log(branch);
+   
+
+
+    nodeTerrain = branch.getChildrenByName("terrain")[0];
+    cmpMeshTerrain = nodeTerrain.getComponent(f.ComponentMesh);
+    terrainMesh = <f.MeshTerrain>cmpMeshTerrain.mesh;
+    
+    
+    nodeTerrain.getComponent(f.ComponentCamera)
+ 
 
     cmpCamera = viewport.camera;
     let posShip = rgdBodyShip.getPosition();
@@ -83,8 +100,8 @@ namespace Script {
 
     //document.body.getElementsByTagName("canvas")[0].classList.add("noCursor");
 
-    cmpCamera.mtxPivot.translate(new f.Vector3(0, 2, -15));
-
+   // cmpCamera.mtxPivot.translate(new f.Vector3(0, 2, -35));
+   
     generateCubes(12);
 
 
@@ -107,6 +124,13 @@ namespace Script {
     viewport.draw();
     f.AudioManager.default.update();
     updateCamera();
+
+    f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+    viewport.physicsDebugMode = 2;
+   
+    //console.log(terrainMesh.getTerrainInfo(shipNode.mtxLocal.translation,cmpMeshTerrain.mtxWorld).distance);
+
+
     //rgdBodyShip.applyTorque(new ƒ.Vector3(0,0,0) )
     // rotational impulse
     //linear impulse

@@ -7,7 +7,7 @@ namespace Script {
     public static readonly iSubclass: number = ƒ.Component.registerSubclass(SpaceShipMovement);
     // Properties may be mutated by users in the editor via the automatically created user interface
     public message: string = "SpaceShipMovement added to ";
-
+    
 
     private rgdBodySpaceship: ƒ.ComponentRigidbody;
 
@@ -20,6 +20,10 @@ namespace Script {
     private relativeY: ƒ.Vector3;
     private relativeZ: ƒ.Vector3;
 
+
+    private audioCrash: ƒ.Audio;
+
+    
 
     constructor() {
       super();
@@ -51,10 +55,33 @@ namespace Script {
           this.removeEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
           break;
         case ƒ.EVENT.NODE_DESERIALIZED:
-          // if deserialized the node is now fully reconstructed and access to all its components and children is possible
+        this.audioCrash = new ƒ.Audio("./images/gong.mp3");
+        this.node.addComponent(new ƒ.ComponentAudio(this.audioCrash));
+        this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollision);
+        this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, this.hndTrigger);
+        // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
     }
+
+    
+
+    hndCollision():void{
+      //console.log("bumm");
+      this.node.getComponent(ƒ.ComponentAudio).play(true);
+      this.node.getComponent(ƒ.ComponentAudio).volume = 0.5;
+    }
+
+    hndTrigger = (event :ƒ.EventPhysics):void => {
+      console.log("entered a pyramid");
+      
+    
+      console.log(event)
+      this.rgdBodySpaceship.applyLinearImpulse(ƒ.Vector3.SCALE(this.relativeZ,-5000));
+    }
+
+//Todo : Camera mit joints? vllt mit universelJoint
+
 
     update = (): void => {
       this.setRelativeAxes();
@@ -76,8 +103,8 @@ namespace Script {
       }
 
 
-      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeY,this.xAxis * -0.5))
-      //this.rgdBodySpaceship.applyTorque(new ƒ.Vector3(0, this.xAxis * -10, 0));
+      //this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeY,this.xAxis * -0.5))
+      this.rgdBodySpaceship.applyTorque(new ƒ.Vector3(0, this.xAxis * -10, 0));
       //this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
       this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
      

@@ -46,7 +46,9 @@ async function startInteractiveViewport(_graphId) /* : void */ {
     }
 
     // setup the viewport
-    let cmpCamera /* : ƒ.ComponentCamera */ = new ƒ.ComponentCamera();
+    let cameraNode /* : ƒ.ComponentCamera */ = graph.getChildrenByName("spaceship")[0].getChildrenByName("Camera")[0];
+
+    let cmpCamera = cameraNode.getComponent(ƒ.ComponentCamera);
 
     let canvas /* : HTMLCanvasElement */ = document.querySelector("canvas");
     let viewport /* : ƒ.Viewport */ = new ƒ.Viewport();
@@ -64,8 +66,9 @@ async function startInteractiveViewport(_graphId) /* : void */ {
     let cmpListener /* : ƒ.ComponentAudioListener */ = new ƒ.ComponentAudioListener();
 
     let rgdBodyShip = graph.getChildrenByName("spaceship")[0];
+
     //graph.addComponent(cmpCamera);
-    rgdBodyShip.addComponent(cmpCamera);
+    //rgdBodyShip.addComponent(cmpCamera);
     cmpCamera.node.addComponent(cmpListener);
     //cmpCamera.mtxPivot.translation = new ƒ.Vector3(0, 1.2, 7);
     //cmpCamera.mtxPivot.rotateY(180);

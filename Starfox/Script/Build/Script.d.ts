@@ -12,8 +12,11 @@ declare namespace Script {
         private relativeX;
         private relativeY;
         private relativeZ;
+        private audioCrash;
         constructor();
         hndEvent: (_event: Event) => void;
+        hndCollision(): void;
+        hndTrigger: (event: ƒ.EventPhysics) => void;
         update: () => void;
         private width;
         private height;
