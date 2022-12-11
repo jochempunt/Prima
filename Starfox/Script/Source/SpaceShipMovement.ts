@@ -46,7 +46,7 @@ namespace Script {
           ƒ.Debug.log(this.message, this.node);
           this.rgdBodySpaceship = this.node.getComponent(ƒ.ComponentRigidbody);
           // this.rgdBodySpaceship.addVelocity(new ƒ.Vector3(0, 0, 10));
-          ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
+         // ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
           console.log(this.node);
           window.addEventListener("mousemove", this.handleMouse);
           break;
@@ -59,6 +59,8 @@ namespace Script {
         this.node.addComponent(new ƒ.ComponentAudio(this.audioCrash));
         this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollision);
         this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, this.hndTrigger);
+        this.node.addEventListener("SensorHit",this.hndCollision);
+        this.node.addEventListener(ƒ.EVENT.RENDER_PREPARE,this.update);
         // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
@@ -66,10 +68,10 @@ namespace Script {
 
     
 
-    hndCollision():void{
-      //console.log("bumm");
-      this.node.getComponent(ƒ.ComponentAudio).play(true);
-      this.node.getComponent(ƒ.ComponentAudio).volume = 0.5;
+    hndCollision= ():void =>{
+      console.log("bumm");
+      //this.node.getComponent(ƒ.ComponentAudio).play(true);
+      //this.node.getComponent(ƒ.ComponentAudio).volume = 0.5;
     }
 
     hndTrigger = (event :ƒ.EventPhysics):void => {
@@ -84,6 +86,10 @@ namespace Script {
 
 
     update = (): void => {
+      if(!gameState){
+        return;
+      }
+      gameState.height = this.node.mtxWorld.translation.y;
       this.setRelativeAxes();
 
       if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.W])) {

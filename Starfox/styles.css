@@ -33,3 +33,17 @@ canvas.fullscreen {
 .noCursor {
     cursor: none;
 }
+
+#vui {
+    position: absolute;
+    z-index: 0;
+    top: 10px;
+    left: 20px;
+}
+
+#vui>input {
+    color: white;
+    background-color: transparent;
+    font-size: 2em;
+    border: none;
+}

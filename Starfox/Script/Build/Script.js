@@ -2,14 +2,27 @@
 var Script;
 (function (Script) {
     var f = FudgeCore;
+    var fui = FudgeUserInterface;
+    class GameState extends f.Mutable {
+        constructor() {
+            super();
+            this.fuel = 20;
+            this.controller = new fui.Controller(this, document.getElementById("vui"));
+            console.log(this.controller);
+        }
+        reduceMutator(_mutator) { }
+    }
+    Script.GameState = GameState;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var f = FudgeCore;
     f.Debug.info("Main Program Template running!");
-    let viewport;
     let cmpCamera;
     document.addEventListener("interactiveViewportStarted", start);
     let rgdBodyShip;
     let shipNode;
     let terrainMesh;
-    let cmpMeshTerrain;
     let nodeTerrain;
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end;
@@ -32,8 +45,6 @@ var Script;
             componentRigidbody.effectGravity = 0;
             componentRigidbody.mass = 0.1;
             componentRigidbody.setScaling(new f.Vector3(5, 5, 5));
-            console.log("Rigidbody:");
-            console.log(componentRigidbody);
             let componentMesh = new f.ComponentMesh(cubeMesh);
             let componentTransform = new f.ComponentTransform();
             componentTransform.mtxLocal.translation = new f.Vector3(randX, randY, randZ);
@@ -42,21 +53,22 @@ var Script;
             nodeCube.addComponent(materialComp);
             nodeCube.addComponent(componentTransform);
             nodeCube.addComponent(componentRigidbody);
-            viewport.getBranch().addChild(nodeCube);
+            Script.viewport.getBranch().addChild(nodeCube);
         }
     }
     function start(_event) {
-        viewport = _event.detail;
-        let branch = viewport.getBranch();
+        Script.gameState = new Script.GameState();
+        Script.viewport = _event.detail;
+        let branch = Script.viewport.getBranch();
         shipNode = branch.getChildrenByName("spaceship")[0];
         rgdBodyShip = shipNode.getComponent(f.ComponentRigidbody);
         console.log(rgdBodyShip);
         f.Physics.settings.solverIterations = 5000;
         nodeTerrain = branch.getChildrenByName("terrain")[0];
-        cmpMeshTerrain = nodeTerrain.getComponent(f.ComponentMesh);
-        terrainMesh = cmpMeshTerrain.mesh;
+        Script.cmpMeshTerrain = nodeTerrain.getComponent(f.ComponentMesh);
+        terrainMesh = Script.cmpMeshTerrain.mesh;
         nodeTerrain.getComponent(f.ComponentCamera);
-        cmpCamera = viewport.camera;
+        cmpCamera = Script.viewport.camera;
         let posShip = rgdBodyShip.getPosition();
         //cmpCamera.mtxPivot.translation = new f.Vector3(posShip.x,posShip.y+2,posShip.z-30)
         let image = document.createElement("img");
@@ -75,17 +87,75 @@ var Script;
     }
     function update(_event) {
         f.Physics.simulate(); // if physics is included and used
-        viewport.draw();
+        Script.viewport.draw();
         f.AudioManager.default.update();
         updateCamera();
         f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-        viewport.physicsDebugMode = 2;
+        Script.viewport.physicsDebugMode = 2;
         //console.log(terrainMesh.getTerrainInfo(shipNode.mtxLocal.translation,cmpMeshTerrain.mtxWorld).distance);
         //rgdBodyShip.applyTorque(new ƒ.Vector3(0,0,0) )
         // rotational impulse
         //linear impulse
         //rgdBodyShip.applyForce(new ƒ.Vector3(0,0,4))
     }
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var f = FudgeCore;
+    f.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
+    class SensorScript extends f.ComponentScript {
+        //cmpMeshTerrain: f.ComponentMesh;
+        //private terrainMesh: f.MeshTerrain;  //= <f.MeshTerrain>cmpMeshTerrain.mesh;
+        constructor() {
+            super();
+            // Properties may be mutated by users in the editor via the automatically created user interface
+            this.message = "SensorScript added to ";
+            this.strafeThrust = 2000;
+            this.forwardthrust = 5000;
+            // Activate the functions of this component as response to events
+            this.hndEvent = (_event) => {
+                switch (_event.type) {
+                    case "componentAdd" /* COMPONENT_ADD */:
+                        f.Debug.log(this.message, this.node);
+                        f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                        break;
+                    case "componentRemove" /* COMPONENT_REMOVE */:
+                        this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+                        this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+                        break;
+                    case "nodeDeserialized" /* NODE_DESERIALIZED */:
+                        // if deserialized the node is now fully reconstructed and access to all its components and children is possible
+                        break;
+                }
+            };
+            //Todo : Camera mit joints? vllt mit universelJoint
+            this.update = () => {
+                if (!Script.cmpMeshTerrain) {
+                    return;
+                }
+                if (this.node.getParent() != null) {
+                    let terrainInfo = Script.cmpMeshTerrain.mesh.getTerrainInfo(this.node.getParent().mtxWorld.translation, Script.cmpMeshTerrain.mtxWorld);
+                    //console.log(this.node.getParent().name + ": " + terrainInfo.distance);
+                    if (terrainInfo.distance <= 0) {
+                        this.node.dispatchEvent(new Event("SensorHit", { bubbles: true }));
+                    }
+                }
+                else {
+                    //console.log(this.node);
+                }
+            };
+            // Don't start when running in editor
+            if (f.Project.mode == f.MODE.EDITOR)
+                return;
+            // Listen to this component being added to or removed from a node
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+            this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+        }
+    }
+    // Register the script as component for use in the editor via drag&drop
+    SensorScript.iSubclass = f.Component.registerSubclass(SensorScript);
+    Script.SensorScript = SensorScript;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -105,7 +175,7 @@ var Script;
                         ƒ.Debug.log(this.message, this.node);
                         this.rgdBodySpaceship = this.node.getComponent(ƒ.ComponentRigidbody);
                         // this.rgdBodySpaceship.addVelocity(new ƒ.Vector3(0, 0, 10));
-                        ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                        // ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
                         console.log(this.node);
                         window.addEventListener("mousemove", this.handleMouse);
                         break;
@@ -118,9 +188,16 @@ var Script;
                         this.node.addComponent(new ƒ.ComponentAudio(this.audioCrash));
                         this.rgdBodySpaceship.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, this.hndCollision);
                         this.rgdBodySpaceship.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndTrigger);
+                        this.node.addEventListener("SensorHit", this.hndCollision);
+                        this.node.addEventListener("renderPrepare" /* RENDER_PREPARE */, this.update);
                         // if deserialized the node is now fully reconstructed and access to all its components and children is possible
                         break;
                 }
+            };
+            this.hndCollision = () => {
+                console.log("bumm");
+                //this.node.getComponent(ƒ.ComponentAudio).play(true);
+                //this.node.getComponent(ƒ.ComponentAudio).volume = 0.5;
             };
             this.hndTrigger = (event) => {
                 console.log("entered a pyramid");
@@ -129,6 +206,10 @@ var Script;
             };
             //Todo : Camera mit joints? vllt mit universelJoint
             this.update = () => {
+                if (!Script.gameState) {
+                    return;
+                }
+                Script.gameState.height = this.node.mtxWorld.translation.y;
                 this.setRelativeAxes();
                 if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.W])) {
                     this.thrust();
@@ -166,11 +247,6 @@ var Script;
             this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
             this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
             this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
-        }
-        hndCollision() {
-            //console.log("bumm");
-            this.node.getComponent(ƒ.ComponentAudio).play(true);
-            this.node.getComponent(ƒ.ComponentAudio).volume = 0.5;
         }
         setRelativeAxes() {
             this.relativeZ = this.node.mtxWorld.getZ();

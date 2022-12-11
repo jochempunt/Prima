@@ -772,7 +772,6 @@
                         }
                       }
                     ],
-                    "ComponentRigidbody": [],
                     "ComponentCamera": [
                       {
                         "ƒ.ComponentCamera": {
@@ -787,6 +786,31 @@
                           "fieldOfView": 45,
                           "direction": "diagonal",
                           "aspect": 1,
+                          "pivot": {
+                            "translation": "[0, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentRigidbody": [
+                      {
+                        "ƒ.ComponentRigidbody": {
+                          "initialization": "TO_PIVOT",
+                          "friction": 0.2,
+                          "restitution": 0.2,
+                          "mass": 0.009999999999999802,
+                          "dampTranslation": 0.1,
+                          "dampRotation": 0.1,
+                          "effectGravity": 0,
+                          "typeBody": "DYNAMIC",
+                          "typeCollider": "CUBE",
+                          "isTrigger": false,
+                          "id": 5,
                           "pivot": {
                             "translation": "[0, 0, 0]",
                             "rotation": "[0, 0, 0]",
@@ -882,6 +906,108 @@
                   },
                   "children": []
                 }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "Sensors",
+                  "active": true,
+                  "components": {},
+                  "children": [
+                    {
+                      "ƒ.Node": {
+                        "name": "Tip",
+                        "active": true,
+                        "components": {
+                          "ComponentTransform": [
+                            {
+                              "ƒ.ComponentTransform": {
+                                "local": {
+                                  "translation": "[0, -0.029999999329447746, 4.800000190734863]",
+                                  "rotation": "[0, 0, 0]",
+                                  "scaling": "[1, 1, 1]"
+                                },
+                                "Component": {
+                                  "active": true
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "children": [
+                          {
+                            "ƒ.GraphInstance": {
+                              "deserializeFromSource": true,
+                              "name": "Sensor",
+                              "idSource": "Graph|2022-12-01T13:25:13.669Z|71911"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "ƒ.Node": {
+                        "name": "WingL",
+                        "active": true,
+                        "components": {
+                          "ComponentTransform": [
+                            {
+                              "ƒ.ComponentTransform": {
+                                "local": {
+                                  "translation": "[2.9000000953674316, 0, 0.10000000149011612]",
+                                  "rotation": "[0, 0, 0]",
+                                  "scaling": "[1, 1, 1]"
+                                },
+                                "Component": {
+                                  "active": true
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "children": [
+                          {
+                            "ƒ.GraphInstance": {
+                              "deserializeFromSource": true,
+                              "name": "Sensor",
+                              "idSource": "Graph|2022-12-01T13:25:13.669Z|71911"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "ƒ.Node": {
+                        "name": "WingR",
+                        "active": true,
+                        "components": {
+                          "ComponentTransform": [
+                            {
+                              "ƒ.ComponentTransform": {
+                                "local": {
+                                  "translation": "[-2.9000000953674316, 0, 0.10000000149011612]",
+                                  "rotation": "[0, 0, 0]",
+                                  "scaling": "[1, 1, 1]"
+                                },
+                                "Component": {
+                                  "active": true
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "children": [
+                          {
+                            "ƒ.GraphInstance": {
+                              "deserializeFromSource": true,
+                              "name": "Sensor",
+                              "idSource": "Graph|2022-12-01T13:25:13.669Z|71911"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -909,6 +1035,64 @@
       "name": "Objects3d\\startship3.obj",
       "type": "MeshObj",
       "url": "Objects3d\\startship3.obj"
+    }
+  },
+  "Graph|2022-12-01T13:25:13.669Z|71911": {
+    "ƒ.Graph": {
+      "name": "Sensor",
+      "active": true,
+      "components": {
+        "ComponentMesh": [
+          {
+            "ƒ.ComponentMesh": {
+              "idMesh": "MeshCube|2022-11-28T16:29:39.705Z|47449",
+              "pivot": {
+                "translation": "[0, 0, 0]",
+                "rotation": "[0, 0, 0]",
+                "scaling": "[0.10000002384185791, 0.10000002384185791, 0.10000002384185791]"
+              },
+              "Component": {
+                "active": true
+              }
+            }
+          }
+        ],
+        "ComponentMaterial": [
+          {
+            "ƒ.ComponentMaterial": {
+              "sortForAlpha": false,
+              "clrPrimary": "[1, 1, 1, 1]",
+              "clrSecondary": "[1, 1, 1, 1]",
+              "pivot": {
+                "translation": "[0, 0]",
+                "rotation": 0,
+                "scaling": "[1, 1]"
+              },
+              "Component": {
+                "active": true
+              },
+              "idMaterial": "Material|2022-11-22T14:24:16.748Z|82715"
+            }
+          }
+        ],
+        "SensorScript": [
+          {
+            "Script.SensorScript": {
+              "active": true,
+              "message": "SensorScript added to ",
+              "strafeThrust": 2000,
+              "forwardthrust": 5000,
+              "width": 0,
+              "height": 0,
+              "xAxis": 0,
+              "yAxis": 0
+            }
+          }
+        ]
+      },
+      "children": [],
+      "idResource": "Graph|2022-12-01T13:25:13.669Z|71911",
+      "type": "Graph"
     }
   }
 }
