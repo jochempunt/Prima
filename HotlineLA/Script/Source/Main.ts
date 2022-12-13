@@ -43,6 +43,9 @@ namespace HotlineLA {
 
 
 
+    if(f.Keyboard.isPressedOne([f.KEYBOARD_CODE.B])){
+      avatarCmp.shootBullet();
+    }
     if(f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])){
       avatarCmp.moveY(1);
     }

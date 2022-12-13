@@ -8,6 +8,8 @@ var HotlineLA;
         constructor() {
             super();
             this.playerSpeed = 100;
+            this.bulletSpeed = 8;
+            this.shootAgain = true;
             // Activate the functions of this component as response to events
             this.hndEvent = (_event) => {
                 switch (_event.type) {
@@ -20,6 +22,7 @@ var HotlineLA;
                     case "nodeDeserialized" /* NODE_DESERIALIZED */:
                         this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
                         this.torsoNode = this.node.getChild(0);
+                        this.gunNode = this.torsoNode.getChild(0);
                         window.addEventListener("mousemove", this.rotateToMousePointer);
                         this.rgdBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, this.hndCollison);
                         // if deserialized the node is now fully reconstructed and access to all its components and children is possible
@@ -27,7 +30,7 @@ var HotlineLA;
                 }
             };
             this.hndCollison = () => {
-                console.log("collided");
+                //  console.log("collided");
             };
             this.moveY = (direction) => {
                 this.rgdBody.applyForce(new f.Vector3(0, direction * this.playerSpeed, 0));
@@ -42,13 +45,14 @@ var HotlineLA;
                 let mousePosX = e.clientX;
                 let windowCenterX = window.innerWidth / 2;
                 let windowCenterY = window.innerHeight / 2;
-                let targetPosY = mousePosY - windowCenterY;
-                let targetPosX = mousePosX - windowCenterX;
-                console.log("X: " + targetPosX + " Y: " + targetPosY);
-                let angleRad = Math.atan2(targetPosY, targetPosX);
+                this.targetY = mousePosY - windowCenterY;
+                this.targetX = mousePosX - windowCenterX;
+                let angleRad = Math.atan2(this.targetY, this.targetX);
                 let angleDeg = angleRad * (180.0 / Math.PI);
-                console.log(angleDeg);
                 this.torsoNode.mtxLocal.rotation = new f.Vector3(0, 0, -angleDeg);
+            };
+            this.hndTime = () => {
+                this.shootAgain = true;
             };
             // Don't start when running in editor
             if (f.Project.mode == f.MODE.EDITOR)
@@ -57,6 +61,35 @@ var HotlineLA;
             this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
             this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
             this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+        }
+        shootBullet() {
+            if (!this.shootAgain) {
+                return;
+            }
+            let bullet = new f.Node("bullet");
+            let bulletSprite = new f.MeshSprite("bulletMesh");
+            let bulletMaterial = new f.Material("bulletMaterial", f.ShaderLit);
+            let componentMesh = new f.ComponentMesh(bulletSprite);
+            componentMesh.mtxPivot.scale(new f.Vector3(0.2, 0.2, 1));
+            let componentMat = new f.ComponentMaterial(bulletMaterial);
+            componentMat.clrPrimary = f.Color.CSS("black");
+            let componentTransf = new f.ComponentTransform();
+            componentTransf.mtxLocal.translation = this.gunNode.mtxWorld.translation;
+            componentTransf.mtxLocal.translateZ(-0.1);
+            bullet.addComponent(componentMesh);
+            bullet.addComponent(componentMat);
+            bullet.addComponent(componentTransf);
+            let componentRigidbody = new f.ComponentRigidbody();
+            componentRigidbody.effectGravity = 0;
+            componentRigidbody.mass = 0.1;
+            componentRigidbody.isTrigger = true;
+            bullet.addComponent(componentRigidbody);
+            HotlineLA.branch.addChild(bullet);
+            // TODO: make the bullet precisely go from the initial position to the target point 
+            bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse(f.Vector3.NORMALIZATION(new f.Vector3(this.targetX, -this.targetY, 0), this.bulletSpeed));
+            this.shootAgain = false;
+            let time = new f.Time();
+            let timer = new f.Timer(time, 150, 1, this.hndTime);
         }
     }
     // Register the script as component for use in the editor via drag&drop
@@ -126,6 +159,9 @@ var HotlineLA;
         f.Physics.simulate(); // if physics is included and used
         viewport.draw();
         f.AudioManager.default.update();
+        if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.B])) {
+            avatarCmp.shootBullet();
+        }
         if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
             avatarCmp.moveY(1);
         }

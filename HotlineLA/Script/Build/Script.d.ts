@@ -5,12 +5,19 @@ declare namespace HotlineLA {
         constructor();
         private playerSpeed;
         private rgdBody;
-        torsoNode: f.Node;
+        private torsoNode;
+        private gunNode;
+        private targetX;
+        private targetY;
+        private bulletSpeed;
+        private shootAgain;
         hndEvent: (_event: Event) => void;
         hndCollison: () => void;
         moveY: (direction: number) => void;
         moveX: (direction: number) => void;
         rotateToMousePointer: (e: MouseEvent) => void;
+        shootBullet(): void;
+        hndTime: () => void;
     }
 }
 declare namespace HotlineLA {
