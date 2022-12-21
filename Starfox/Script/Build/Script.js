@@ -9,6 +9,8 @@ var Script;
             this.fuel = 20;
             this.controller = new fui.Controller(this, document.getElementById("vui"));
             console.log(this.controller);
+            console.log("mutator");
+            console.log(this.getMutator());
         }
         reduceMutator(_mutator) { }
     }
@@ -21,7 +23,6 @@ var Script;
     let cmpCamera;
     document.addEventListener("interactiveViewportStarted", start);
     let rgdBodyShip;
-    let shipNode;
     let terrainMesh;
     let nodeTerrain;
     function lerp(start, end, amt) {
@@ -60,8 +61,8 @@ var Script;
         Script.gameState = new Script.GameState();
         Script.viewport = _event.detail;
         let branch = Script.viewport.getBranch();
-        shipNode = branch.getChildrenByName("spaceship")[0];
-        rgdBodyShip = shipNode.getComponent(f.ComponentRigidbody);
+        Script.shipNode = branch.getChildrenByName("spaceship")[0];
+        rgdBodyShip = Script.shipNode.getComponent(f.ComponentRigidbody);
         console.log(rgdBodyShip);
         f.Physics.settings.solverIterations = 5000;
         nodeTerrain = branch.getChildrenByName("terrain")[0];
@@ -190,9 +191,36 @@ var Script;
                         this.rgdBodySpaceship.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndTrigger);
                         this.node.addEventListener("SensorHit", this.hndCollision);
                         this.node.addEventListener("renderPrepare" /* RENDER_PREPARE */, this.update);
+                        this.initAnimation();
                         // if deserialized the node is now fully reconstructed and access to all its components and children is possible
                         break;
                 }
+            };
+            this.initAnimation = () => {
+                let animseq = new ƒ.AnimationSequence();
+                animseq.addKey(new ƒ.AnimationKey(0, 0));
+                animseq.addKey(new ƒ.AnimationKey(1000, 1));
+                animseq.addKey(new ƒ.AnimationKey(2000, 0));
+                let animStructure = {
+                    components: {
+                        ComponentMaterial: [
+                            {
+                                "ƒ.ComponentMaterial": {
+                                    clrPrimary: {
+                                        r: animseq
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                };
+                let animation = new ƒ.Animation("testAnimation", animStructure, 30);
+                animation.setEvent("event123", 1000);
+                let cmpAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS);
+                cmpAnimator.scale = 1;
+                this.node.addComponent(cmpAnimator);
+                cmpAnimator.activate(true);
+                cmpAnimator.addEventListener("event123", this.hndCollision);
             };
             this.hndCollision = () => {
                 console.log("bumm");
@@ -270,5 +298,78 @@ var Script;
     // Register the script as component for use in the editor via drag&drop
     SpaceShipMovement.iSubclass = ƒ.Component.registerSubclass(SpaceShipMovement);
     Script.SpaceShipMovement = SpaceShipMovement;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
+    let JOB;
+    (function (JOB) {
+        JOB[JOB["IDLE"] = 0] = "IDLE";
+        JOB[JOB["ATTACK"] = 1] = "ATTACK";
+    })(JOB || (JOB = {}));
+    class StateMachine extends ƒAid.ComponentStateMachine {
+        constructor() {
+            super();
+            // Activate the functions of this component as response to events
+            this.hndEvent = (_event) => {
+                switch (_event.type) {
+                    case "componentAdd" /* COMPONENT_ADD */:
+                        ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                        this.transit(JOB.IDLE);
+                        break;
+                    case "componentRemove" /* COMPONENT_REMOVE */:
+                        this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+                        this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+                        ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                        break;
+                    case "nodeDeserialized" /* NODE_DESERIALIZED */:
+                        this.turretHead = this.node.getChild(0);
+                        break;
+                }
+            };
+            this.update = (_event) => {
+                this.act();
+            };
+            this.instructions = StateMachine.instructions; // setup instructions with the static set
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            // Listen to this component being added to or removed from a node
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+            this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+        }
+        static get() {
+            let setup = new ƒAid.StateMachineInstructions();
+            setup.transitDefault = StateMachine.transitDefault;
+            setup.actDefault = StateMachine.actDefault;
+            setup.setAction(JOB.IDLE, this.actIdle);
+            setup.setAction(JOB.ATTACK, this.actAttack);
+            return setup;
+        }
+        static transitDefault(_machine) {
+            console.log("Transit to", _machine.stateNext);
+        }
+        static async actDefault(_machine) {
+            console.log("Attack");
+        }
+        static async actAttack(_machine) {
+            //
+            console.log("pipi");
+        }
+        static async actIdle(_machine) {
+            _machine.turretHead.mtxLocal.rotateY(2);
+            let distance = ƒ.Vector3.DIFFERENCE(Script.shipNode.mtxWorld.translation, _machine.node.mtxWorld.translation);
+            if (distance.magnitude < 10) {
+                _machine.transit(JOB.ATTACK);
+            }
+            StateMachine.actDefault(_machine);
+        }
+    }
+    StateMachine.iSubclass = ƒ.Component.registerSubclass(StateMachine);
+    StateMachine.instructions = StateMachine.get();
+    Script.StateMachine = StateMachine;
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map

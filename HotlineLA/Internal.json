@@ -148,7 +148,7 @@
                     "local": {
                       "translation": "[0, 3, 0]",
                       "rotation": "[0, 0, 0]",
-                      "scaling": "[1, 1, 1]"
+                      "scaling": "[1, 2, 2]"
                     },
                     "Component": {
                       "active": true
@@ -227,7 +227,7 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[0, 0, 0]",
+                      "translation": "[-3, 0, 0]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
@@ -266,7 +266,10 @@
                 {
                   "HotlineLA.CharacterMovementScript": {
                     "active": true,
-                    "playerSpeed": 290
+                    "playerSpeed": 290,
+                    "bulletSpeed": 8,
+                    "shootAgain": true,
+                    "bulletCount": 0
                   }
                 }
               ]
@@ -368,7 +371,7 @@
                             {
                               "ƒ.ComponentTransform": {
                                 "local": {
-                                  "translation": "[0.7000000476837158, 0.30000001192092896, 0.019999999552965164]",
+                                  "translation": "[0.7000000476837158, 0.12999998033046722, 0.019999999552965164]",
                                   "rotation": "[0, 0, 0]",
                                   "scaling": "[0.49999991059303284, 0.2999999225139618, 1]"
                                 },
@@ -430,9 +433,9 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[7.249995708465576, -4.249998569488525, 0]",
+                      "translation": "[7.249995708465576, -3.999994993209839, 0]",
                       "rotation": "[0, 0, 90]",
-                      "scaling": "[1, 1, 1]"
+                      "scaling": "[1, 2, 2]"
                     },
                     "Component": {
                       "active": true
@@ -467,6 +470,71 @@
               ]
             },
             "children": []
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Enemys",
+            "active": true,
+            "components": {},
+            "children": [
+              {
+                "ƒ.Node": {
+                  "name": "EnemyPos",
+                  "active": true,
+                  "components": {
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[1, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshQuad|2022-12-11T13:18:20.498Z|07970",
+                          "pivot": {
+                            "translation": "[0, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[0, 0]",
+                            "rotation": 0,
+                            "scaling": "[1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-12-11T13:19:51.050Z|99152"
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
+              }
+            ]
           }
         }
       ],

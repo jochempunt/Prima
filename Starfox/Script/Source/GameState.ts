@@ -14,6 +14,8 @@ namespace Script {
             super();
             this.controller = new fui.Controller(this, document.getElementById("vui"));
             console.log(this.controller);
+            console.log("mutator");
+            console.log(this.getMutator());
         }
 
 

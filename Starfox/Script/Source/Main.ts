@@ -9,7 +9,7 @@ namespace Script {
 
   let rgdBodyShip: f.ComponentRigidbody;
 
-  let shipNode: f.Node;
+  export let  shipNode: f.Node;
 
   let terrainMesh: f.MeshTerrain;
   export let cmpMeshTerrain: f.ComponentMesh;
@@ -83,6 +83,8 @@ namespace Script {
 
 
     nodeTerrain.getComponent(f.ComponentCamera)
+
+
 
 
     cmpCamera = viewport.camera;

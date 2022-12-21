@@ -7,9 +7,9 @@ namespace Script {
     public static readonly iSubclass: number = ƒ.Component.registerSubclass(SpaceShipMovement);
     // Properties may be mutated by users in the editor via the automatically created user interface
     public message: string = "SpaceShipMovement added to ";
-    
 
-    private rgdBodySpaceship: ƒ.ComponentRigidbody;
+
+    rgdBodySpaceship: ƒ.ComponentRigidbody;
 
     public strafeThrust: number = 2000;
     public forwardthrust: number = 5000;
@@ -23,7 +23,7 @@ namespace Script {
 
     private audioCrash: ƒ.Audio;
 
-    
+
 
     constructor() {
       super();
@@ -46,7 +46,7 @@ namespace Script {
           ƒ.Debug.log(this.message, this.node);
           this.rgdBodySpaceship = this.node.getComponent(ƒ.ComponentRigidbody);
           // this.rgdBodySpaceship.addVelocity(new ƒ.Vector3(0, 0, 10));
-         // ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
+          // ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
           console.log(this.node);
           window.addEventListener("mousemove", this.handleMouse);
           break;
@@ -55,38 +55,79 @@ namespace Script {
           this.removeEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
           break;
         case ƒ.EVENT.NODE_DESERIALIZED:
-        this.audioCrash = new ƒ.Audio("./images/gong.mp3");
-        this.node.addComponent(new ƒ.ComponentAudio(this.audioCrash));
-        this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollision);
-        this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, this.hndTrigger);
-        this.node.addEventListener("SensorHit",this.hndCollision);
-        this.node.addEventListener(ƒ.EVENT.RENDER_PREPARE,this.update);
-        // if deserialized the node is now fully reconstructed and access to all its components and children is possible
+          this.audioCrash = new ƒ.Audio("./images/gong.mp3");
+          this.node.addComponent(new ƒ.ComponentAudio(this.audioCrash));
+          this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollision);
+          this.rgdBodySpaceship.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, this.hndTrigger);
+          this.node.addEventListener("SensorHit", this.hndCollision);
+          this.node.addEventListener(ƒ.EVENT.RENDER_PREPARE, this.update);
+          this.initAnimation();
+          // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
     }
 
-    
 
-    hndCollision= ():void =>{
+
+
+    initAnimation = (): void => {
+      let animseq: ƒ.AnimationSequence = new ƒ.AnimationSequence();
+      animseq.addKey(new ƒ.AnimationKey(0, 0));
+      animseq.addKey(new ƒ.AnimationKey(1000, 1));
+      animseq.addKey(new ƒ.AnimationKey(2000, 0));
+
+     
+
+  
+
+      let animStructure: ƒ.AnimationStructure = {
+        components: {
+          ComponentMaterial: [
+            {
+              "ƒ.ComponentMaterial": {
+                clrPrimary: {
+                  r: animseq
+                }
+              }
+            }
+          ]
+        }
+      };
+
+      let animation: ƒ.Animation = new ƒ.Animation("testAnimation", animStructure, 30);
+      animation.setEvent("event123",1000 );
+      let cmpAnimator: ƒ.ComponentAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS);
+      cmpAnimator.scale = 1;
+
+      this.node.addComponent(cmpAnimator);
+      cmpAnimator.activate(true);
+      cmpAnimator.addEventListener("event123",this.hndCollision);
+
+
+
+    }
+
+
+
+    hndCollision = (): void => {
       console.log("bumm");
       //this.node.getComponent(ƒ.ComponentAudio).play(true);
       //this.node.getComponent(ƒ.ComponentAudio).volume = 0.5;
     }
 
-    hndTrigger = (event :ƒ.EventPhysics):void => {
+    hndTrigger = (event: ƒ.EventPhysics): void => {
       console.log("entered a pyramid");
-      
-    
+
+
       console.log(event)
-      this.rgdBodySpaceship.applyLinearImpulse(ƒ.Vector3.SCALE(this.relativeZ,-5000));
+      this.rgdBodySpaceship.applyLinearImpulse(ƒ.Vector3.SCALE(this.relativeZ, -5000));
     }
 
-//Todo : Camera mit joints? vllt mit universelJoint
+    //Todo : Camera mit joints? vllt mit universelJoint
 
 
     update = (): void => {
-      if(!gameState){
+      if (!gameState) {
         return;
       }
       gameState.height = this.node.mtxWorld.translation.y;
@@ -113,7 +154,7 @@ namespace Script {
       this.rgdBodySpaceship.applyTorque(new ƒ.Vector3(0, this.xAxis * -10, 0));
       //this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
       this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeX, this.yAxis * 1.5));
-     
+
     }
 
     private width: number = 0;
@@ -141,7 +182,7 @@ namespace Script {
 
       this.relativeX = this.node.mtxWorld.getX();
       this.relativeY.scale(5);
-     
+
     }
 
     backwards(): void {
@@ -154,8 +195,8 @@ namespace Script {
     }
 
 
-    roll(dir:number): void {
-      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ,dir));
+    roll(dir: number): void {
+      this.rgdBodySpaceship.applyTorque(ƒ.Vector3.SCALE(this.relativeZ, dir));
     }
 
 
