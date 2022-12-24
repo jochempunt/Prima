@@ -373,7 +373,7 @@ var HotlineLA;
         viewport.draw();
         f.AudioManager.default.update();
         //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-        viewport.physicsDebugMode = 2;
+        //viewport.physicsDebugMode = 2;
         if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.B])) {
             avatarCmp.shootBullet();
         }
