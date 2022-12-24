@@ -40,10 +40,12 @@ namespace HotlineLA {
 
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
     branch.addEventListener("BulletHit", hndBulletHit);
-
+    document.addEventListener("mousedown",hndClick);
     f.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
+
+  
 
 
   async function loadEnemys(): Promise<void> {
@@ -89,9 +91,14 @@ namespace HotlineLA {
   function updateCamera(): void {
     cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x,avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
   }
+  function hndClick(event:Event):void{
+    avatarCmp.shootBullet();
+  }
 
 
-
+  
+  
+  
   function update(_event: Event): void {
     f.Physics.settings.solverIterations = 5000;
     f.Physics.simulate();  // if physics is included and used

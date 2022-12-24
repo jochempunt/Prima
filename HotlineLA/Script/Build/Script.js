@@ -337,6 +337,7 @@ var HotlineLA;
         cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         HotlineLA.branch.addEventListener("BulletHit", hndBulletHit);
+        document.addEventListener("mousedown", hndClick);
         f.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
     async function loadEnemys() {
@@ -366,6 +367,9 @@ var HotlineLA;
     }
     function updateCamera() {
         cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x, avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
+    }
+    function hndClick(event) {
+        avatarCmp.shootBullet();
     }
     function update(_event) {
         f.Physics.settings.solverIterations = 5000;
