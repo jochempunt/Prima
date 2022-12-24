@@ -333,7 +333,8 @@ var HotlineLA;
             wall.getComponent(f.ComponentRigidbody).collisionGroup = f.COLLISION_GROUP.GROUP_2;
         }
         loadEnemys();
-        cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, -35);
+        cmpCamera.mtxPivot.rotateY(180);
+        cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         HotlineLA.branch.addEventListener("BulletHit", hndBulletHit);
         f.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -364,7 +365,7 @@ var HotlineLA;
         HotlineLA.branch.removeChild(bulletToRemove);
     }
     function updateCamera() {
-        cmpCamera.mtxPivot.translation = new f.Vector3(-avatarNode.mtxLocal.translation.x, avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
+        cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x, avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
     }
     function update(_event) {
         f.Physics.settings.solverIterations = 5000;

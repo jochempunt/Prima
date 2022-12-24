@@ -35,8 +35,8 @@ namespace HotlineLA {
 
     loadEnemys();
 
-
-    cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, -35);
+    cmpCamera.mtxPivot.rotateY(180);
+    cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
 
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
     branch.addEventListener("BulletHit", hndBulletHit);
@@ -87,7 +87,7 @@ namespace HotlineLA {
 
 
   function updateCamera(): void {
-    cmpCamera.mtxPivot.translation = new f.Vector3(-avatarNode.mtxLocal.translation.x, avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
+    cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x,avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
   }
 
 
