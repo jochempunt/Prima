@@ -1,18 +1,19 @@
-namespace Script {
-    import ƒ = FudgeCore;
+namespace HotlineLA {
+    import f = FudgeCore;
     import ƒAid = FudgeAid;
-    ƒ.Project.registerScriptNamespace(Script);  // Register the namespace to FUDGE for serialization
+    f.Project.registerScriptNamespace(HotlineLA);  // Register the namespace to FUDGE for serialization
 
     enum JOB {
-        IDLE,ATTACK,DEAD
+        IDLE,PATROLL,ATTACK, DEAD
     }
 
     export class enemyStateMachine extends ƒAid.ComponentStateMachine<JOB> {
-        public static readonly iSubclass: number = ƒ.Component.registerSubclass(enemyStateMachine);
+        public static readonly iSubclass: number = f.Component.registerSubclass(enemyStateMachine);
         private static instructions: ƒAid.StateMachineInstructions<JOB> = enemyStateMachine.get();
-      
-        private turretHead: ƒ.Node;
-        private barrel:ƒ.Node;
+
+        private enemyN: Enemy;
+
+        private deltaTime:number;
 
 
 
@@ -20,23 +21,29 @@ namespace Script {
         constructor() {
             super();
             this.instructions = enemyStateMachine.instructions; // setup instructions with the static set
-
+           
             // Don't start when running in editor
-            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+            if (f.Project.mode == f.MODE.EDITOR)
                 return;
 
+
+          
             // Listen to this component being added to or removed from a node
-            this.addEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
-            this.addEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
-            this.addEventListener(ƒ.EVENT.NODE_DESERIALIZED, this.hndEvent);
+            this.addEventListener(f.EVENT.COMPONENT_ADD, this.hndEvent);
+            this.addEventListener(f.EVENT.COMPONENT_REMOVE, this.hndEvent);
+            this.addEventListener(f.EVENT.NODE_DESERIALIZED, this.hndEvent);
         }
 
         public static get(): ƒAid.StateMachineInstructions<JOB> {
             let setup: ƒAid.StateMachineInstructions<JOB> = new ƒAid.StateMachineInstructions();
             setup.transitDefault = enemyStateMachine.transitDefault;
             setup.actDefault = enemyStateMachine.actDefault;
-            setup.setAction(JOB.IDLE, <ƒ.General>this.actIdle);
-            setup.setAction(JOB.ATTACK,<ƒ.General>this.actAttack);
+
+            setup.setAction(JOB.IDLE, <f.General>this.actIdle);
+            setup.setAction(JOB.PATROLL,<f.General>this.actPatroll);
+            setup.setAction(JOB.ATTACK, <f.General>this.actAttack);
+            setup.setAction(JOB.DEAD, <f.General>this.actDead);
+            
             return setup;
         }
 
@@ -45,51 +52,72 @@ namespace Script {
         }
 
         private static async actDefault(_machine: enemyStateMachine): Promise<void> {
-           console.log("Attack");
+            console.log("Default");
+            
+        }
+
+        private static async actPatroll(_machine: enemyStateMachine): Promise<void> {
+            console.log("Patrolling");
+
+            _machine.enemyN.patroll(_machine.deltaTime);
         }
 
         private static async actAttack(_machine: enemyStateMachine): Promise<void> {
             //
             console.log("pipi");
-         }
+        }
+
+
+        private static async actDead(_machine: enemyStateMachine): Promise<void> {
+            _machine.enemyN.checkEndDeathAnimation();
+            console.log("im Dead");
+        }
+
+
 
         private static async actIdle(_machine: enemyStateMachine): Promise<void> {
-           _machine.turretHead.mtxLocal.rotateY(2);
-      
-          // if(distance.magnitude <10){
-        //
-          //  _machine.transit(JOB.ATTACK);
-           //} 
-           enemyStateMachine.actDefault(_machine);
-
-
-
+            // if(distance.magnitude <10){
+            //
+            //  _machine.transit(JOB.ATTACK);
+            //} 
+            enemyStateMachine.actDefault(_machine);
         }
-      
-      
+
+
 
 
         // Activate the functions of this component as response to events
         private hndEvent = (_event: Event): void => {
             switch (_event.type) {
-                case ƒ.EVENT.COMPONENT_ADD:
-                    ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
-                    this.transit(JOB.IDLE);
+                case f.EVENT.COMPONENT_ADD:
+                    f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.update);
+                   
+                    this.enemyN = <Enemy>this.node;
+                    this.enemyN.getComponent(f.ComponentRigidbody).addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShot);
+                    this.transit(JOB.PATROLL);
                     break;
-                case ƒ.EVENT.COMPONENT_REMOVE:
-                    this.removeEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
-                    this.removeEventListener(ƒ.EVENT.COMPONENT_REMOVE, this.hndEvent);
-                    ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
+                case f.EVENT.COMPONENT_REMOVE:
+                    this.removeEventListener(f.EVENT.COMPONENT_ADD, this.hndEvent);
+                    this.removeEventListener(f.EVENT.COMPONENT_REMOVE, this.hndEvent);
+                    f.Loop.removeEventListener(f.EVENT.LOOP_FRAME, this.update);
                     break;
-                case ƒ.EVENT.NODE_DESERIALIZED:
-                   this.turretHead = this.node.getChild(0);
-
+                case f.EVENT.NODE_DESERIALIZED:
+                   
                     break;
+            }
+        }
+        private hndShot = (_event: f.EventPhysics):void =>{
+            console.log("im shot for real");
+            if (_event.cmpRigidbody.node.name == "bullet") {
+            this.enemyN.setHeadShotAnimation(_event.collisionNormal);
+            this.transit(JOB.DEAD);
+            this.enemyN.rdgBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShot);
             }
         }
 
         private update = (_event: Event): void => {
             this.act();
+            this.deltaTime = f.Loop.timeFrameGame / 1000;
         }
 
         // protected reduceMutator(_mutator: ƒ.Mutator): void {

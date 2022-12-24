@@ -43,7 +43,8 @@ namespace HotlineLA {
 
             componentRigidbody.isTrigger = true;
             componentRigidbody.dampRotation = 4.5;
-      
+            componentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
+            componentRigidbody.dampTranslation = 0;
             this.addComponent(componentRigidbody);//#endregion
       
       

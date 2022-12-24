@@ -32,7 +32,7 @@ namespace HotlineLA {
     private targetX: number;
     private targetY: number;
 
-    private bulletSpeed: number = 8;
+    private bulletSpeed: number = 20;
 
     private shootAgain: boolean = true;
 
@@ -52,13 +52,11 @@ namespace HotlineLA {
           this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
           this.rgdBody.effectRotation.x = 0;
           this.rgdBody.effectRotation.y = 0;
+          this.rgdBody.collisionMask =f.COLLISION_GROUP.GROUP_2;
           this.torsoNode = this.node.getChild(0);
           this.gunNode = this.torsoNode.getChild(0);
           window.addEventListener("mousemove", this.rotateToMousePointer);
           //this.rgdBody.addEventListener(f.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollison);
-
-
-         
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
@@ -66,7 +64,7 @@ namespace HotlineLA {
 
     hndBulletHit = (event:Event): void => {
       //  console.log("collided");
-      console.log(event);
+      //console.log(event);
     }
 
 
@@ -75,7 +73,7 @@ namespace HotlineLA {
     moveY = (direction: number): void => {
       this.rgdBody.applyForce(new f.Vector3(0, direction * this.playerSpeed, 0))
       //this.rgdBody.applyLinearImpulse(new f.Vector3( 0,direction * 12,0));
-      console.log("up " + this.playerSpeed);
+      //console.log("up " + this.playerSpeed);
     }
 
 
@@ -116,7 +114,7 @@ namespace HotlineLA {
 
       this.bulletCount++;
       // TODO: make the bullet precisely go from the initial position to the target point 
-      bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse(f.Vector3.NORMALIZATION(new f.Vector3(this.targetX - this.gunNode.mtxWorld.translation.x, -(this.targetY - this.gunNode.mtxWorld.translation.y), 0), this.bulletSpeed));
+      bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse(f.Vector3.NORMALIZATION(new f.Vector3(this.targetX - this.gunNode.mtxWorld.translation.x, -(this.targetY - this.gunNode.mtxWorld.translation.y), 1), this.bulletSpeed));
       //bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse( f.Vector3.NORMALIZATION( new f.Vector3(this.targetX ,-this.targetY,0),this.bulletSpeed));
       this.shootAgain = false;
       let time: f.Time = new f.Time();

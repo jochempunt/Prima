@@ -20,7 +20,6 @@ namespace Script {
         constructor() {
             super();
             this.instructions = StateMachine.instructions; // setup instructions with the static set
-
             // Don't start when running in editor
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;

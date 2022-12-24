@@ -11,7 +11,7 @@ namespace HotlineLA {
 
   let enemys: f.Node[];
   let enemyPos: f.Node
-
+  let walls: f.Node[];
 
   let cmpCamera: f.ComponentCamera;
 
@@ -25,11 +25,18 @@ namespace HotlineLA {
     cmpCamera = viewport.camera;
 
 
+    let wallParent = branch.getChildrenByName("Walls")[0];
+
+    walls = wallParent.getChildren();
+    for(let wall of walls){
+      //collisiongroup2 is for walls // for raycasts
+      wall.getComponent(f.ComponentRigidbody).collisionGroup = f.COLLISION_GROUP.GROUP_2;
+    }
 
     loadEnemys();
 
 
-    cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, -15);
+    cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, -35);
 
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
     branch.addEventListener("BulletHit", hndBulletHit);
@@ -50,7 +57,12 @@ namespace HotlineLA {
 
     let imgSpriteSheehtShotDead: f.TextureImage = new f.TextureImage();
     await imgSpriteSheehtShotDead.load("./Images/EnemySprites/EnemyDeath1.png");
-    enemyNode.initializeAnimations(imgSpriteSheetWalk,imgSpriteSheehtShotDead);
+
+
+    let imgSpriteSheehtShotDeadF: f.TextureImage = new f.TextureImage();
+    await imgSpriteSheehtShotDeadF.load("./Images/EnemySprites/EnemyDeadFront.png");
+
+    enemyNode.initializeAnimations(imgSpriteSheetWalk,imgSpriteSheehtShotDead,imgSpriteSheehtShotDeadF);
     enemyPos.appendChild(enemyNode);
 
   }
@@ -59,7 +71,7 @@ namespace HotlineLA {
   function hndBulletHit(event: f.EventUnified): void {
     //  console.log("collided");
     bulletToRemove = <f.Node>event.target;
-    console.log(bulletToRemove.name);
+    //console.log(bulletToRemove.name);
     //bulletToRemove.removeComponent(bulletToRemove.getComponent(BulletScript));
 
     setTimeout(removeBullet, 1);

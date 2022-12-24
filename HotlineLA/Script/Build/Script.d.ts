@@ -59,37 +59,47 @@ declare namespace HotlineLA {
     class Enemy extends fAid.NodeSprite {
         animState: AnimationState;
         animShotDeath: fAid.SpriteSheetAnimation;
+        animShotDeathFront: fAid.SpriteSheetAnimation;
         animWalk: fAid.SpriteSheetAnimation;
         rdgBody: f.ComponentRigidbody;
+        isShot: boolean;
+        walkspeed: number;
         constructor();
-        initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage): void;
-        hndTrigger: (event: f.EventPhysics) => void;
+        initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage, sheetShotDeathFront: f.TextureImage): void;
+        patroll(deltaTime: number): void;
+        setHeadShotAnimation(collisionDirection: f.Vector3): void;
+        setFallinganimation(onBack: boolean): void;
         update: () => void;
+        checkEndDeathAnimation(): void;
     }
 }
 declare namespace HotlineLA {
     import f = FudgeCore;
     let branch: f.Node;
 }
-declare namespace Script {
+declare namespace HotlineLA {
     import ƒAid = FudgeAid;
     enum JOB {
         IDLE = 0,
-        ATTACK = 1,
-        DEAD = 2
+        PATROLL = 1,
+        ATTACK = 2,
+        DEAD = 3
     }
     export class enemyStateMachine extends ƒAid.ComponentStateMachine<JOB> {
         static readonly iSubclass: number;
         private static instructions;
-        private turretHead;
-        private barrel;
+        private enemyN;
+        private deltaTime;
         constructor();
         static get(): ƒAid.StateMachineInstructions<JOB>;
         private static transitDefault;
         private static actDefault;
+        private static actPatroll;
         private static actAttack;
+        private static actDead;
         private static actIdle;
         private hndEvent;
+        private hndShot;
         private update;
     }
     export {};
