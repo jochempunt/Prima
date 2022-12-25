@@ -185,10 +185,10 @@
                 {
                   "HotlineLA.CharacterMovementScript": {
                     "active": true,
-                    "playerSpeed": 290,
-                    "bulletSpeed": 8,
+                    "PLAYER_SPEED": 200,
+                    "BULLETSPEED": 20,
                     "shootAgain": true,
-                    "bulletCount": 0
+                    "MAX_BULLETS": 10
                   }
                 }
               ]
@@ -218,7 +218,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[0.8196078431372549, 0, 0, 1]",
+                          "clrPrimary": "[0.6823529411764706, 0, 0.8196078431372549, 1]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -272,7 +272,7 @@
                             {
                               "ƒ.ComponentMaterial": {
                                 "sortForAlpha": false,
-                                "clrPrimary": "[1, 1, 1, 1]",
+                                "clrPrimary": "[0.3176470588235294, 0.24313725490196078, 0.24313725490196078, 1]",
                                 "clrSecondary": "[1, 1, 1, 1]",
                                 "pivot": {
                                   "translation": "[0, 0]",
