@@ -22,21 +22,24 @@ declare namespace HotlineLA {
     class CharacterMovementScript extends f.ComponentScript {
         static readonly iSubclass: number;
         constructor();
-        private playerSpeed;
+        private PLAYER_SPEED;
         private rgdBody;
         private torsoNode;
         private gunNode;
         private targetX;
         private targetY;
-        private bulletSpeed;
+        private BULLETSPEED;
         private shootAgain;
         private bulletCount;
+        private MAX_BULLETS;
         hndEvent: (_event: Event) => void;
         hndBulletHit: (event: Event) => void;
         moveY: (direction: number) => void;
         moveX: (direction: number) => void;
         rotateToMousePointer: (e: MouseEvent) => void;
         shootBullet: () => void;
+        shootBulletsR: () => void;
+        reloadBullets: (bulletsToReload: number) => void;
         hndTime: () => void;
     }
 }
@@ -64,9 +67,16 @@ declare namespace HotlineLA {
         rdgBody: f.ComponentRigidbody;
         isShot: boolean;
         walkspeed: number;
+        attackSpeed: number;
+        viewRadius: number;
+        viewAngle: number;
         constructor();
         initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage, sheetShotDeathFront: f.TextureImage): void;
+        isPlayerInFOV: () => boolean;
+        chasePlayer(): void;
+        getPlayerAngle(): number;
         patroll(deltaTime: number): void;
+        addBlood(direction: f.Vector3): void;
         setHeadShotAnimation(collisionDirection: f.Vector3): void;
         setFallinganimation(onBack: boolean): void;
         update: () => void;
@@ -76,6 +86,8 @@ declare namespace HotlineLA {
 declare namespace HotlineLA {
     import f = FudgeCore;
     let branch: f.Node;
+    let avatarNode: f.Node;
+    let bloodSprite: f.TextureImage;
 }
 declare namespace HotlineLA {
     import ƒAid = FudgeAid;

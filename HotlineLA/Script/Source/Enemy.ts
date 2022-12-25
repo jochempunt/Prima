@@ -4,6 +4,9 @@ namespace HotlineLA {
 
 
 
+
+
+
     export enum AnimationState {
         WALK, DEADSHOT
     }
@@ -18,6 +21,11 @@ namespace HotlineLA {
         rdgBody: f.ComponentRigidbody;
         isShot: boolean = false;
         walkspeed: number = 2.6;
+        attackSpeed: number = 3.5;
+
+        viewRadius: number = 10;
+        viewAngle: number = 120;
+
         constructor() {
             super("enemy");
             this.addComponent(new f.ComponentTransform((new f.Matrix4x4())));
@@ -31,6 +39,10 @@ namespace HotlineLA {
             this.addComponent(this.rdgBody);
             this.rdgBody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
         }
+
+
+
+
 
         public initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage, sheetShotDeathFront: f.TextureImage): void {
 
@@ -63,6 +75,56 @@ namespace HotlineLA {
 
 
 
+
+        isPlayerInFOV = (): boolean => {
+            let playerDir: f.Vector3 = f.Vector3.DIFFERENCE(avatarNode.mtxWorld.translation, this.getParent().mtxWorld.translation);
+            playerDir.normalize();
+            // Calculate the angle between the enemy's forward direction and the direction to the player
+            let angleRad: number = f.Vector3.DOT(this.getParent().mtxWorld.getX(), playerDir);
+            let angleDeg: number = Math.acos(angleRad) * (180.0 / Math.PI);
+            let playerRange: number = this.mtxWorld.translation.getDistance(avatarNode.mtxWorld.translation);
+
+            // Check if the player is within the FOV of the enemy
+            if (angleDeg < this.viewAngle / 2) {
+                console.log("target is in da house");
+
+                if (playerRange <= this.viewRadius) {
+                    // Use a raycast to check if the player is behind a wall or not
+                    let rCast: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true);
+                    if (rCast.hit) {
+                        if (rCast.rigidbodyComponent.node.name == "avatar") {
+                            console.log("direct view on target!");
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+
+
+
+        chasePlayer() {
+            let playerDir: f.Vector3 = f.Vector3.DIFFERENCE(avatarNode.mtxWorld.translation, this.getParent().mtxWorld.translation);
+            playerDir.normalize();
+            let rCast: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true);
+            let posNode: f.Node = this.getParent();
+            posNode.mtxLocal.rotation = new f.Vector3(0, 0, this.getPlayerAngle());
+            // Move the enemy towards the player's position
+
+            posNode.mtxLocal.translateX(this.attackSpeed * f.Loop.timeFrameGame / 1000);
+
+        }
+
+        getPlayerAngle(): number {
+            let playerDir: f.Vector3 = f.Vector3.DIFFERENCE(avatarNode.mtxWorld.translation, this.getParent().mtxWorld.translation);
+            // Calculate the angle between the enemy's forward direction and the direction to the player
+            let angleRad: number = Math.atan2(playerDir.y, playerDir.x);
+            return angleRad * (180.0 / Math.PI);
+        }
+
+
         patroll(deltaTime: number) {
 
             let posNode: f.Node = this.getParent();
@@ -77,6 +139,30 @@ namespace HotlineLA {
             }
         }
 
+
+
+        addBlood(direction: f.Vector3) {
+            let bloodNode: f.Node = new f.Node("blood");
+            let spriteMaterial: f.Material = new f.Material("bloodmaterial", f.ShaderLitTextured);
+            let coatBlood: f.CoatTextured = new f.CoatTextured(undefined, bloodSprite);
+            spriteMaterial.coat = coatBlood;
+            let compMat: f.ComponentMaterial = new f.ComponentMaterial(spriteMaterial);
+
+            let cmpMesh: f.ComponentMesh = new f.ComponentMesh(new f.MeshQuad);
+
+            let cmpTransf: f.ComponentTransform = new f.ComponentTransform();
+            console.log("translation of blood: " + f.Vector3.SCALE(direction, 1));
+            cmpTransf.mtxLocal.translate(f.Vector3.NORMALIZATION(direction, 4));
+            cmpTransf.mtxLocal.scale(new f.Vector3(3, 3, 1));
+
+
+            bloodNode.addComponent(compMat);
+            bloodNode.addComponent(cmpMesh);
+            bloodNode.addComponent(cmpTransf);
+
+            this.addChild(bloodNode);
+
+        }
 
 
         setHeadShotAnimation(collisionDirection: f.Vector3): void {
@@ -98,6 +184,11 @@ namespace HotlineLA {
             this.getParent().mtxLocal.rotation = direction;
             this.setFallinganimation(onBack);
 
+            let directionVecto: f.Vector3 = new f.Vector3(1, 0, 0);
+
+            f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
+
+            this.addBlood(directionVecto);
         }
 
 

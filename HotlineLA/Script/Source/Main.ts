@@ -7,7 +7,7 @@ namespace HotlineLA {
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   let avatarCmp: CharacterMovementScript;
-  let avatarNode: f.Node;
+  export let avatarNode: f.Node;
 
   let enemys: f.Node[];
   let enemyPos: f.Node
@@ -41,10 +41,11 @@ namespace HotlineLA {
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
     branch.addEventListener("BulletHit", hndBulletHit);
     document.addEventListener("mousedown",hndClick);
+    document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
     f.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
-
+export let bloodSprite: f.TextureImage;
   
 
 
@@ -64,8 +65,15 @@ namespace HotlineLA {
     let imgSpriteSheehtShotDeadF: f.TextureImage = new f.TextureImage();
     await imgSpriteSheehtShotDeadF.load("./Images/EnemySprites/EnemyDeadFront.png");
 
+    bloodSprite = new f.TextureImage();
+    await bloodSprite.load("./Images/EnemySprites/BloodPuddle.png");
+
+
     enemyNode.initializeAnimations(imgSpriteSheetWalk,imgSpriteSheehtShotDead,imgSpriteSheehtShotDeadF);
     enemyPos.appendChild(enemyNode);
+
+
+
 
   }
 
@@ -105,7 +113,7 @@ namespace HotlineLA {
     viewport.draw();
     f.AudioManager.default.update();
     //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-    //viewport.physicsDebugMode = 2;
+    viewport.physicsDebugMode = 2;
 
 
     if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.B])) {

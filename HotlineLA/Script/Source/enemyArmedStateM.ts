@@ -54,17 +54,30 @@ namespace HotlineLA {
         private static async actDefault(_machine: enemyStateMachine): Promise<void> {
             console.log("Default");
             
+            if( _machine.enemyN.isPlayerInFOV()){
+                _machine.transit(JOB.ATTACK);
+            }
+            
         }
 
         private static async actPatroll(_machine: enemyStateMachine): Promise<void> {
             console.log("Patrolling");
-
+           if( _machine.enemyN.isPlayerInFOV()){
+            _machine.transit(JOB.ATTACK);
+           }
             _machine.enemyN.patroll(_machine.deltaTime);
         }
 
         private static async actAttack(_machine: enemyStateMachine): Promise<void> {
-            //
-            console.log("pipi");
+            
+            if(_machine.enemyN.isPlayerInFOV()){
+                _machine.enemyN.chasePlayer();
+            }else{
+                _machine.transit(JOB.IDLE);
+            }
+           
+            console.log("Attack");
+
         }
 
 
@@ -82,6 +95,8 @@ namespace HotlineLA {
             //} 
             enemyStateMachine.actDefault(_machine);
         }
+
+
 
 
 
