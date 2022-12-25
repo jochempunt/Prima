@@ -34,7 +34,7 @@ namespace HotlineLA {
         case f.EVENT.COMPONENT_REMOVE:
           this.removeEventListener(f.EVENT.COMPONENT_ADD, this.hndEvent);
           this.removeEventListener(f.EVENT.COMPONENT_REMOVE, this.hndEvent);
-
+          this.rgdBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndCollision);
           break;
         case f.EVENT.NODE_DESERIALIZED:
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
@@ -46,13 +46,16 @@ namespace HotlineLA {
 
 
     init(){
-      let lifeSpan:f.Timer = new f.Timer(new f.Time,3000,1,this.bulletDeath);
+      new f.Timer(new f.Time,3000,1,this.bulletDeath);
       
     }
 
     bulletDeath = (): void => {
       this.node.dispatchEvent(new Event("BulletHit", { bubbles: true }))
-    
+
+      
+
+
     }
 
 
@@ -65,6 +68,7 @@ namespace HotlineLA {
       if( event.cmpRigidbody.node.name.includes("Enemy")){
         this.node.dispatchEvent(new Event("CharacterHit", { bubbles: true }));
       }
+ 
     }
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {

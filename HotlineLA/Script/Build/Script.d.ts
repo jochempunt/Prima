@@ -40,7 +40,7 @@ declare namespace HotlineLA {
         shootBullet: () => void;
         shootBulletsR: () => void;
         reloadBullets: (bulletsToReload: number) => void;
-        hndTime: () => void;
+        enableShooting: () => void;
     }
 }
 declare namespace HotlineLA {
@@ -80,13 +80,23 @@ declare namespace HotlineLA {
         setHeadShotAnimation(collisionDirection: f.Vector3): void;
         setFallinganimation(onBack: boolean): void;
         update: () => void;
-        checkEndDeathAnimation(): void;
+        cleanUpAfterDeath(): void;
+    }
+}
+declare namespace HotlineLA {
+    import f = FudgeCore;
+    class GameState extends f.Mutable {
+        protected reduceMutator(_mutator: f.Mutator): void;
+        bulletCount: number;
+        private controller;
+        constructor();
     }
 }
 declare namespace HotlineLA {
     import f = FudgeCore;
     let branch: f.Node;
     let avatarNode: f.Node;
+    let gameState: GameState;
     let bloodSprite: f.TextureImage;
 }
 declare namespace HotlineLA {
@@ -100,8 +110,11 @@ declare namespace HotlineLA {
     export class enemyStateMachine extends ƒAid.ComponentStateMachine<JOB> {
         static readonly iSubclass: number;
         private static instructions;
-        private enemyN;
+        private enemy;
         private deltaTime;
+        private timer;
+        private IDLE_TIME;
+        private PATROLL_TIME;
         constructor();
         static get(): ƒAid.StateMachineInstructions<JOB>;
         private static transitDefault;
@@ -113,6 +126,8 @@ declare namespace HotlineLA {
         private hndEvent;
         private hndShot;
         private update;
+        private hndSwitchToPatroll;
+        private hndSwitchToIdle;
     }
     export {};
 }

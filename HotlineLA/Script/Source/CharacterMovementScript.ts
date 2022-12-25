@@ -36,7 +36,7 @@ namespace HotlineLA {
 
     private shootAgain: boolean = true;
 
-    private bulletCount: number = 10; 
+    private bulletCount: number; 
     private MAX_BULLETS: number = 10; 
 
     // Activate the functions of this component as response to events
@@ -55,7 +55,10 @@ namespace HotlineLA {
           this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
           this.torsoNode = this.node.getChild(0);
           this.gunNode = this.torsoNode.getChild(0);
-         
+          this.bulletCount = 10;
+          if(gameState){
+            gameState.bulletCount = this.bulletCount;
+          }
           //this.rgdBody.addEventListener(f.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollison);
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
@@ -106,19 +109,20 @@ namespace HotlineLA {
 
 
     shootBullet = (): void => {
-      if (!this.shootAgain) {
+      if (!this.shootAgain || this.bulletCount <= 0) {
         return;
       }
       let bullet: f.Node = new BulletNode(this.gunNode)
       branch.addChild(bullet);
 
-      this.bulletCount++;
+      this.bulletCount--;
+      console.debug(this.bulletCount + this.MAX_BULLETS);
       // TODO: make the bullet precisely go from the initial position to the target point 
       bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse(f.Vector3.NORMALIZATION(new f.Vector3(this.targetX - this.gunNode.mtxWorld.translation.x, -(this.targetY - this.gunNode.mtxWorld.translation.y), 1), this.BULLETSPEED));
       //bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse( f.Vector3.NORMALIZATION( new f.Vector3(this.targetX ,-this.targetY,0),this.bulletSpeed));
       this.shootAgain = false;
       let time: f.Time = new f.Time();
-      let timer: f.Timer = new f.Timer(time, 150, 1, this.hndTime);
+      let timer: f.Timer = new f.Timer(time, 150, 1, this.enableShooting);
 
     }
 
@@ -151,7 +155,7 @@ namespace HotlineLA {
 
       this.shootAgain = false;
       let time: f.Time = new f.Time();
-      let timer: f.Timer = new f.Timer(time, 150, 1, this.hndTime);
+      let timer: f.Timer = new f.Timer(time, 150, 1, this.enableShooting);
 
     
   }
@@ -163,7 +167,7 @@ namespace HotlineLA {
 
 
 
-  hndTime = (): void => {
+  enableShooting = (): void => {
     this.shootAgain = true;
   }
 

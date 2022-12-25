@@ -14,8 +14,10 @@ namespace HotlineLA {
   let walls: f.Node[];
 
   let cmpCamera: f.ComponentCamera;
+  export let gameState: GameState;
 
   function start(_event: CustomEvent): void {
+    gameState = new GameState();
     viewport = _event.detail;
     branch = viewport.getBranch();
 
@@ -39,7 +41,7 @@ namespace HotlineLA {
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
 
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
-    branch.addEventListener("BulletHit", hndBulletHit);
+    branch.addEventListener("BulletHit", hndlBulletCollision );
     document.addEventListener("mousedown",hndClick);
     document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
     f.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -78,17 +80,11 @@ export let bloodSprite: f.TextureImage;
   }
 
   let bulletToRemove: f.Node;
-  function hndBulletHit(event: f.EventUnified): void {
-    //  console.log("collided");
+  function hndlBulletCollision (event: f.EventUnified): void {
+    //bulletToRemove = event.target as f.Node;
     bulletToRemove = <f.Node>event.target;
-    //console.log(bulletToRemove.name);
-    //bulletToRemove.removeComponent(bulletToRemove.getComponent(BulletScript));
-
     setTimeout(removeBullet, 1);
-
   }
-
-
 
   function removeBullet() {
     branch.removeChild(bulletToRemove);
@@ -108,12 +104,14 @@ export let bloodSprite: f.TextureImage;
   
   
   function update(_event: Event): void {
+    gameState.bulletCount = avatarCmp.bulletCount ;
     f.Physics.settings.solverIterations = 5000;
     f.Physics.simulate();  // if physics is included and used
     viewport.draw();
     f.AudioManager.default.update();
     //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
     viewport.physicsDebugMode = 2;
+
 
 
     if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.B])) {

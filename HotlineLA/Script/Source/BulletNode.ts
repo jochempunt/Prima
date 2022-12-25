@@ -34,7 +34,7 @@ namespace HotlineLA {
       
             let componentRigidbody: f.ComponentRigidbody = new f.ComponentRigidbody();
             componentRigidbody.effectGravity = 0;
-            componentRigidbody.mass = 0.1;
+            componentRigidbody.mass = 20;
             // bullets can only rotate around the z axis
             componentRigidbody.effectRotation.x = 0;
             componentRigidbody.effectRotation.y = 0;

@@ -187,8 +187,8 @@ namespace HotlineLA {
             let directionVecto: f.Vector3 = new f.Vector3(1, 0, 0);
 
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
-
-            this.addBlood(directionVecto);
+            setTimeout(this.addBlood.bind(this,directionVecto),300);
+            //this.addBlood(directionVecto);
         }
 
 
@@ -206,11 +206,11 @@ namespace HotlineLA {
 
 
         update = (): void => {
-            this.checkEndDeathAnimation();
+            this.cleanUpAfterDeath();
         }
 
-
-        checkEndDeathAnimation() {
+        // remove the rigidbody instantly after death, and stop the animation when it came to the last frame
+        cleanUpAfterDeath() {
             if (this.animState == AnimationState.DEADSHOT) {
 
                 this.removeComponent(this.rdgBody);

@@ -19,7 +19,7 @@ var HotlineLA;
             this.addComponent(componentTransf);
             let componentRigidbody = new f.ComponentRigidbody();
             componentRigidbody.effectGravity = 0;
-            componentRigidbody.mass = 0.1;
+            componentRigidbody.mass = 20;
             // bullets can only rotate around the z axis
             componentRigidbody.effectRotation.x = 0;
             componentRigidbody.effectRotation.y = 0;
@@ -54,6 +54,7 @@ var HotlineLA;
                     case "componentRemove" /* COMPONENT_REMOVE */:
                         this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
                         this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+                        this.rgdBody.removeEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndCollision);
                         break;
                     case "nodeDeserialized" /* NODE_DESERIALIZED */:
                         // if deserialized the node is now fully reconstructed and access to all its components and children is possible
@@ -80,7 +81,7 @@ var HotlineLA;
             this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
         }
         init() {
-            let lifeSpan = new f.Timer(new f.Time, 3000, 1, this.bulletDeath);
+            new f.Timer(new f.Time, 3000, 1, this.bulletDeath);
         }
     }
     // Register the script as component for use in the editor via drag&drop
@@ -98,7 +99,6 @@ var HotlineLA;
             this.PLAYER_SPEED = 200;
             this.BULLETSPEED = 20;
             this.shootAgain = true;
-            this.bulletCount = 10;
             this.MAX_BULLETS = 10;
             // Activate the functions of this component as response to events
             this.hndEvent = (_event) => {
@@ -116,6 +116,10 @@ var HotlineLA;
                         this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
                         this.torsoNode = this.node.getChild(0);
                         this.gunNode = this.torsoNode.getChild(0);
+                        this.bulletCount = 10;
+                        if (HotlineLA.gameState) {
+                            HotlineLA.gameState.bulletCount = this.bulletCount;
+                        }
                         //this.rgdBody.addEventListener(f.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollison);
                         // if deserialized the node is now fully reconstructed and access to all its components and children is possible
                         break;
@@ -145,18 +149,19 @@ var HotlineLA;
                 this.torsoNode.mtxLocal.rotation = new f.Vector3(0, 0, -angleDeg);
             };
             this.shootBullet = () => {
-                if (!this.shootAgain) {
+                if (!this.shootAgain || this.bulletCount <= 0) {
                     return;
                 }
                 let bullet = new HotlineLA.BulletNode(this.gunNode);
                 HotlineLA.branch.addChild(bullet);
-                this.bulletCount++;
+                this.bulletCount--;
+                console.debug(this.bulletCount + this.MAX_BULLETS);
                 // TODO: make the bullet precisely go from the initial position to the target point 
                 bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse(f.Vector3.NORMALIZATION(new f.Vector3(this.targetX - this.gunNode.mtxWorld.translation.x, -(this.targetY - this.gunNode.mtxWorld.translation.y), 1), this.BULLETSPEED));
                 //bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse( f.Vector3.NORMALIZATION( new f.Vector3(this.targetX ,-this.targetY,0),this.bulletSpeed));
                 this.shootAgain = false;
                 let time = new f.Time();
-                let timer = new f.Timer(time, 150, 1, this.hndTime);
+                let timer = new f.Timer(time, 150, 1, this.enableShooting);
             };
             this.shootBulletsR = () => {
                 if (!this.shootAgain || this.bulletCount <= 0) {
@@ -178,12 +183,12 @@ var HotlineLA;
                 }
                 this.shootAgain = false;
                 let time = new f.Time();
-                let timer = new f.Timer(time, 150, 1, this.hndTime);
+                let timer = new f.Timer(time, 150, 1, this.enableShooting);
             };
             this.reloadBullets = (bulletsToReload) => {
                 this.bulletCount += bulletsToReload; // Increment bulletCount by the number of bullets being reloaded
             };
-            this.hndTime = () => {
+            this.enableShooting = () => {
                 this.shootAgain = true;
             };
             // Don't start when running in editor
@@ -277,7 +282,7 @@ var HotlineLA;
                 return false;
             };
             this.update = () => {
-                this.checkEndDeathAnimation();
+                this.cleanUpAfterDeath();
             };
             this.addComponent(new f.ComponentTransform((new f.Matrix4x4())));
             this.rdgBody = new f.ComponentRigidbody();
@@ -369,7 +374,8 @@ var HotlineLA;
             this.setFallinganimation(onBack);
             let directionVecto = new f.Vector3(1, 0, 0);
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
-            this.addBlood(directionVecto);
+            setTimeout(this.addBlood.bind(this, directionVecto), 300);
+            //this.addBlood(directionVecto);
         }
         setFallinganimation(onBack) {
             if (onBack) {
@@ -382,7 +388,8 @@ var HotlineLA;
             }
             this.animState = AnimationState.DEADSHOT;
         }
-        checkEndDeathAnimation() {
+        // remove the rigidbody instantly after death, and stop the animation when it came to the last frame
+        cleanUpAfterDeath() {
             if (this.animState == AnimationState.DEADSHOT) {
                 this.removeComponent(this.rdgBody);
                 if (this.getCurrentFrame == 3) {
@@ -396,6 +403,22 @@ var HotlineLA;
 var HotlineLA;
 (function (HotlineLA) {
     var f = FudgeCore;
+    var fui = FudgeUserInterface;
+    class GameState extends f.Mutable {
+        constructor() {
+            super();
+            this.controller = new fui.Controller(this, document.getElementById("vui"));
+            console.log(this.controller);
+            console.log("mutator");
+            console.log(this.getMutator());
+        }
+        reduceMutator(_mutator) { }
+    }
+    HotlineLA.GameState = GameState;
+})(HotlineLA || (HotlineLA = {}));
+var HotlineLA;
+(function (HotlineLA) {
+    var f = FudgeCore;
     f.Debug.info("Main Program Template running!");
     let viewport;
     document.addEventListener("interactiveViewportStarted", start);
@@ -405,6 +428,7 @@ var HotlineLA;
     let walls;
     let cmpCamera;
     function start(_event) {
+        HotlineLA.gameState = new HotlineLA.GameState();
         viewport = _event.detail;
         HotlineLA.branch = viewport.getBranch();
         HotlineLA.avatarNode = HotlineLA.branch.getChildrenByName("avatar")[0];
@@ -420,7 +444,7 @@ var HotlineLA;
         cmpCamera.mtxPivot.rotateY(180);
         cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
-        HotlineLA.branch.addEventListener("BulletHit", hndBulletHit);
+        HotlineLA.branch.addEventListener("BulletHit", hndlBulletCollision);
         document.addEventListener("mousedown", hndClick);
         document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
         f.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -442,11 +466,9 @@ var HotlineLA;
         enemyPos.appendChild(enemyNode);
     }
     let bulletToRemove;
-    function hndBulletHit(event) {
-        //  console.log("collided");
+    function hndlBulletCollision(event) {
+        //bulletToRemove = event.target as f.Node;
         bulletToRemove = event.target;
-        //console.log(bulletToRemove.name);
-        //bulletToRemove.removeComponent(bulletToRemove.getComponent(BulletScript));
         setTimeout(removeBullet, 1);
     }
     function removeBullet() {
@@ -459,6 +481,7 @@ var HotlineLA;
         avatarCmp.shootBullet();
     }
     function update(_event) {
+        HotlineLA.gameState.bulletCount = avatarCmp.bulletCount;
         f.Physics.settings.solverIterations = 5000;
         f.Physics.simulate(); // if physics is included and used
         viewport.draw();
@@ -498,14 +521,18 @@ var HotlineLA;
     class enemyStateMachine extends ƒAid.ComponentStateMachine {
         constructor() {
             super();
+            this.timer = null;
+            this.IDLE_TIME = 3000;
+            this.PATROLL_TIME = 5000;
             // Activate the functions of this component as response to events
             this.hndEvent = (_event) => {
                 switch (_event.type) {
                     case "componentAdd" /* COMPONENT_ADD */:
                         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
-                        this.enemyN = this.node;
-                        this.enemyN.getComponent(f.ComponentRigidbody).addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShot);
-                        this.transit(JOB.PATROLL);
+                        this.enemy = this.node;
+                        this.enemy.getComponent(f.ComponentRigidbody).addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShot);
+                        this.transit(JOB.IDLE);
+                        this.timer = new f.Timer(new f.Time, this.IDLE_TIME, 1, this.hndSwitchToPatroll);
                         break;
                     case "componentRemove" /* COMPONENT_REMOVE */:
                         this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
@@ -519,14 +546,23 @@ var HotlineLA;
             this.hndShot = (_event) => {
                 console.log("im shot for real");
                 if (_event.cmpRigidbody.node.name == "bullet") {
-                    this.enemyN.setHeadShotAnimation(_event.collisionNormal);
+                    this.enemy.setHeadShotAnimation(_event.collisionNormal);
+                    this.timer.active = false;
                     this.transit(JOB.DEAD);
-                    this.enemyN.rdgBody.removeEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShot);
+                    this.enemy.rdgBody.removeEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShot);
                 }
             };
             this.update = (_event) => {
                 this.act();
                 this.deltaTime = f.Loop.timeFrameGame / 1000;
+            };
+            this.hndSwitchToPatroll = () => {
+                this.transit(JOB.PATROLL);
+                this.timer = null;
+            };
+            this.hndSwitchToIdle = () => {
+                this.transit(JOB.IDLE);
+                this.timer = null;
             };
             this.instructions = enemyStateMachine.instructions; // setup instructions with the static set
             // Don't start when running in editor
@@ -552,20 +588,27 @@ var HotlineLA;
         }
         static async actDefault(_machine) {
             console.log("Default");
-            if (_machine.enemyN.isPlayerInFOV()) {
+            if (_machine.enemy.isPlayerInFOV()) {
                 _machine.transit(JOB.ATTACK);
             }
         }
         static async actPatroll(_machine) {
             console.log("Patrolling");
-            if (_machine.enemyN.isPlayerInFOV()) {
+            if (_machine.timer == null) {
+                _machine.timer = new f.Timer(new f.Time, _machine.PATROLL_TIME, 1, _machine.hndSwitchToIdle);
+            }
+            if (_machine.enemy.isPlayerInFOV()) {
                 _machine.transit(JOB.ATTACK);
             }
-            _machine.enemyN.patroll(_machine.deltaTime);
+            _machine.enemy.patroll(_machine.deltaTime);
         }
         static async actAttack(_machine) {
-            if (_machine.enemyN.isPlayerInFOV()) {
-                _machine.enemyN.chasePlayer();
+            if (_machine.timer != null) {
+                _machine.timer.active = false;
+                _machine.timer = null;
+            }
+            if (_machine.enemy.isPlayerInFOV()) {
+                _machine.enemy.chasePlayer();
             }
             else {
                 _machine.transit(JOB.IDLE);
@@ -573,14 +616,20 @@ var HotlineLA;
             console.log("Attack");
         }
         static async actDead(_machine) {
-            _machine.enemyN.checkEndDeathAnimation();
+            if (_machine.timer != null) {
+                _machine.timer = null;
+            }
+            _machine.enemy.cleanUpAfterDeath();
             console.log("im Dead");
         }
         static async actIdle(_machine) {
             // if(distance.magnitude <10){
             //
             //  _machine.transit(JOB.ATTACK);
-            //} 
+            //}
+            if (_machine.timer == null) {
+                _machine.timer = new f.Timer(new f.Time, _machine.IDLE_TIME, 1, _machine.hndSwitchToPatroll);
+            }
             enemyStateMachine.actDefault(_machine);
         }
     }
