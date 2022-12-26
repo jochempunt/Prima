@@ -2,11 +2,6 @@ namespace HotlineLA {
     import fAid = FudgeAid;
     import f = FudgeCore;
 
-
-
-
-
-
     export enum AnimationState {
         WALK, DEADSHOT
     }
@@ -20,7 +15,7 @@ namespace HotlineLA {
         animWalk: fAid.SpriteSheetAnimation;
         rdgBody: f.ComponentRigidbody;
         isShot: boolean = false;
-        walkspeed: number = 2.6;
+        walkspeed: number = 3;
         attackSpeed: number = 3.5;
 
         viewRadius: number = 10;
@@ -154,19 +149,15 @@ namespace HotlineLA {
             console.log("translation of blood: " + f.Vector3.SCALE(direction, 1));
             cmpTransf.mtxLocal.translate(f.Vector3.NORMALIZATION(direction, 4));
             cmpTransf.mtxLocal.scale(new f.Vector3(3, 3, 1));
-
-
             bloodNode.addComponent(compMat);
             bloodNode.addComponent(cmpMesh);
             bloodNode.addComponent(cmpTransf);
-
             this.addChild(bloodNode);
-
         }
 
 
-        setHeadShotAnimation(collisionDirection: f.Vector3): void {
-            let angleRad: number = Math.atan2(collisionDirection.y, -collisionDirection.x);
+        handleHeadshotCollision(collisionDirection: f.Vector3): void {
+            let angleRad: number = Math.atan2(collisionDirection.y, collisionDirection.x);
             let angleDeg: number = angleRad * (180.0 / Math.PI);
 
             let direction: f.Vector3 = new f.Vector3(0, 0, angleDeg)
@@ -182,13 +173,14 @@ namespace HotlineLA {
                 console.log("i hitta wall!!");
             }
             this.getParent().mtxLocal.rotation = direction;
-            this.setFallinganimation(onBack);
 
+            new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));
             let directionVecto: f.Vector3 = new f.Vector3(1, 0, 0);
 
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
-            setTimeout(this.addBlood.bind(this,directionVecto),300);
-            //this.addBlood(directionVecto);
+
+            new f.Timer(new f.Time, 300, 1, this.addBlood.bind(this, directionVecto));
+
         }
 
 
@@ -205,9 +197,7 @@ namespace HotlineLA {
         }
 
 
-        update = (): void => {
-            this.cleanUpAfterDeath();
-        }
+
 
         // remove the rigidbody instantly after death, and stop the animation when it came to the last frame
         cleanUpAfterDeath() {
@@ -219,13 +209,8 @@ namespace HotlineLA {
                 }
             }
 
+
+
         }
-
-
-
-
-
-
-
     }
 }

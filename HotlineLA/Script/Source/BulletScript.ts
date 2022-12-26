@@ -45,17 +45,12 @@ namespace HotlineLA {
 
 
 
-    init(){
-      new f.Timer(new f.Time,3000,1,this.bulletDeath);
-      
+    init() {
+      new f.Timer(new f.Time, 3000, 1, this.bulletDeath);
     }
 
     bulletDeath = (): void => {
-      this.node.dispatchEvent(new Event("BulletHit", { bubbles: true }))
-
-      
-
-
+      this.node.dispatchEvent(new Event("BulletHit", { bubbles: true }));
     }
 
 
@@ -65,10 +60,10 @@ namespace HotlineLA {
       console.log("boom");
 
       this.node.dispatchEvent(new Event("BulletHit", { bubbles: true }));
-      if( event.cmpRigidbody.node.name.includes("Enemy")){
+      if (event.cmpRigidbody.node.name.includes("Enemy")) {
         this.node.dispatchEvent(new Event("CharacterHit", { bubbles: true }));
       }
- 
+
     }
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {

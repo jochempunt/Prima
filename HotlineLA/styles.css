@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Righteous&family=VT323&display=swap');
 html,
 body {
     padding: 0px;
@@ -57,15 +57,31 @@ canvas.fullscreen {
 }
 
 #vui {
-    position: absolute;
-    z-index: 0;
-    top: 10px;
-    left: 20px;
+    background-color: transparent
 }
 
-#vui>input {
-    color: rgb(255, 255, 255);
-    background-color: transparent;
-    font-size: 2em;
+#bulletVui>input[type="text"] {
+    font-family: 'VT323', monospace;
+    font-size: 5rem;
+    font-weight: bold;
     border: none;
+    background: transparent;
+    color: white;
+    text-shadow: 2px 2px black;
+}
+
+#bulletVui {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: white;
+    margin: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#bulletVui>img {
+    height: 35px;
+    margin: 10px;
 }

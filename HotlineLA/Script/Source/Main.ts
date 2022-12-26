@@ -16,6 +16,9 @@ namespace HotlineLA {
   let cmpCamera: f.ComponentCamera;
   export let gameState: GameState;
 
+export let BulletImage: f.TextureImage;
+
+
   function start(_event: CustomEvent): void {
     gameState = new GameState();
     viewport = _event.detail;
@@ -41,7 +44,7 @@ namespace HotlineLA {
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
 
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
-    branch.addEventListener("BulletHit", hndlBulletCollision );
+   
     document.addEventListener("mousedown",hndClick);
     document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
     f.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -70,6 +73,9 @@ export let bloodSprite: f.TextureImage;
     bloodSprite = new f.TextureImage();
     await bloodSprite.load("./Images/EnemySprites/BloodPuddle.png");
 
+    BulletImage = new f.TextureImage();
+    await BulletImage.load("./Images/FX/CharacterBullet.png");
+
 
     enemyNode.initializeAnimations(imgSpriteSheetWalk,imgSpriteSheehtShotDead,imgSpriteSheehtShotDeadF);
     enemyPos.appendChild(enemyNode);
@@ -79,16 +85,8 @@ export let bloodSprite: f.TextureImage;
 
   }
 
-  let bulletToRemove: f.Node;
-  function hndlBulletCollision (event: f.EventUnified): void {
-    //bulletToRemove = event.target as f.Node;
-    bulletToRemove = <f.Node>event.target;
-    setTimeout(removeBullet, 1);
-  }
 
-  function removeBullet() {
-    branch.removeChild(bulletToRemove);
-  }
+
 
 
 
@@ -96,7 +94,8 @@ export let bloodSprite: f.TextureImage;
     cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x,avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
   }
   function hndClick(event:Event):void{
-    avatarCmp.shootBullet();
+    //avatarCmp.shootBullet();
+    avatarCmp.shootBulletsR();
   }
 
 
@@ -114,9 +113,7 @@ export let bloodSprite: f.TextureImage;
 
 
 
-    if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.B])) {
-      avatarCmp.shootBullet();
-    }
+  
     if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
       avatarCmp.moveY(1);
     }

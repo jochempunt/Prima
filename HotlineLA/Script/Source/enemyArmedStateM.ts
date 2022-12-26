@@ -18,8 +18,8 @@ namespace HotlineLA {
 
         private timer: f.Timer = null;
 
-        private IDLE_TIME:number = 3000;
-        private PATROLL_TIME:number = 5000;
+        private IDLE_TIME: number = 3000;
+        private PATROLL_TIME: number = 5000;
 
 
         constructor() {
@@ -80,7 +80,7 @@ namespace HotlineLA {
         private static async actAttack(_machine: enemyStateMachine): Promise<void> {
 
             if (_machine.timer != null) {
-                _machine.timer.active= false;
+                _machine.timer.active = false;
                 _machine.timer = null;
             }
 
@@ -128,7 +128,7 @@ namespace HotlineLA {
                     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.update);
 
                     this.enemy = <Enemy>this.node;
-                    this.enemy.getComponent(f.ComponentRigidbody).addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShot);
+                    this.enemy.getComponent(f.ComponentRigidbody).addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShotDead);
                     this.transit(JOB.IDLE);
                     this.timer = new f.Timer(new f.Time, this.IDLE_TIME, 1, this.hndSwitchToPatroll);
                     break;
@@ -142,15 +142,26 @@ namespace HotlineLA {
                     break;
             }
         }
-        private hndShot = (_event: f.EventPhysics): void => {
+        private hndShotDead = (_event: f.EventPhysics): void => {
             console.log("im shot for real");
             if (_event.cmpRigidbody.node.name == "bullet") {
-                this.enemy.setHeadShotAnimation(_event.collisionNormal);
+                this.enemy.handleHeadshotCollision(_event.collisionNormal);
                 this.timer.active = false;
                 this.transit(JOB.DEAD);
-                this.enemy.rdgBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShot);
+                this.enemy.rdgBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShotDead);
             }
         }
+
+
+        public hndShotDead2 = (normal: f.Vector3): void => {
+            console.log("im shot for real");
+
+            this.enemy.handleHeadshotCollision(normal);
+            this.timer.active = false;
+            this.transit(JOB.DEAD);
+            this.enemy.rdgBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShotDead);
+        }
+
 
         private update = (_event: Event): void => {
             this.act();

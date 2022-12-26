@@ -2,7 +2,11 @@ declare namespace HotlineLA {
     import fAid = FudgeAid;
     import f = FudgeCore;
     class BulletNode extends fAid.NodeSprite {
-        constructor(gunNode: f.Node);
+        startPos: f.Vector3;
+        endPos: f.Vector3;
+        bulletSpeed: number;
+        constructor(gunNode: f.Node, rayHit: f.RayHitInfo);
+        moveBullet: () => void;
     }
 }
 declare namespace HotlineLA {
@@ -30,14 +34,13 @@ declare namespace HotlineLA {
         private targetY;
         private BULLETSPEED;
         private shootAgain;
-        private bulletCount;
+        bulletCount: number;
         private MAX_BULLETS;
         hndEvent: (_event: Event) => void;
         hndBulletHit: (event: Event) => void;
         moveY: (direction: number) => void;
         moveX: (direction: number) => void;
         rotateToMousePointer: (e: MouseEvent) => void;
-        shootBullet: () => void;
         shootBulletsR: () => void;
         reloadBullets: (bulletsToReload: number) => void;
         enableShooting: () => void;
@@ -77,9 +80,8 @@ declare namespace HotlineLA {
         getPlayerAngle(): number;
         patroll(deltaTime: number): void;
         addBlood(direction: f.Vector3): void;
-        setHeadShotAnimation(collisionDirection: f.Vector3): void;
+        handleHeadshotCollision(collisionDirection: f.Vector3): void;
         setFallinganimation(onBack: boolean): void;
-        update: () => void;
         cleanUpAfterDeath(): void;
     }
 }
@@ -97,9 +99,11 @@ declare namespace HotlineLA {
     let branch: f.Node;
     let avatarNode: f.Node;
     let gameState: GameState;
+    let BulletImage: f.TextureImage;
     let bloodSprite: f.TextureImage;
 }
 declare namespace HotlineLA {
+    import f = FudgeCore;
     import ƒAid = FudgeAid;
     enum JOB {
         IDLE = 0,
@@ -124,7 +128,8 @@ declare namespace HotlineLA {
         private static actDead;
         private static actIdle;
         private hndEvent;
-        private hndShot;
+        private hndShotDead;
+        hndShotDead2: (normal: f.Vector3) => void;
         private update;
         private hndSwitchToPatroll;
         private hndSwitchToIdle;

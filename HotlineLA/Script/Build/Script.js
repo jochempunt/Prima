@@ -4,33 +4,36 @@ var HotlineLA;
     var fAid = FudgeAid;
     var f = FudgeCore;
     class BulletNode extends fAid.NodeSprite {
-        constructor(gunNode) {
+        constructor(gunNode, rayHit) {
             super("bullet");
-            let bulletMaterial = new f.Material("bulletMaterial", f.ShaderLit);
+            this.bulletSpeed = 27;
+            this.moveBullet = () => {
+                // Calculate the direction the bullet should travel
+                let distanceTravelled = this.startPos.getDistance(this.mtxWorld.translation);
+                if (distanceTravelled >= this.endPos.getDistance(this.startPos) - 0.5) {
+                    this.getParent().removeChild(this);
+                    f.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.moveBullet);
+                    return;
+                }
+                // Update the position of the bullet
+                this.mtxLocal.translateX(this.bulletSpeed * (f.Loop.timeFrameGame / 1000));
+            };
+            let bulletMaterial = new f.Material("bulletMaterial", f.ShaderLitTextured);
+            let coatBullet = new f.CoatTextured(undefined, HotlineLA.BulletImage);
+            bulletMaterial.coat = coatBullet;
             //this.getComponent(f.ComponentMesh).mtxPivot.scale(new f.Vector3(0.2, 0.2, 1));
             let componentMat = this.getComponent(f.ComponentMaterial);
             componentMat.material = bulletMaterial;
-            componentMat.clrPrimary = f.Color.CSS("black");
+            //componentMat.clrPrimary = f.Color.CSS("black");
             let componentTransf = new f.ComponentTransform();
             componentTransf.mtxLocal.translation = gunNode.mtxWorld.translation;
             componentTransf.mtxLocal.translateZ(-0.1);
             componentTransf.mtxLocal.rotation = gunNode.mtxWorld.rotation;
-            componentTransf.mtxLocal.scale(new f.Vector3(0.2, 0.2, 1));
+            componentTransf.mtxLocal.scale(new f.Vector3(1.5, 1.5, 1.5));
             this.addComponent(componentTransf);
-            let componentRigidbody = new f.ComponentRigidbody();
-            componentRigidbody.effectGravity = 0;
-            componentRigidbody.mass = 20;
-            // bullets can only rotate around the z axis
-            componentRigidbody.effectRotation.x = 0;
-            componentRigidbody.effectRotation.y = 0;
-            //componentRigidbody.mtxPivot.scale(new f.Vector3(0.2,0.2,1));
-            componentRigidbody.isTrigger = true;
-            componentRigidbody.dampRotation = 4.5;
-            componentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
-            componentRigidbody.dampTranslation = 0;
-            this.addComponent(componentRigidbody); //#endregion
-            let script = new HotlineLA.BulletScript();
-            this.addComponent(script);
+            this.startPos = gunNode.mtxWorld.translation;
+            this.endPos = rayHit.hitPoint;
+            f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.moveBullet);
         }
     }
     HotlineLA.BulletNode = BulletNode;
@@ -148,21 +151,6 @@ var HotlineLA;
                 let angleDeg = angleRad * (180.0 / Math.PI);
                 this.torsoNode.mtxLocal.rotation = new f.Vector3(0, 0, -angleDeg);
             };
-            this.shootBullet = () => {
-                if (!this.shootAgain || this.bulletCount <= 0) {
-                    return;
-                }
-                let bullet = new HotlineLA.BulletNode(this.gunNode);
-                HotlineLA.branch.addChild(bullet);
-                this.bulletCount--;
-                console.debug(this.bulletCount + this.MAX_BULLETS);
-                // TODO: make the bullet precisely go from the initial position to the target point 
-                bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse(f.Vector3.NORMALIZATION(new f.Vector3(this.targetX - this.gunNode.mtxWorld.translation.x, -(this.targetY - this.gunNode.mtxWorld.translation.y), 1), this.BULLETSPEED));
-                //bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse( f.Vector3.NORMALIZATION( new f.Vector3(this.targetX ,-this.targetY,0),this.bulletSpeed));
-                this.shootAgain = false;
-                let time = new f.Time();
-                let timer = new f.Timer(time, 150, 1, this.enableShooting);
-            };
             this.shootBulletsR = () => {
                 if (!this.shootAgain || this.bulletCount <= 0) {
                     return;
@@ -180,6 +168,12 @@ var HotlineLA;
                 // If the ray intersects with an object, apply appropriate effects
                 if (raycast.hit) {
                     // Apply damage or destruction to the object that was hit
+                    HotlineLA.branch.addChild(new HotlineLA.BulletNode(this.gunNode, raycast));
+                    if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
+                        console.log("hit enemy");
+                        let enemy = raycast.rigidbodyComponent.node;
+                        enemy.getComponent(HotlineLA.enemyStateMachine).hndShotDead2(raycast.hitNormal);
+                    }
                 }
                 this.shootAgain = false;
                 let time = new f.Time();
@@ -254,7 +248,7 @@ var HotlineLA;
         constructor() {
             super("enemy");
             this.isShot = false;
-            this.walkspeed = 2.6;
+            this.walkspeed = 3;
             this.attackSpeed = 3.5;
             this.viewRadius = 10;
             this.viewAngle = 120;
@@ -280,9 +274,6 @@ var HotlineLA;
                     }
                 }
                 return false;
-            };
-            this.update = () => {
-                this.cleanUpAfterDeath();
             };
             this.addComponent(new f.ComponentTransform((new f.Matrix4x4())));
             this.rdgBody = new f.ComponentRigidbody();
@@ -356,8 +347,8 @@ var HotlineLA;
             bloodNode.addComponent(cmpTransf);
             this.addChild(bloodNode);
         }
-        setHeadShotAnimation(collisionDirection) {
-            let angleRad = Math.atan2(collisionDirection.y, -collisionDirection.x);
+        handleHeadshotCollision(collisionDirection) {
+            let angleRad = Math.atan2(collisionDirection.y, collisionDirection.x);
             let angleDeg = angleRad * (180.0 / Math.PI);
             let direction = new f.Vector3(0, 0, angleDeg);
             console.log(collisionDirection);
@@ -371,11 +362,10 @@ var HotlineLA;
                 console.log("i hitta wall!!");
             }
             this.getParent().mtxLocal.rotation = direction;
-            this.setFallinganimation(onBack);
+            new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));
             let directionVecto = new f.Vector3(1, 0, 0);
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
-            setTimeout(this.addBlood.bind(this, directionVecto), 300);
-            //this.addBlood(directionVecto);
+            new f.Timer(new f.Time, 300, 1, this.addBlood.bind(this, directionVecto));
         }
         setFallinganimation(onBack) {
             if (onBack) {
@@ -444,7 +434,6 @@ var HotlineLA;
         cmpCamera.mtxPivot.rotateY(180);
         cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
-        HotlineLA.branch.addEventListener("BulletHit", hndlBulletCollision);
         document.addEventListener("mousedown", hndClick);
         document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
         f.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -462,23 +451,17 @@ var HotlineLA;
         await imgSpriteSheehtShotDeadF.load("./Images/EnemySprites/EnemyDeadFront.png");
         HotlineLA.bloodSprite = new f.TextureImage();
         await HotlineLA.bloodSprite.load("./Images/EnemySprites/BloodPuddle.png");
+        HotlineLA.BulletImage = new f.TextureImage();
+        await HotlineLA.BulletImage.load("./Images/FX/CharacterBullet.png");
         enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
         enemyPos.appendChild(enemyNode);
-    }
-    let bulletToRemove;
-    function hndlBulletCollision(event) {
-        //bulletToRemove = event.target as f.Node;
-        bulletToRemove = event.target;
-        setTimeout(removeBullet, 1);
-    }
-    function removeBullet() {
-        HotlineLA.branch.removeChild(bulletToRemove);
     }
     function updateCamera() {
         cmpCamera.mtxPivot.translation = new f.Vector3(HotlineLA.avatarNode.mtxLocal.translation.x, HotlineLA.avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
     }
     function hndClick(event) {
-        avatarCmp.shootBullet();
+        //avatarCmp.shootBullet();
+        avatarCmp.shootBulletsR();
     }
     function update(_event) {
         HotlineLA.gameState.bulletCount = avatarCmp.bulletCount;
@@ -488,9 +471,6 @@ var HotlineLA;
         f.AudioManager.default.update();
         //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
         viewport.physicsDebugMode = 2;
-        if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.B])) {
-            avatarCmp.shootBullet();
-        }
         if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
             avatarCmp.moveY(1);
         }
@@ -530,7 +510,7 @@ var HotlineLA;
                     case "componentAdd" /* COMPONENT_ADD */:
                         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
                         this.enemy = this.node;
-                        this.enemy.getComponent(f.ComponentRigidbody).addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShot);
+                        this.enemy.getComponent(f.ComponentRigidbody).addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShotDead);
                         this.transit(JOB.IDLE);
                         this.timer = new f.Timer(new f.Time, this.IDLE_TIME, 1, this.hndSwitchToPatroll);
                         break;
@@ -543,14 +523,21 @@ var HotlineLA;
                         break;
                 }
             };
-            this.hndShot = (_event) => {
+            this.hndShotDead = (_event) => {
                 console.log("im shot for real");
                 if (_event.cmpRigidbody.node.name == "bullet") {
-                    this.enemy.setHeadShotAnimation(_event.collisionNormal);
+                    this.enemy.handleHeadshotCollision(_event.collisionNormal);
                     this.timer.active = false;
                     this.transit(JOB.DEAD);
-                    this.enemy.rdgBody.removeEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShot);
+                    this.enemy.rdgBody.removeEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShotDead);
                 }
+            };
+            this.hndShotDead2 = (normal) => {
+                console.log("im shot for real");
+                this.enemy.handleHeadshotCollision(normal);
+                this.timer.active = false;
+                this.transit(JOB.DEAD);
+                this.enemy.rdgBody.removeEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShotDead);
             };
             this.update = (_event) => {
                 this.act();

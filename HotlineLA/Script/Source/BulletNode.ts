@@ -4,76 +4,79 @@ namespace HotlineLA {
     import f = FudgeCore;
 
 
-    export class BulletNode extends fAid.NodeSprite{
+    export class BulletNode extends fAid.NodeSprite {
 
+        startPos: f.Vector3;
+        endPos: f.Vector3;
+        bulletSpeed: number = 27;
 
-
-        constructor(gunNode:f.Node) {
+        constructor(gunNode: f.Node,rayHit:f.RayHitInfo) {
             super("bullet");
-           
 
- 
-            let bulletMaterial: f.Material = new f.Material("bulletMaterial", f.ShaderLit);
-      
-      
+
+
+            let bulletMaterial: f.Material = new f.Material("bulletMaterial", f.ShaderLitTextured);
+            let coatBullet: f.CoatTextured = new f.CoatTextured(undefined, BulletImage);
+            bulletMaterial.coat = coatBullet;
+
             //this.getComponent(f.ComponentMesh).mtxPivot.scale(new f.Vector3(0.2, 0.2, 1));
-      
-            
-          
+
+
+
             let componentMat: f.ComponentMaterial = this.getComponent(f.ComponentMaterial);
             componentMat.material = bulletMaterial;
-            componentMat.clrPrimary = f.Color.CSS("black");
-      
+            //componentMat.clrPrimary = f.Color.CSS("black");
+
             let componentTransf: f.ComponentTransform = new f.ComponentTransform();
             componentTransf.mtxLocal.translation = gunNode.mtxWorld.translation;
             componentTransf.mtxLocal.translateZ(-0.1);
-      
+
             componentTransf.mtxLocal.rotation = gunNode.mtxWorld.rotation;
-            componentTransf.mtxLocal.scale(new f.Vector3(0.2, 0.2, 1));
+            componentTransf.mtxLocal.scale(new f.Vector3(1.5,1.5, 1.5));
             this.addComponent(componentTransf);
-      
-            let componentRigidbody: f.ComponentRigidbody = new f.ComponentRigidbody();
-            componentRigidbody.effectGravity = 0;
-            componentRigidbody.mass = 20;
-            // bullets can only rotate around the z axis
-            componentRigidbody.effectRotation.x = 0;
-            componentRigidbody.effectRotation.y = 0;
 
-            //componentRigidbody.mtxPivot.scale(new f.Vector3(0.2,0.2,1));
+            this.startPos = gunNode.mtxWorld.translation;
+            this.endPos = rayHit.hitPoint;
 
-            componentRigidbody.isTrigger = true;
-            componentRigidbody.dampRotation = 4.5;
-            componentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
-            componentRigidbody.dampTranslation = 0;
-            this.addComponent(componentRigidbody);//#endregion
-      
-      
-            let script: BulletScript = new BulletScript();
-      
-            this.addComponent(script);
-      
+
+            f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.moveBullet);
+
         }
+        moveBullet = (): void => {
+            // Calculate the direction the bullet should travel
+            let distanceTravelled: number = this.startPos.getDistance(this.mtxWorld.translation);
+           
+            if (distanceTravelled >= this.endPos.getDistance(this.startPos) -0.5) {
+                this.getParent().removeChild(this);
+                f.Loop.removeEventListener(f.EVENT.LOOP_FRAME, this.moveBullet);
+                return;
+            }
+            // Update the position of the bullet
+            this.mtxLocal.translateX(this.bulletSpeed * (f.Loop.timeFrameGame/1000));
+
+            
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-} 
+}

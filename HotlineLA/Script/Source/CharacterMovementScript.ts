@@ -36,8 +36,8 @@ namespace HotlineLA {
 
     private shootAgain: boolean = true;
 
-    private bulletCount: number; 
-    private MAX_BULLETS: number = 10; 
+    public bulletCount: number;
+    private MAX_BULLETS: number = 10;
 
     // Activate the functions of this component as response to events
     public hndEvent = (_event: Event): void => {
@@ -56,7 +56,7 @@ namespace HotlineLA {
           this.torsoNode = this.node.getChild(0);
           this.gunNode = this.torsoNode.getChild(0);
           this.bulletCount = 10;
-          if(gameState){
+          if (gameState) {
             gameState.bulletCount = this.bulletCount;
           }
           //this.rgdBody.addEventListener(f.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollison);
@@ -108,25 +108,8 @@ namespace HotlineLA {
     }
 
 
-    shootBullet = (): void => {
-      if (!this.shootAgain || this.bulletCount <= 0) {
-        return;
-      }
-      let bullet: f.Node = new BulletNode(this.gunNode)
-      branch.addChild(bullet);
 
-      this.bulletCount--;
-      console.debug(this.bulletCount + this.MAX_BULLETS);
-      // TODO: make the bullet precisely go from the initial position to the target point 
-      bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse(f.Vector3.NORMALIZATION(new f.Vector3(this.targetX - this.gunNode.mtxWorld.translation.x, -(this.targetY - this.gunNode.mtxWorld.translation.y), 1), this.BULLETSPEED));
-      //bullet.getComponent(f.ComponentRigidbody).applyLinearImpulse( f.Vector3.NORMALIZATION( new f.Vector3(this.targetX ,-this.targetY,0),this.bulletSpeed));
-      this.shootAgain = false;
-      let time: f.Time = new f.Time();
-      let timer: f.Timer = new f.Timer(time, 150, 1, this.enableShooting);
-
-    }
-
-    shootBulletsR = (): void =>{
+    shootBulletsR = (): void => {
 
       if (!this.shootAgain || this.bulletCount <= 0) {
         return;
@@ -149,32 +132,35 @@ namespace HotlineLA {
       // If the ray intersects with an object, apply appropriate effects
       if (raycast.hit) {
         // Apply damage or destruction to the object that was hit
+        branch.addChild(new BulletNode(this.gunNode,raycast));
+        
+        if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
+          console.log("hit enemy");
+          let enemy: Enemy = raycast.rigidbodyComponent.node as Enemy;
+          enemy.getComponent(enemyStateMachine).hndShotDead2(raycast.hitNormal);
+        }
       }
-
-
-
       this.shootAgain = false;
       let time: f.Time = new f.Time();
       let timer: f.Timer = new f.Timer(time, 150, 1, this.enableShooting);
 
-    
+    }
+
+
+    reloadBullets = (bulletsToReload: number): void => {
+      this.bulletCount += bulletsToReload; // Increment bulletCount by the number of bullets being reloaded
+    }
+
+
+
+    enableShooting = (): void => {
+      this.shootAgain = true;
+    }
+
+
+    // protected reduceMutator(_mutator: ƒ.Mutator): void {
+    //   // delete properties that should not be mutated
+    //   // undefined properties and private fields (#) will not be included by default
+    // }
   }
-
-
-  reloadBullets = (bulletsToReload: number): void => {
-    this.bulletCount += bulletsToReload; // Increment bulletCount by the number of bullets being reloaded
-  }
-
-
-
-  enableShooting = (): void => {
-    this.shootAgain = true;
-  }
-
-
-  // protected reduceMutator(_mutator: ƒ.Mutator): void {
-  //   // delete properties that should not be mutated
-  //   // undefined properties and private fields (#) will not be included by default
-  // }
-}
 }
