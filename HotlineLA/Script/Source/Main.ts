@@ -39,7 +39,7 @@ namespace HotlineLA {
     }
 
     loadEnemys();
-
+   
     cmpCamera.mtxPivot.rotateY(180);
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
 
@@ -89,7 +89,8 @@ namespace HotlineLA {
     let avatarDeathShotSprite = new f.TextureImage();
     await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
     avatarCmp.initialiseAnimations(avatarShootSprite,avatarDeathShotSprite);
-
+    gameState.bulletCount = avatarCmp.bulletCount;
+    showVui();
     
     
     enemys = branch.getChildrenByName("Enemys");
@@ -124,7 +125,9 @@ namespace HotlineLA {
     avatarCmp.shootBulletsR();
   }
 
-
+  function showVui(){
+    document.getElementById("vui").className = "";
+  }
 
 
 

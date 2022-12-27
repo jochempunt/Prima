@@ -65,7 +65,7 @@ namespace HotlineLA {
             this.framerate = 10;
 
             let statemachine: enemyStateMachine = new enemyStateMachine();
-           
+
             this.addComponent(statemachine);
         }
 
@@ -82,14 +82,14 @@ namespace HotlineLA {
 
             // Check if the player is within the FOV of the enemy
             if (angleDeg < this.viewAngle / 2) {
-            
+
 
                 if (playerRange <= this.viewRadius) {
                     // Use a raycast to check if the player is behind a wall or not
                     let rCast: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true);
                     if (rCast.hit) {
                         if (rCast.rigidbodyComponent.node.name == "avatar") {
-                        
+
                             return true;
                         }
                     }
@@ -110,8 +110,8 @@ namespace HotlineLA {
             // Move the enemy towards the player's position
 
             posNode.mtxLocal.translateX(this.attackSpeed * f.Loop.timeFrameGame / 1000);
-            if(this.mtxWorld.translation.getDistance(avatarNode.mtxWorld.translation)<= 1.2){
-                this.dispatchEvent(new Event("PlayerHit",{bubbles:true}));
+            if (this.mtxWorld.translation.getDistance(avatarNode.mtxWorld.translation) <= 1.2) {
+                this.dispatchEvent(new Event("PlayerHit", { bubbles: true }));
             }
         }
 
@@ -128,7 +128,7 @@ namespace HotlineLA {
             let posNode: f.Node = this.getParent();
             let rcast1: f.RayHitInfo = f.Physics.raycast(posNode.mtxWorld.translation, posNode.mtxWorld.getX(), 1.5, true, f.COLLISION_GROUP.GROUP_2);
             if (rcast1.hit) {
-               
+
                 posNode.mtxLocal.rotateZ(-90);
             } else {
                 if (deltaTime) {
@@ -149,7 +149,7 @@ namespace HotlineLA {
             let cmpMesh: f.ComponentMesh = new f.ComponentMesh(new f.MeshQuad);
 
             let cmpTransf: f.ComponentTransform = new f.ComponentTransform();
-           
+
             cmpTransf.mtxLocal.translate(f.Vector3.NORMALIZATION(direction, 4));
             cmpTransf.mtxLocal.scale(new f.Vector3(3, 3, 1));
             bloodNode.addComponent(compMat);
@@ -160,23 +160,22 @@ namespace HotlineLA {
 
 
         handleHeadshotCollision(collisionDirection: f.Vector3): void {
-           
-            let angleRad: number = Math.atan2(-collisionDirection.y,-collisionDirection.x);
+
+            let angleRad: number = Math.atan2(-collisionDirection.y, -collisionDirection.x);
             let angleDeg: number = angleRad * (180.0 / Math.PI);
 
             let direction: f.Vector3 = new f.Vector3(0, 0, angleDeg)
             this.mtxLocal.translateZ(-0.2);
-           
+
             let onBack: boolean = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
-            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation,new f.Vector3(-collisionDirection.x,-collisionDirection.y,0) , 7, true);
+            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, new f.Vector3(-collisionDirection.x, -collisionDirection.y, 0), 7, true);
             if (rcast1.hit) {
-                if(rcast1.rigidbodyComponent.node.name.includes("Wall")){
-                    console.log("there is a wall my man!");
-                    direction = new f.Vector3(0, 0,angleDeg + 180);
+                if (rcast1.rigidbodyComponent.node.name.includes("Wall")) {
+                    direction = new f.Vector3(0, 0, angleDeg + 180);
                     onBack = false;
                 }
-               
+
             }
             //TODO do this after the bullet has hit, not before
             this.mtxLocal.rotation = direction;

@@ -377,7 +377,6 @@ var HotlineLA;
             let rcast1 = f.Physics.raycast(this.mtxWorld.translation, new f.Vector3(-collisionDirection.x, -collisionDirection.y, 0), 7, true);
             if (rcast1.hit) {
                 if (rcast1.rigidbodyComponent.node.name.includes("Wall")) {
-                    console.log("there is a wall my man!");
                     direction = new f.Vector3(0, 0, angleDeg + 180);
                     onBack = false;
                 }
@@ -481,6 +480,8 @@ var HotlineLA;
         let avatarDeathShotSprite = new f.TextureImage();
         await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
         avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
+        HotlineLA.gameState.bulletCount = avatarCmp.bulletCount;
+        showVui();
         enemys = HotlineLA.branch.getChildrenByName("Enemys");
         let enemyPositions = enemys[0].getChildrenByName("EnemyPos");
         for (let enemyP of enemyPositions) {
@@ -496,6 +497,9 @@ var HotlineLA;
     function hndClick(event) {
         //avatarCmp.shootBullet();
         avatarCmp.shootBulletsR();
+    }
+    function showVui() {
+        document.getElementById("vui").className = "";
     }
     function update(_event) {
         HotlineLA.gameState.bulletCount = avatarCmp.bulletCount;
