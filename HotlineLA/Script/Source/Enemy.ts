@@ -18,7 +18,7 @@ namespace HotlineLA {
         walkspeed: number = 3;
         attackSpeed: number = 3.5;
 
-        viewRadius: number = 10;
+        viewRadius: number = 50;
         viewAngle: number = 120;
 
         constructor() {
@@ -160,7 +160,8 @@ namespace HotlineLA {
 
 
         handleHeadshotCollision(collisionDirection: f.Vector3): void {
-            let angleRad: number = Math.atan2(collisionDirection.y, collisionDirection.x);
+           
+            let angleRad: number = Math.atan2(-collisionDirection.y,-collisionDirection.x);
             let angleDeg: number = angleRad * (180.0 / Math.PI);
 
             let direction: f.Vector3 = new f.Vector3(0, 0, angleDeg)
@@ -168,15 +169,17 @@ namespace HotlineLA {
            
             let onBack: boolean = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
-            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, collisionDirection, 5, true, f.COLLISION_GROUP.GROUP_2);
+            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation,new f.Vector3(-collisionDirection.x,-collisionDirection.y,0) , 7, true);
             if (rcast1.hit) {
-              
-                direction = new f.Vector3(0, 0, -angleDeg);
-                onBack = false;
-             
+                if(rcast1.rigidbodyComponent.node.name.includes("Wall")){
+                    console.log("there is a wall my man!");
+                    direction = new f.Vector3(0, 0,angleDeg + 180);
+                    onBack = false;
+                }
+               
             }
             //TODO do this after the bullet has hit, not before
-            this.getParent().mtxLocal.rotation = direction;
+            this.mtxLocal.rotation = direction;
 
             new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));
             let directionVecto: f.Vector3 = new f.Vector3(1, 0, 0);

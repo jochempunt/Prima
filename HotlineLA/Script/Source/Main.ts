@@ -10,7 +10,7 @@ namespace HotlineLA {
   export let avatarNode: f.Node;
 
   let enemys: f.Node[];
-  let enemyPos: f.Node
+ // let enemyPos: f.Node;
   let walls: f.Node[];
 
   let cmpCamera: f.ComponentCamera;
@@ -64,11 +64,8 @@ namespace HotlineLA {
   }
 
   async function loadEnemys(): Promise<void> {
-    enemys = branch.getChildrenByName("Enemys");
-    enemyPos = enemys[0].getChildrenByName("EnemyPos")[0];
-    enemyPos.removeComponent(enemyPos.getComponent(f.ComponentMesh));
-    let enemyNode: Enemy = new Enemy();
-
+    
+    
     let imgSpriteSheetWalk: f.TextureImage = new f.TextureImage();
     await imgSpriteSheetWalk.load("./Images/EnemySprites/EnemyArmed.png");
 
@@ -93,9 +90,22 @@ namespace HotlineLA {
     await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
     avatarCmp.initialiseAnimations(avatarShootSprite,avatarDeathShotSprite);
 
-    enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
-    enemyPos.appendChild(enemyNode);
+    
+    
+    enemys = branch.getChildrenByName("Enemys");
+    let enemyPositions: f.Node[] = enemys[0].getChildrenByName("EnemyPos");
+    for(let enemyP of enemyPositions){
+      
+      enemyP.removeComponent(enemyP.getComponent(f.ComponentMesh));
+      let enemyNode: Enemy = new Enemy();
+      enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
+      enemyP.appendChild(enemyNode);
+  
+    }
+   
 
+   
+   
 
 
 

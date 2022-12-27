@@ -270,7 +270,7 @@ var HotlineLA;
             this.isShot = false;
             this.walkspeed = 3;
             this.attackSpeed = 3.5;
-            this.viewRadius = 10;
+            this.viewRadius = 50;
             this.viewAngle = 120;
             this.isPlayerInFOV = () => {
                 let playerDir = f.Vector3.DIFFERENCE(HotlineLA.avatarNode.mtxWorld.translation, this.getParent().mtxWorld.translation);
@@ -368,19 +368,22 @@ var HotlineLA;
             this.addChild(bloodNode);
         }
         handleHeadshotCollision(collisionDirection) {
-            let angleRad = Math.atan2(collisionDirection.y, collisionDirection.x);
+            let angleRad = Math.atan2(-collisionDirection.y, -collisionDirection.x);
             let angleDeg = angleRad * (180.0 / Math.PI);
             let direction = new f.Vector3(0, 0, angleDeg);
             this.mtxLocal.translateZ(-0.2);
             let onBack = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
-            let rcast1 = f.Physics.raycast(this.mtxWorld.translation, collisionDirection, 5, true, f.COLLISION_GROUP.GROUP_2);
+            let rcast1 = f.Physics.raycast(this.mtxWorld.translation, new f.Vector3(-collisionDirection.x, -collisionDirection.y, 0), 7, true);
             if (rcast1.hit) {
-                direction = new f.Vector3(0, 0, -angleDeg);
-                onBack = false;
+                if (rcast1.rigidbodyComponent.node.name.includes("Wall")) {
+                    console.log("there is a wall my man!");
+                    direction = new f.Vector3(0, 0, angleDeg + 180);
+                    onBack = false;
+                }
             }
             //TODO do this after the bullet has hit, not before
-            this.getParent().mtxLocal.rotation = direction;
+            this.mtxLocal.rotation = direction;
             new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));
             let directionVecto = new f.Vector3(1, 0, 0);
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
@@ -433,7 +436,7 @@ var HotlineLA;
     document.addEventListener("interactiveViewportStarted", start);
     let avatarCmp;
     let enemys;
-    let enemyPos;
+    // let enemyPos: f.Node;
     let walls;
     let cmpCamera;
     function start(_event) {
@@ -463,10 +466,6 @@ var HotlineLA;
         avatarCmp.die();
     }
     async function loadEnemys() {
-        enemys = HotlineLA.branch.getChildrenByName("Enemys");
-        enemyPos = enemys[0].getChildrenByName("EnemyPos")[0];
-        enemyPos.removeComponent(enemyPos.getComponent(f.ComponentMesh));
-        let enemyNode = new HotlineLA.Enemy();
         let imgSpriteSheetWalk = new f.TextureImage();
         await imgSpriteSheetWalk.load("./Images/EnemySprites/EnemyArmed.png");
         let imgSpriteSheehtShotDead = new f.TextureImage();
@@ -482,8 +481,14 @@ var HotlineLA;
         let avatarDeathShotSprite = new f.TextureImage();
         await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
         avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
-        enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
-        enemyPos.appendChild(enemyNode);
+        enemys = HotlineLA.branch.getChildrenByName("Enemys");
+        let enemyPositions = enemys[0].getChildrenByName("EnemyPos");
+        for (let enemyP of enemyPositions) {
+            enemyP.removeComponent(enemyP.getComponent(f.ComponentMesh));
+            let enemyNode = new HotlineLA.Enemy();
+            enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
+            enemyP.appendChild(enemyNode);
+        }
     }
     function updateCamera() {
         cmpCamera.mtxPivot.translation = new f.Vector3(HotlineLA.avatarNode.mtxLocal.translation.x, HotlineLA.avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
