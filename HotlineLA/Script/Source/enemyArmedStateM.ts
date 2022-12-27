@@ -157,7 +157,10 @@ namespace HotlineLA {
             console.log("im shot for real");
 
             this.enemy.handleHeadshotCollision(normal);
-            this.timer.active = false;
+            if (this.timer != null) {
+                this.timer.active = false;
+            }
+
             this.transit(JOB.DEAD);
             this.enemy.rdgBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShotDead);
         }

@@ -96,7 +96,6 @@ var HotlineLA;
     var f = FudgeCore;
     f.Project.registerScriptNamespace(HotlineLA); // Register the namespace to FUDGE for serialization
     class CharacterMovementScript extends f.ComponentScript {
-        // Properties may be mutated by users in the editor via the automatically created user interface
         constructor() {
             super();
             this.PLAYER_SPEED = 200;
@@ -120,6 +119,9 @@ var HotlineLA;
                         this.torsoNode = this.node.getChild(0);
                         this.gunNode = this.torsoNode.getChild(0);
                         this.bulletCount = 10;
+                        this.avatarSprites = new HotlineLA.avatar();
+                        this.torsoNode.removeComponent(this.torsoNode.getComponent(f.ComponentMaterial));
+                        this.torsoNode.addChild(this.avatarSprites);
                         if (HotlineLA.gameState) {
                             HotlineLA.gameState.bulletCount = this.bulletCount;
                         }
@@ -168,7 +170,9 @@ var HotlineLA;
                 // If the ray intersects with an object, apply appropriate effects
                 if (raycast.hit) {
                     // Apply damage or destruction to the object that was hit
+                    this.avatarSprites.shootAnim();
                     HotlineLA.branch.addChild(new HotlineLA.BulletNode(this.gunNode, raycast));
+                    //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);
                     if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
                         console.log("hit enemy");
                         let enemy = raycast.rigidbodyComponent.node;
@@ -192,6 +196,9 @@ var HotlineLA;
             this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
             this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
             this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+        }
+        initialiseAnimations(shootingImg) {
+            this.avatarSprites.initaliseAnimations(shootingImg);
         }
     }
     // Register the script as component for use in the editor via drag&drop
@@ -296,6 +303,7 @@ var HotlineLA;
             this.animShotDeathFront = new fAid.SpriteSheetAnimation("Walk", coatDeathShotFront);
             this.animShotDeathFront.generateByGrid(f.Rectangle.GET(6, 0, 72, 35), 5, 11, f.ORIGIN2D.CENTERLEFT, f.Vector2.X(72));
             this.mtxLocal.translateZ(-0.1);
+            //this.mtxLocal.scale(new f.Vector3(1,1,1));
             this.setAnimation(this.animWalk);
             this.animState = AnimationState.WALK;
             this.setFrameDirection(1);
@@ -351,6 +359,7 @@ var HotlineLA;
             let angleRad = Math.atan2(collisionDirection.y, collisionDirection.x);
             let angleDeg = angleRad * (180.0 / Math.PI);
             let direction = new f.Vector3(0, 0, angleDeg);
+            this.mtxLocal.translateZ(-0.2);
             console.log(collisionDirection);
             let onBack = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
@@ -361,6 +370,7 @@ var HotlineLA;
                 onBack = false;
                 console.log("i hitta wall!!");
             }
+            //TODO do this after the bullet has hit, not before
             this.getParent().mtxLocal.rotation = direction;
             new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));
             let directionVecto = new f.Vector3(1, 0, 0);
@@ -453,6 +463,9 @@ var HotlineLA;
         await HotlineLA.bloodSprite.load("./Images/EnemySprites/BloodPuddle.png");
         HotlineLA.BulletImage = new f.TextureImage();
         await HotlineLA.BulletImage.load("./Images/FX/CharacterBullet.png");
+        let avatarShootSprite = new f.TextureImage();
+        await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
+        avatarCmp.initialiseAnimations(avatarShootSprite);
         enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
         enemyPos.appendChild(enemyNode);
     }
@@ -470,7 +483,7 @@ var HotlineLA;
         viewport.draw();
         f.AudioManager.default.update();
         //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-        viewport.physicsDebugMode = 2;
+        //viewport.physicsDebugMode = 2;
         if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
             avatarCmp.moveY(1);
         }
@@ -485,6 +498,35 @@ var HotlineLA;
         }
         updateCamera();
     }
+})(HotlineLA || (HotlineLA = {}));
+var HotlineLA;
+(function (HotlineLA) {
+    var fAid = FudgeAid;
+    var f = FudgeCore;
+    class avatar extends fAid.NodeSprite {
+        constructor() {
+            super("avatarSprite");
+            this.returnToNormal = () => {
+                this.showFrame(0);
+            };
+        }
+        initaliseAnimations(sheetShot) {
+            let coatShot = new f.CoatTextured(undefined, sheetShot);
+            this.armedAnimation = new fAid.SpriteSheetAnimation("Walk", coatShot);
+            this.armedAnimation.generateByGrid(f.Rectangle.GET(0, 0, 50, 30), 2, 11, f.ORIGIN2D.CENTER, f.Vector2.X(50));
+            let cmpTransf = new f.ComponentTransform();
+            this.addComponent(cmpTransf);
+            this.mtxLocal.translateX(1);
+            this.setAnimation(this.armedAnimation);
+            this.setFrameDirection(0);
+            this.framerate = 0;
+        }
+        shootAnim() {
+            this.showFrame(1);
+            new f.Timer(new f.Time, 120, 1, this.returnToNormal);
+        }
+    }
+    HotlineLA.avatar = avatar;
 })(HotlineLA || (HotlineLA = {}));
 var HotlineLA;
 (function (HotlineLA) {
@@ -535,7 +577,9 @@ var HotlineLA;
             this.hndShotDead2 = (normal) => {
                 console.log("im shot for real");
                 this.enemy.handleHeadshotCollision(normal);
-                this.timer.active = false;
+                if (this.timer != null) {
+                    this.timer.active = false;
+                }
                 this.transit(JOB.DEAD);
                 this.enemy.rdgBody.removeEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, this.hndShotDead);
             };

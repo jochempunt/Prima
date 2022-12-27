@@ -58,13 +58,14 @@ namespace HotlineLA {
 
 
             this.mtxLocal.translateZ(-0.1);
+            //this.mtxLocal.scale(new f.Vector3(1,1,1));
             this.setAnimation(this.animWalk);
             this.animState = AnimationState.WALK;
             this.setFrameDirection(1);
             this.framerate = 10;
 
             let statemachine: enemyStateMachine = new enemyStateMachine();
-
+           
             this.addComponent(statemachine);
         }
 
@@ -161,7 +162,7 @@ namespace HotlineLA {
             let angleDeg: number = angleRad * (180.0 / Math.PI);
 
             let direction: f.Vector3 = new f.Vector3(0, 0, angleDeg)
-
+            this.mtxLocal.translateZ(-0.2);
             console.log(collisionDirection);
             let onBack: boolean = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
@@ -172,6 +173,7 @@ namespace HotlineLA {
                 onBack = false;
                 console.log("i hitta wall!!");
             }
+            //TODO do this after the bullet has hit, not before
             this.getParent().mtxLocal.rotation = direction;
 
             new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));

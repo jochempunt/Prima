@@ -16,7 +16,7 @@ namespace HotlineLA {
   let cmpCamera: f.ComponentCamera;
   export let gameState: GameState;
 
-export let BulletImage: f.TextureImage;
+  export let BulletImage: f.TextureImage;
 
 
   function start(_event: CustomEvent): void {
@@ -33,7 +33,7 @@ export let BulletImage: f.TextureImage;
     let wallParent = branch.getChildrenByName("Walls")[0];
 
     walls = wallParent.getChildren();
-    for(let wall of walls){
+    for (let wall of walls) {
       //collisiongroup2 is for walls // for raycasts
       wall.getComponent(f.ComponentRigidbody).collisionGroup = f.COLLISION_GROUP.GROUP_2;
     }
@@ -44,22 +44,22 @@ export let BulletImage: f.TextureImage;
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
 
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
-   
-    document.addEventListener("mousedown",hndClick);
+
+    document.addEventListener("mousedown", hndClick);
     document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
     f.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
-export let bloodSprite: f.TextureImage;
-  
+  export let bloodSprite: f.TextureImage;
+
 
 
   async function loadEnemys(): Promise<void> {
     enemys = branch.getChildrenByName("Enemys");
     enemyPos = enemys[0].getChildrenByName("EnemyPos")[0];
     enemyPos.removeComponent(enemyPos.getComponent(f.ComponentMesh));
-    let enemyNode:Enemy = new Enemy();
-    
+    let enemyNode: Enemy = new Enemy();
+
     let imgSpriteSheetWalk: f.TextureImage = new f.TextureImage();
     await imgSpriteSheetWalk.load("./Images/EnemySprites/EnemyArmed.png");
 
@@ -76,8 +76,12 @@ export let bloodSprite: f.TextureImage;
     BulletImage = new f.TextureImage();
     await BulletImage.load("./Images/FX/CharacterBullet.png");
 
+    let avatarShootSprite = new f.TextureImage();
+    await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
+    avatarCmp.initialiseAnimations(avatarShootSprite);
 
-    enemyNode.initializeAnimations(imgSpriteSheetWalk,imgSpriteSheehtShotDead,imgSpriteSheehtShotDeadF);
+
+    enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
     enemyPos.appendChild(enemyNode);
 
 
@@ -91,29 +95,29 @@ export let bloodSprite: f.TextureImage;
 
 
   function updateCamera(): void {
-    cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x,avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
+    cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x, avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
   }
-  function hndClick(event:Event):void{
+  function hndClick(event: Event): void {
     //avatarCmp.shootBullet();
     avatarCmp.shootBulletsR();
   }
 
 
-  
-  
-  
+
+
+
   function update(_event: Event): void {
-    gameState.bulletCount = avatarCmp.bulletCount ;
+    gameState.bulletCount = avatarCmp.bulletCount;
     f.Physics.settings.solverIterations = 5000;
     f.Physics.simulate();  // if physics is included and used
     viewport.draw();
     f.AudioManager.default.update();
     //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-    viewport.physicsDebugMode = 2;
+    //viewport.physicsDebugMode = 2;
 
 
 
-  
+
     if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
       avatarCmp.moveY(1);
     }

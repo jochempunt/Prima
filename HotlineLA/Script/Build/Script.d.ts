@@ -25,6 +25,7 @@ declare namespace HotlineLA {
     import f = FudgeCore;
     class CharacterMovementScript extends f.ComponentScript {
         static readonly iSubclass: number;
+        private avatarSprites;
         constructor();
         private PLAYER_SPEED;
         private rgdBody;
@@ -36,6 +37,7 @@ declare namespace HotlineLA {
         private shootAgain;
         bulletCount: number;
         private MAX_BULLETS;
+        initialiseAnimations(shootingImg: f.TextureImage): void;
         hndEvent: (_event: Event) => void;
         hndBulletHit: (event: Event) => void;
         moveY: (direction: number) => void;
@@ -101,6 +103,17 @@ declare namespace HotlineLA {
     let gameState: GameState;
     let BulletImage: f.TextureImage;
     let bloodSprite: f.TextureImage;
+}
+declare namespace HotlineLA {
+    import fAid = FudgeAid;
+    import f = FudgeCore;
+    class avatar extends fAid.NodeSprite {
+        armedAnimation: fAid.SpriteSheetAnimation;
+        constructor();
+        initaliseAnimations(sheetShot: f.TextureImage): void;
+        shootAnim(): void;
+        returnToNormal: () => void;
+    }
 }
 declare namespace HotlineLA {
     import f = FudgeCore;

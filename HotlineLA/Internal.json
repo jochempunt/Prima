@@ -173,7 +173,7 @@
                     "pivot": {
                       "translation": "[0, 0, 0]",
                       "rotation": "[90, 0, 0]",
-                      "scaling": "[1.100000023841858, 1, 1]"
+                      "scaling": "[1.5, 1, 1]"
                     },
                     "Component": {
                       "active": true
@@ -206,7 +206,7 @@
                           "pivot": {
                             "translation": "[0, 0, 0.009999999776482582]",
                             "rotation": "[0, 0, 0]",
-                            "scaling": "[1, 1, 1]"
+                            "scaling": "[0.9999995231628418, 1.000000238418579, 1]"
                           },
                           "Component": {
                             "active": true
@@ -218,7 +218,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[0.6823529411764706, 0, 0.8196078431372549, 1]",
+                          "clrPrimary": "[0.27450980392156865, 0.3568627450980392, 0.6666666666666666, 1]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -272,7 +272,7 @@
                             {
                               "ƒ.ComponentMaterial": {
                                 "sortForAlpha": false,
-                                "clrPrimary": "[0.3176470588235294, 0.24313725490196078, 0.24313725490196078, 1]",
+                                "clrPrimary": "[0.3176470588235294, 0.24313725490196078, 0.24313725490196078, 0]",
                                 "clrSecondary": "[1, 1, 1, 1]",
                                 "pivot": {
                                   "translation": "[0, 0]",
@@ -290,7 +290,7 @@
                             {
                               "ƒ.ComponentTransform": {
                                 "local": {
-                                  "translation": "[0.7000000476837158, 0.12999998033046722, 0]",
+                                  "translation": "[2.6999995708465576, -0.17000001668930054, 0]",
                                   "rotation": "[0, 0, 0]",
                                   "scaling": "[0.49999991059303284, 0.2999999225139618, 1]"
                                 },
@@ -711,6 +711,30 @@
       ],
       "idResource": "Graph|2022-12-11T13:17:40.300Z|93526",
       "type": "Graph"
+    }
+  },
+  "Material|2022-12-27T14:36:02.834Z|11706": {
+    "ƒ.Material": {
+      "name": "armed",
+      "idResource": "Material|2022-12-27T14:36:02.834Z|11706",
+      "shader": "ShaderLitTextured",
+      "coat": {
+        "ƒ.CoatTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-12-27T14:36:13.210Z|64765"
+        }
+      }
+    }
+  },
+  "TextureImage|2022-12-27T14:36:13.210Z|64765": {
+    "ƒ.TextureImage": {
+      "url": "Images\\avatarSprites\\avatarArmed.png",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-12-27T14:36:13.210Z|64765",
+        "name": "Images\\avatarSprites\\avatarArmed.png",
+        "mipmap": "CRISP"
+      }
     }
   }
 }

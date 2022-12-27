@@ -7,7 +7,7 @@ namespace HotlineLA {
     public static readonly iSubclass: number = f.Component.registerSubclass(CharacterMovementScript);
     // Properties may be mutated by users in the editor via the automatically created user interface
 
-
+    private avatarSprites: avatar;
 
     constructor() {
       super();
@@ -20,6 +20,11 @@ namespace HotlineLA {
       this.addEventListener(f.EVENT.COMPONENT_ADD, this.hndEvent);
       this.addEventListener(f.EVENT.COMPONENT_REMOVE, this.hndEvent);
       this.addEventListener(f.EVENT.NODE_DESERIALIZED, this.hndEvent);
+
+
+      
+     
+
     }
 
     private PLAYER_SPEED: number = 200;
@@ -39,6 +44,13 @@ namespace HotlineLA {
     public bulletCount: number;
     private MAX_BULLETS: number = 10;
 
+
+
+    initialiseAnimations(shootingImg: f.TextureImage): void {
+     this.avatarSprites.initaliseAnimations(shootingImg);
+    }
+
+
     // Activate the functions of this component as response to events
     public hndEvent = (_event: Event): void => {
       switch (_event.type) {
@@ -56,6 +68,9 @@ namespace HotlineLA {
           this.torsoNode = this.node.getChild(0);
           this.gunNode = this.torsoNode.getChild(0);
           this.bulletCount = 10;
+          this.avatarSprites = new avatar();
+          this.torsoNode.removeComponent(this.torsoNode.getComponent(f.ComponentMaterial));
+          this.torsoNode.addChild(this.avatarSprites);
           if (gameState) {
             gameState.bulletCount = this.bulletCount;
           }
@@ -107,7 +122,7 @@ namespace HotlineLA {
       this.torsoNode.mtxLocal.rotation = new f.Vector3(0, 0, -angleDeg);
     }
 
-
+  
 
     shootBulletsR = (): void => {
 
@@ -132,8 +147,10 @@ namespace HotlineLA {
       // If the ray intersects with an object, apply appropriate effects
       if (raycast.hit) {
         // Apply damage or destruction to the object that was hit
-        branch.addChild(new BulletNode(this.gunNode,raycast));
-        
+        this.avatarSprites.shootAnim();
+        branch.addChild(new BulletNode(this.gunNode, raycast));
+       
+        //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);
         if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
           console.log("hit enemy");
           let enemy: Enemy = raycast.rigidbodyComponent.node as Enemy;
