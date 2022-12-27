@@ -57,8 +57,7 @@ namespace HotlineLA {
         }
 
         private static async actDefault(_machine: enemyStateMachine): Promise<void> {
-            console.log("Default");
-
+           
             if (_machine.enemy.isPlayerInFOV()) {
                 _machine.transit(JOB.ATTACK);
             }
@@ -128,7 +127,7 @@ namespace HotlineLA {
                     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.update);
 
                     this.enemy = <Enemy>this.node;
-                    this.enemy.getComponent(f.ComponentRigidbody).addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShotDead);
+
                     this.transit(JOB.IDLE);
                     this.timer = new f.Timer(new f.Time, this.IDLE_TIME, 1, this.hndSwitchToPatroll);
                     break;
@@ -142,19 +141,11 @@ namespace HotlineLA {
                     break;
             }
         }
-        private hndShotDead = (_event: f.EventPhysics): void => {
-            console.log("im shot for real");
-            if (_event.cmpRigidbody.node.name == "bullet") {
-                this.enemy.handleHeadshotCollision(_event.collisionNormal);
-                this.timer.active = false;
-                this.transit(JOB.DEAD);
-                this.enemy.rdgBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShotDead);
-            }
-        }
+       
 
 
-        public hndShotDead2 = (normal: f.Vector3): void => {
-            console.log("im shot for real");
+        public hndShotDead = (normal: f.Vector3): void => {
+         
 
             this.enemy.handleHeadshotCollision(normal);
             if (this.timer != null) {
@@ -162,7 +153,7 @@ namespace HotlineLA {
             }
 
             this.transit(JOB.DEAD);
-            this.enemy.rdgBody.removeEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, this.hndShotDead);
+            
         }
 
 

@@ -37,10 +37,15 @@ declare namespace HotlineLA {
         private shootAgain;
         bulletCount: number;
         private MAX_BULLETS;
-        initialiseAnimations(shootingImg: f.TextureImage): void;
+        dead: boolean;
+        cmpListener: ƒ.ComponentAudioListener;
+        private audioShot;
+        private cmpAudio;
+        initialiseAnimations(shootingImg: f.TextureImage, deathImg: f.TextureImage): void;
         hndEvent: (_event: Event) => void;
         hndBulletHit: (event: Event) => void;
         moveY: (direction: number) => void;
+        die(): void;
         moveX: (direction: number) => void;
         rotateToMousePointer: (e: MouseEvent) => void;
         shootBulletsR: () => void;
@@ -109,9 +114,11 @@ declare namespace HotlineLA {
     import f = FudgeCore;
     class avatar extends fAid.NodeSprite {
         armedAnimation: fAid.SpriteSheetAnimation;
+        deathSprite: fAid.SpriteSheetAnimation;
         constructor();
-        initaliseAnimations(sheetShot: f.TextureImage): void;
+        initaliseAnimations(sheetShot: f.TextureImage, deathImg: f.TextureImage): void;
         shootAnim(): void;
+        setDeathSprite(): void;
         returnToNormal: () => void;
     }
 }
@@ -141,8 +148,7 @@ declare namespace HotlineLA {
         private static actDead;
         private static actIdle;
         private hndEvent;
-        private hndShotDead;
-        hndShotDead2: (normal: f.Vector3) => void;
+        hndShotDead: (normal: f.Vector3) => void;
         private update;
         private hndSwitchToPatroll;
         private hndSwitchToIdle;

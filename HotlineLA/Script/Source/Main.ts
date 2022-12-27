@@ -47,12 +47,21 @@ namespace HotlineLA {
 
     document.addEventListener("mousedown", hndClick);
     document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
-    f.Loop.start();  // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+    f.Loop.start(); 
+    
+  branch.addEventListener("PlayerHit",killPlayer);    
+  
+    // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
   export let bloodSprite: f.TextureImage;
 
 
+
+
+  function killPlayer():void{
+    avatarCmp.die();
+  }
 
   async function loadEnemys(): Promise<void> {
     enemys = branch.getChildrenByName("Enemys");
@@ -78,8 +87,11 @@ namespace HotlineLA {
 
     let avatarShootSprite = new f.TextureImage();
     await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
-    avatarCmp.initialiseAnimations(avatarShootSprite);
+   
 
+    let avatarDeathShotSprite = new f.TextureImage();
+    await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
+    avatarCmp.initialiseAnimations(avatarShootSprite,avatarDeathShotSprite);
 
     enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
     enemyPos.appendChild(enemyNode);
@@ -117,19 +129,25 @@ namespace HotlineLA {
 
 
 
+    if (!avatarCmp.dead) {
+      if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
+        avatarCmp.moveY(1);
+      }
+      if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.S, f.KEYBOARD_CODE.ARROW_DOWN])) {
+        avatarCmp.moveY(-1);
+      }
+      if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.D, f.KEYBOARD_CODE.ARROW_RIGHT])) {
+        avatarCmp.moveX(1);
+      }
+      if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.A, f.KEYBOARD_CODE.ARROW_LEFT])) {
+        avatarCmp.moveX(-1);
+      }
+      if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.L])) {
+        avatarCmp.die();
+      }
+    }
 
-    if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
-      avatarCmp.moveY(1);
-    }
-    if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.S, f.KEYBOARD_CODE.ARROW_DOWN])) {
-      avatarCmp.moveY(-1);
-    }
-    if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.D, f.KEYBOARD_CODE.ARROW_RIGHT])) {
-      avatarCmp.moveX(1);
-    }
-    if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.A, f.KEYBOARD_CODE.ARROW_LEFT])) {
-      avatarCmp.moveX(-1);
-    }
+
 
     updateCamera();
 

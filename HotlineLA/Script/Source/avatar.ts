@@ -1,4 +1,4 @@
-namespace HotlineLA{
+namespace HotlineLA {
 
 
 
@@ -7,32 +7,48 @@ namespace HotlineLA{
 
 
     export class avatar extends fAid.NodeSprite {
-    armedAnimation:  fAid.SpriteSheetAnimation;
+        armedAnimation: fAid.SpriteSheetAnimation;
+        deathSprite: fAid.SpriteSheetAnimation;
         constructor() {
             super("avatarSprite");
         }
 
 
-        initaliseAnimations(sheetShot:f.TextureImage){
+        initaliseAnimations(sheetShot: f.TextureImage, deathImg: f.TextureImage) {
             let coatShot: f.CoatTextured = new f.CoatTextured(undefined, sheetShot);
-            this.armedAnimation = new fAid.SpriteSheetAnimation("Walk", coatShot);    
+
+            let cmpTransf: f.ComponentTransform = new f.ComponentTransform();
+
+            this.armedAnimation = new fAid.SpriteSheetAnimation("Shot", coatShot);
             this.armedAnimation.generateByGrid(f.Rectangle.GET(0, 0, 50, 30), 2, 11, f.ORIGIN2D.CENTER, f.Vector2.X(50));
-            let cmpTransf:f.ComponentTransform = new f.ComponentTransform();
+            let coatDeath: f.CoatTextured = new f.CoatTextured(undefined, deathImg);
+            this.deathSprite = new fAid.SpriteSheetAnimation("Death", coatDeath);
+            this.deathSprite.generateByGrid(f.Rectangle.GET(0, 0, 55, 30), 1, 11, f.ORIGIN2D.CENTERLEFT, f.Vector2.X(55));
+
+
+
+
+
             this.addComponent(cmpTransf);
             this.mtxLocal.translateX(1);
 
             this.setAnimation(this.armedAnimation);
+
             this.setFrameDirection(0);
             this.framerate = 0;
 
         }
 
-        shootAnim():void{
+        shootAnim(): void {
             this.showFrame(1);
-            new f.Timer(new f.Time,120,1,this.returnToNormal);
+            new f.Timer(new f.Time, 120, 1, this.returnToNormal);
         }
 
-        returnToNormal=():void=>{
+        setDeathSprite(){
+            this.setAnimation(this.deathSprite);
+        }
+
+        returnToNormal = (): void => {
             this.showFrame(0);
         }
     }

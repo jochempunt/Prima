@@ -44,10 +44,13 @@ namespace HotlineLA {
     public bulletCount: number;
     private MAX_BULLETS: number = 10;
 
+    public dead:boolean;
+    public cmpListener  : ƒ.ComponentAudioListener;  
+    private audioShot: ƒ.Audio;
+    private cmpAudio: f.ComponentAudio;
 
-
-    initialiseAnimations(shootingImg: f.TextureImage): void {
-     this.avatarSprites.initaliseAnimations(shootingImg);
+    initialiseAnimations(shootingImg: f.TextureImage,deathImg: f.TextureImage): void {
+      this.avatarSprites.initaliseAnimations(shootingImg,deathImg);
     }
 
 
@@ -71,6 +74,18 @@ namespace HotlineLA {
           this.avatarSprites = new avatar();
           this.torsoNode.removeComponent(this.torsoNode.getComponent(f.ComponentMaterial));
           this.torsoNode.addChild(this.avatarSprites);
+          this.dead = false;
+
+
+          this.cmpListener = new ƒ.ComponentAudioListener();
+          this.node.addComponent(this.cmpListener);
+          ƒ.AudioManager.default.listenWith(this.cmpListener);
+      
+
+          this.audioShot =new f.Audio("./Sounds/9mmshot.mp3");
+          this.cmpAudio =new ƒ.ComponentAudio(this.audioShot);
+          this.cmpAudio.volume = 0.25;
+          this.node.addComponent(this.cmpAudio);
           if (gameState) {
             gameState.bulletCount = this.bulletCount;
           }
@@ -81,8 +96,7 @@ namespace HotlineLA {
     }
 
     hndBulletHit = (event: Event): void => {
-      //  console.log("collided");
-      //console.log(event);
+     
     }
 
 
@@ -90,11 +104,14 @@ namespace HotlineLA {
 
     moveY = (direction: number): void => {
       this.rgdBody.applyForce(new f.Vector3(0, direction * this.PLAYER_SPEED, 0))
-      //this.rgdBody.applyLinearImpulse(new f.Vector3( 0,direction * 12,0));
-      //console.log("up " + this.playerSpeed);
     }
 
-
+    die(){
+      this.avatarSprites.mtxLocal.translateZ(-0.1);
+      this.avatarSprites.setDeathSprite();
+      this.rgdBody.activate(false);
+      this.dead = true;
+    }
 
 
     moveX = (direction: number): void => {
@@ -104,29 +121,32 @@ namespace HotlineLA {
 
 
     rotateToMousePointer = (e: MouseEvent): void => {
-      let mousePosY: number = e.clientY;
-      let mousePosX: number = e.clientX;
-
-      let windowCenterX: number = window.innerWidth / 2;
-      let windowCenterY: number = window.innerHeight / 2;
-
-      this.targetY = mousePosY - windowCenterY;
-      this.targetX = mousePosX - windowCenterX;
-
-      let angleRad: number = Math.atan2(this.targetY, this.targetX);
-
-
-      let angleDeg: number = angleRad * (180.0 / Math.PI);
-
-
-      this.torsoNode.mtxLocal.rotation = new f.Vector3(0, 0, -angleDeg);
+      if(!this.dead){
+        let mousePosY: number = e.clientY;
+        let mousePosX: number = e.clientX;
+  
+        let windowCenterX: number = window.innerWidth / 2;
+        let windowCenterY: number = window.innerHeight / 2;
+  
+        this.targetY = mousePosY - windowCenterY;
+        this.targetX = mousePosX - windowCenterX;
+  
+        let angleRad: number = Math.atan2(this.targetY, this.targetX);
+  
+  
+        let angleDeg: number = angleRad * (180.0 / Math.PI);
+  
+  
+        this.torsoNode.mtxLocal.rotation = new f.Vector3(0, 0, -angleDeg);
+      }
+    
     }
 
   
 
     shootBulletsR = (): void => {
 
-      if (!this.shootAgain || this.bulletCount <= 0) {
+      if (!this.shootAgain || this.bulletCount <= 0|| this.dead) {
         return;
       }
       //let bullet: f.Node = new BulletNode(this.gunNode)
@@ -149,12 +169,13 @@ namespace HotlineLA {
         // Apply damage or destruction to the object that was hit
         this.avatarSprites.shootAnim();
         branch.addChild(new BulletNode(this.gunNode, raycast));
+        this.cmpAudio.play(true);
        
         //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);
         if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
           console.log("hit enemy");
           let enemy: Enemy = raycast.rigidbodyComponent.node as Enemy;
-          enemy.getComponent(enemyStateMachine).hndShotDead2(raycast.hitNormal);
+          enemy.getComponent(enemyStateMachine).hndShotDead(raycast.hitNormal);
         }
       }
       this.shootAgain = false;
