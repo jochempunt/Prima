@@ -14,12 +14,16 @@ namespace HotlineLA {
         animShotDeathFront: fAid.SpriteSheetAnimation;
         animWalk: fAid.SpriteSheetAnimation;
         rdgBody: f.ComponentRigidbody;
-        isShot: boolean = false;
+
+        bloodNode: f.Node;
+        isDead:boolean= false;
         walkspeed: number = 3;
         attackSpeed: number = 3.5;
 
         viewRadius: number = 50;
         viewAngle: number = 120;
+
+        statemachine: enemyStateMachine;
 
         constructor() {
             super("enemy");
@@ -64,9 +68,9 @@ namespace HotlineLA {
             this.setFrameDirection(1);
             this.framerate = 10;
 
-            let statemachine: enemyStateMachine = new enemyStateMachine();
+            this.statemachine = new enemyStateMachine();
 
-            this.addComponent(statemachine);
+            this.addComponent(this.statemachine);
         }
 
 
@@ -104,7 +108,6 @@ namespace HotlineLA {
         chasePlayer() {
             let playerDir: f.Vector3 = f.Vector3.DIFFERENCE(avatarNode.mtxWorld.translation, this.getParent().mtxWorld.translation);
             playerDir.normalize();
-            let rCast: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true);
             let posNode: f.Node = this.getParent();
             posNode.mtxLocal.rotation = new f.Vector3(0, 0, this.getPlayerAngle());
             // Move the enemy towards the player's position
@@ -210,13 +213,37 @@ namespace HotlineLA {
             if (this.animState == AnimationState.DEADSHOT) {
 
                 this.removeComponent(this.rdgBody);
+                this.isDead = true;
                 if (this.getCurrentFrame == 3) {
                     this.setFrameDirection(0);
                 }
             }
+        }
 
+
+
+        public reset(): void {
+            // Reset the enemy's properties to their initial state
+
+            this.setAnimation(this.animWalk);
+            this.animState = AnimationState.WALK;
+            this.setFrameDirection(1);
+            this.framerate = 10;
+
+            this.mtxLocal.rotation = f.Vector3.ZERO();
+
+            this.statemachine.resetState();
+
+            // Remove the blood node if it exists
+            if (this.isDead) {
+                this.removeAllChildren();
+                this.bloodNode = undefined;
+                this.addComponent(this.rdgBody);
+                this.isDead = false;
+            }
 
 
         }
+
     }
 }

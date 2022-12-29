@@ -6,11 +6,14 @@ namespace HotlineLA {
   export let branch: f.Node;
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
-  let avatarCmp: CharacterMovementScript;
+  export let avatarCmp: CharacterMovementScript;
   export let avatarNode: f.Node;
 
-  let enemys: f.Node[];
- // let enemyPos: f.Node;
+  let enemyBranch: f.Node[];
+  let enemys:Enemy[] = [];
+  let enemyPositionNodes: f.Node[];
+  let intialenemyTransforms:f.Matrix4x4[] = [];
+  
   let walls: f.Node[];
 
   let cmpCamera: f.ComponentCamera;
@@ -93,15 +96,15 @@ namespace HotlineLA {
     showVui();
     
     
-    enemys = branch.getChildrenByName("Enemys");
-    let enemyPositions: f.Node[] = enemys[0].getChildrenByName("EnemyPos");
-    for(let enemyP of enemyPositions){
-      
+    enemyBranch = branch.getChildrenByName("Enemys");
+    enemyPositionNodes= enemyBranch[0].getChildrenByName("EnemyPos");
+    for(let enemyP of enemyPositionNodes){
+      intialenemyTransforms.push(enemyP.mtxLocal.clone);
       enemyP.removeComponent(enemyP.getComponent(f.ComponentMesh));
       let enemyNode: Enemy = new Enemy();
       enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
+      enemys.push(enemyNode);
       enemyP.appendChild(enemyNode);
-  
     }
    
 
@@ -130,6 +133,25 @@ namespace HotlineLA {
   }
 
 
+  function resetEnemyPositions(){
+    for( let i: number = 0; i< enemyPositionNodes.length;i++){
+      enemyPositionNodes[i].mtxLocal.set(intialenemyTransforms[i]);
+    }
+  }
+
+
+  function ResetLevel():void{
+    avatarCmp.dead = false;
+    enemys.forEach(enemy => {
+      enemy.reset();
+    });
+    resetEnemyPositions();
+    avatarCmp.reset();
+  }
+
+ 
+
+
 
   function update(_event: Event): void {
     gameState.bulletCount = avatarCmp.bulletCount;
@@ -139,8 +161,11 @@ namespace HotlineLA {
     f.AudioManager.default.update();
     //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
     //viewport.physicsDebugMode = 2;
+   
 
-
+    if(avatarCmp.dead){
+      setTimeout(ResetLevel,1000);
+    }
 
     if (!avatarCmp.dead) {
       if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {

@@ -26,6 +26,7 @@ declare namespace HotlineLA {
     class CharacterMovementScript extends f.ComponentScript {
         static readonly iSubclass: number;
         private avatarSprites;
+        private initialtransform;
         constructor();
         private PLAYER_SPEED;
         private rgdBody;
@@ -43,7 +44,7 @@ declare namespace HotlineLA {
         private cmpAudio;
         initialiseAnimations(shootingImg: f.TextureImage, deathImg: f.TextureImage): void;
         hndEvent: (_event: Event) => void;
-        hndBulletHit: (event: Event) => void;
+        setup: () => void;
         moveY: (direction: number) => void;
         die(): void;
         moveX: (direction: number) => void;
@@ -51,6 +52,7 @@ declare namespace HotlineLA {
         shootBulletsR: () => void;
         reloadBullets: (bulletsToReload: number) => void;
         enableShooting: () => void;
+        reset(): void;
     }
 }
 declare namespace HotlineLA {
@@ -75,11 +77,13 @@ declare namespace HotlineLA {
         animShotDeathFront: fAid.SpriteSheetAnimation;
         animWalk: fAid.SpriteSheetAnimation;
         rdgBody: f.ComponentRigidbody;
-        isShot: boolean;
+        bloodNode: f.Node;
+        isDead: boolean;
         walkspeed: number;
         attackSpeed: number;
         viewRadius: number;
         viewAngle: number;
+        statemachine: enemyStateMachine;
         constructor();
         initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage, sheetShotDeathFront: f.TextureImage): void;
         isPlayerInFOV: () => boolean;
@@ -90,6 +94,7 @@ declare namespace HotlineLA {
         handleHeadshotCollision(collisionDirection: f.Vector3): void;
         setFallinganimation(onBack: boolean): void;
         cleanUpAfterDeath(): void;
+        reset(): void;
     }
 }
 declare namespace HotlineLA {
@@ -104,6 +109,7 @@ declare namespace HotlineLA {
 declare namespace HotlineLA {
     import f = FudgeCore;
     let branch: f.Node;
+    let avatarCmp: CharacterMovementScript;
     let avatarNode: f.Node;
     let gameState: GameState;
     let BulletImage: f.TextureImage;
@@ -120,6 +126,7 @@ declare namespace HotlineLA {
         shootAnim(): void;
         setDeathSprite(): void;
         returnToNormal: () => void;
+        reset(): void;
     }
 }
 declare namespace HotlineLA {
@@ -148,6 +155,7 @@ declare namespace HotlineLA {
         private static actDead;
         private static actIdle;
         private hndEvent;
+        resetState(): void;
         hndShotDead: (normal: f.Vector3) => void;
         private update;
         private hndSwitchToPatroll;

@@ -57,7 +57,7 @@ namespace HotlineLA {
         }
 
         private static async actDefault(_machine: enemyStateMachine): Promise<void> {
-           
+
             if (_machine.enemy.isPlayerInFOV()) {
                 _machine.transit(JOB.ATTACK);
             }
@@ -83,12 +83,12 @@ namespace HotlineLA {
                 _machine.timer = null;
             }
 
-            if (_machine.enemy.isPlayerInFOV()) {
+           if(avatarCmp.dead){
+            _machine.transit(JOB.IDLE);
+           }
                 _machine.enemy.chasePlayer();
-            } else {
-                _machine.transit(JOB.IDLE);
-            }
-
+            
+               
             console.log("Attack");
 
         }
@@ -141,11 +141,15 @@ namespace HotlineLA {
                     break;
             }
         }
-       
 
+
+
+        public resetState(): void {
+            this.transit(JOB.IDLE);
+        }
 
         public hndShotDead = (normal: f.Vector3): void => {
-         
+
 
             this.enemy.handleHeadshotCollision(normal);
             if (this.timer != null) {
@@ -153,7 +157,7 @@ namespace HotlineLA {
             }
 
             this.transit(JOB.DEAD);
-            
+
         }
 
 

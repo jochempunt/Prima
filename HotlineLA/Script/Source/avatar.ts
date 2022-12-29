@@ -51,6 +51,13 @@ namespace HotlineLA {
         returnToNormal = (): void => {
             this.showFrame(0);
         }
+
+
+
+        reset():void{
+            this.setAnimation(this.armedAnimation);
+            this.showFrame(0);
+        }
     }
 
 

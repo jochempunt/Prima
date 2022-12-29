@@ -8,6 +8,7 @@ namespace HotlineLA {
     // Properties may be mutated by users in the editor via the automatically created user interface
 
     private avatarSprites: avatar;
+    private initialtransform: f.Matrix4x4;
 
     constructor() {
       super();
@@ -21,9 +22,6 @@ namespace HotlineLA {
       this.addEventListener(f.EVENT.COMPONENT_REMOVE, this.hndEvent);
       this.addEventListener(f.EVENT.NODE_DESERIALIZED, this.hndEvent);
 
-
-      
-     
 
     }
 
@@ -44,13 +42,13 @@ namespace HotlineLA {
     public bulletCount: number;
     private MAX_BULLETS: number = 10;
 
-    public dead:boolean;
-    public cmpListener  : ƒ.ComponentAudioListener;  
+    public dead: boolean;
+    public cmpListener: ƒ.ComponentAudioListener;
     private audioShot: ƒ.Audio;
     private cmpAudio: f.ComponentAudio;
 
-    initialiseAnimations(shootingImg: f.TextureImage,deathImg: f.TextureImage): void {
-      this.avatarSprites.initaliseAnimations(shootingImg,deathImg);
+    initialiseAnimations(shootingImg: f.TextureImage, deathImg: f.TextureImage): void {
+      this.avatarSprites.initaliseAnimations(shootingImg, deathImg);
     }
 
 
@@ -64,39 +62,38 @@ namespace HotlineLA {
           this.removeEventListener(f.EVENT.COMPONENT_REMOVE, this.hndEvent);
           break;
         case f.EVENT.NODE_DESERIALIZED:
-          this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
-          this.rgdBody.effectRotation.x = 0;
-          this.rgdBody.effectRotation.y = 0;
-          this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
-          this.torsoNode = this.node.getChild(0);
-          this.gunNode = this.torsoNode.getChild(0);
-          this.bulletCount = 10;
-          this.avatarSprites = new avatar();
-          this.torsoNode.removeComponent(this.torsoNode.getComponent(f.ComponentMaterial));
-          this.torsoNode.addChild(this.avatarSprites);
-          this.dead = false;
-
-
-          this.cmpListener = new ƒ.ComponentAudioListener();
-          this.node.addComponent(this.cmpListener);
-          ƒ.AudioManager.default.listenWith(this.cmpListener);
-      
-
-          this.audioShot =new f.Audio("./Sounds/9mmshot.mp3");
-          this.cmpAudio =new ƒ.ComponentAudio(this.audioShot);
-          this.cmpAudio.volume = 0.25;
-          this.node.addComponent(this.cmpAudio);
-          if (gameState) {
-            gameState.bulletCount = this.bulletCount;
-          }
+          this.setup();
           //this.rgdBody.addEventListener(f.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollison);
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
     }
 
-    hndBulletHit = (event: Event): void => {
-     
+    setup=():void=>{
+      this.initialtransform = this.node.mtxLocal.clone;
+      this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
+      this.rgdBody.effectRotation.x = 0;
+      this.rgdBody.effectRotation.y = 0;
+      this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
+      this.torsoNode = this.node.getChild(0);
+      this.gunNode = this.torsoNode.getChild(0);
+      this.bulletCount = 10;
+      this.avatarSprites = new avatar();
+      this.torsoNode.removeComponent(this.torsoNode.getComponent(f.ComponentMaterial));
+      this.torsoNode.addChild(this.avatarSprites);
+      this.dead = false;
+      this.cmpListener = new ƒ.ComponentAudioListener();
+      this.node.addComponent(this.cmpListener);
+      ƒ.AudioManager.default.listenWith(this.cmpListener);
+
+
+      this.audioShot = new f.Audio("./Sounds/9mmshot.mp3");
+      this.cmpAudio = new ƒ.ComponentAudio(this.audioShot);
+      this.cmpAudio.volume = 0.25;
+      this.node.addComponent(this.cmpAudio);
+      if (gameState) {
+        gameState.bulletCount = this.bulletCount;
+      }
     }
 
 
@@ -106,7 +103,7 @@ namespace HotlineLA {
       this.rgdBody.applyForce(new f.Vector3(0, direction * this.PLAYER_SPEED, 0))
     }
 
-    die(){
+    die() {
       this.avatarSprites.mtxLocal.translateZ(-0.1);
       this.avatarSprites.setDeathSprite();
       this.rgdBody.activate(false);
@@ -121,32 +118,31 @@ namespace HotlineLA {
 
 
     rotateToMousePointer = (e: MouseEvent): void => {
-      if(!this.dead){
+      if (!this.dead) {
         let mousePosY: number = e.clientY;
         let mousePosX: number = e.clientX;
-  
+
         let windowCenterX: number = window.innerWidth / 2;
         let windowCenterY: number = window.innerHeight / 2;
-  
+
         this.targetY = mousePosY - windowCenterY;
         this.targetX = mousePosX - windowCenterX;
-  
+
         let angleRad: number = Math.atan2(this.targetY, this.targetX);
-  
-  
+
         let angleDeg: number = angleRad * (180.0 / Math.PI);
-  
-  
+
+
         this.torsoNode.mtxLocal.rotation = new f.Vector3(0, 0, -angleDeg);
       }
-    
+
     }
 
-  
+
 
     shootBulletsR = (): void => {
 
-      if (!this.shootAgain || this.bulletCount <= 0|| this.dead) {
+      if (!this.shootAgain || this.bulletCount <= 0 || this.dead) {
         return;
       }
       //let bullet: f.Node = new BulletNode(this.gunNode)
@@ -170,7 +166,7 @@ namespace HotlineLA {
         this.avatarSprites.shootAnim();
         branch.addChild(new BulletNode(this.gunNode, raycast));
         this.cmpAudio.play(true);
-       
+
         //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);
         if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
           console.log("hit enemy");
@@ -180,7 +176,7 @@ namespace HotlineLA {
       }
       this.shootAgain = false;
       let time: f.Time = new f.Time();
-      let timer: f.Timer = new f.Timer(time, 150, 1, this.enableShooting);
+      new f.Timer(time, 150, 1, this.enableShooting);
 
     }
 
@@ -194,11 +190,29 @@ namespace HotlineLA {
     enableShooting = (): void => {
       this.shootAgain = true;
     }
+    reset(): void {
+
+      this.node.mtxLocal.set(this.initialtransform);
+      this.rgdBody.setVelocity(f.Vector3.ZERO());
+      this.rgdBody.activate(true);
 
 
-    // protected reduceMutator(_mutator: ƒ.Mutator): void {
-    //   // delete properties that should not be mutated
-    //   // undefined properties and private fields (#) will not be included by default
-    // }
+      this.bulletCount = this.MAX_BULLETS;
+      this.shootAgain = true;
+      this.dead = false;
+
+      this.avatarSprites.reset();
+
+      // Update the game state with the reset bullet count
+      if (gameState) {
+        gameState.bulletCount = this.bulletCount;
+      }
+
+
+      // protected reduceMutator(_mutator: ƒ.Mutator): void {
+      //   // delete properties that should not be mutated
+      //   // undefined properties and private fields (#) will not be included by default
+      // }
+    }
   }
 }
