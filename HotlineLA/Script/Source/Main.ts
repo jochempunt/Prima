@@ -13,6 +13,7 @@ namespace HotlineLA {
   let enemys:Enemy[] = [];
   let enemyPositionNodes: f.Node[];
   let intialenemyTransforms:f.Matrix4x4[] = [];
+  export let itemBranch:f.Node;
   
   let walls: f.Node[];
 
@@ -20,6 +21,11 @@ namespace HotlineLA {
   export let gameState: GameState;
 
   export let BulletImage: f.TextureImage;
+  export let AmmoImage: f.TextureImage;
+
+  export let audioShot: ƒ.Audio;
+  export let audioRefill: ƒ.Audio;
+
 
 
   function start(_event: CustomEvent): void {
@@ -30,6 +36,7 @@ namespace HotlineLA {
     avatarNode = branch.getChildrenByName("avatar")[0];
     avatarCmp = avatarNode.getComponent(CharacterMovementScript);
 
+    itemBranch = branch.getChildrenByName("items")[0];
     cmpCamera = viewport.camera;
 
 
@@ -50,10 +57,13 @@ namespace HotlineLA {
 
     document.addEventListener("mousedown", hndClick);
     document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
-    f.Loop.start(); 
     
-  branch.addEventListener("PlayerHit",killPlayer);    
-  
+    
+    branch.addEventListener("PlayerHit",killPlayer);  
+    
+    let rigid = avatarNode.getComponent(f.ComponentRigidbody);
+    rigid.addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER,pickupItem);  
+    f.Loop.start(); 
     // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
@@ -62,8 +72,25 @@ namespace HotlineLA {
 
 
 
+  function pickupItem(event:f.EventPhysics){
+  console.log("why isnt it possible?");
+    if(event.cmpRigidbody.node.name == "ammo"){
+      avatarCmp.cmpAudio.setAudio(audioRefill);
+      avatarCmp.cmpAudio.play(true);
+      avatarCmp.reloadBullets(1);
+  
+      let node: f.Node =event.cmpRigidbody.node;
+      setTimeout(removeItem.bind(this,node),1);
+      
+    }
+  }
+  function removeItem(node:f.Node){
+    itemBranch.removeChild(node);
+  }
+
   function killPlayer():void{
     avatarCmp.die();
+    setTimeout(ResetLevel,1000);
   }
 
   async function loadEnemys(): Promise<void> {
@@ -84,6 +111,9 @@ namespace HotlineLA {
 
     BulletImage = new f.TextureImage();
     await BulletImage.load("./Images/FX/CharacterBullet.png");
+
+    AmmoImage = new f.TextureImage();
+    await AmmoImage.load("./Images/avatarSprites/ammo.png")
 
     let avatarShootSprite = new f.TextureImage();
     await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
@@ -106,9 +136,12 @@ namespace HotlineLA {
       enemys.push(enemyNode);
       enemyP.appendChild(enemyNode);
     }
-   
 
-   
+    audioShot = new f.Audio();
+    await audioShot.load("./Sounds/9mmshot.mp3");
+  
+    audioRefill = new f.Audio();
+    await audioRefill.load("./Sounds/ammoRefill.mp3");
    
 
 
@@ -147,6 +180,7 @@ namespace HotlineLA {
     });
     resetEnemyPositions();
     avatarCmp.reset();
+    itemBranch.removeAllChildren();
   }
 
  
@@ -163,9 +197,9 @@ namespace HotlineLA {
     //viewport.physicsDebugMode = 2;
    
 
-    if(avatarCmp.dead){
-      setTimeout(ResetLevel,1000);
-    }
+
+      
+ 
 
     if (!avatarCmp.dead) {
       if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {

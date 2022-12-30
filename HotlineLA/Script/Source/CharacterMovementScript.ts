@@ -45,7 +45,7 @@ namespace HotlineLA {
     public dead: boolean;
     public cmpListener: ƒ.ComponentAudioListener;
     private audioShot: ƒ.Audio;
-    private cmpAudio: f.ComponentAudio;
+    public cmpAudio: f.ComponentAudio;
 
     initialiseAnimations(shootingImg: f.TextureImage, deathImg: f.TextureImage): void {
       this.avatarSprites.initaliseAnimations(shootingImg, deathImg);
@@ -87,17 +87,20 @@ namespace HotlineLA {
       ƒ.AudioManager.default.listenWith(this.cmpListener);
 
 
-      this.audioShot = new f.Audio("./Sounds/9mmshot.mp3");
       this.cmpAudio = new ƒ.ComponentAudio(this.audioShot);
       this.cmpAudio.volume = 0.25;
       this.node.addComponent(this.cmpAudio);
       if (gameState) {
         gameState.bulletCount = this.bulletCount;
       }
+
+     
     }
 
 
 
+
+   
 
     moveY = (direction: number): void => {
       this.rgdBody.applyForce(new f.Vector3(0, direction * this.PLAYER_SPEED, 0))
@@ -165,6 +168,9 @@ namespace HotlineLA {
         // Apply damage or destruction to the object that was hit
         this.avatarSprites.shootAnim();
         branch.addChild(new BulletNode(this.gunNode, raycast));
+        
+        avatarCmp.cmpAudio.setAudio(audioShot);
+        avatarCmp.cmpAudio.play(true);
         this.cmpAudio.play(true);
 
         //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);

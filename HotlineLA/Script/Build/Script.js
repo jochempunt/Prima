@@ -3,6 +3,33 @@ var HotlineLA;
 (function (HotlineLA) {
     var fAid = FudgeAid;
     var f = FudgeCore;
+    class Ammo extends fAid.NodeSprite {
+        constructor(position) {
+            super("ammo");
+            let componentTransf = new f.ComponentTransform();
+            componentTransf.mtxLocal.translation = position;
+            componentTransf.mtxLocal.translateZ(-0.1);
+            componentTransf.mtxLocal.scaling = new f.Vector3(1.5, 1.5, 3);
+            this.addComponent(componentTransf);
+            let ammoMaterial = new f.Material("ammoMaterial", f.ShaderLitTextured);
+            let coatAmmo = new f.CoatTextured(undefined, HotlineLA.AmmoImage);
+            ammoMaterial.coat = coatAmmo;
+            //this.getComponent(f.ComponentMesh).mtxPivot.scale(new f.Vector3(0.2, 0.2, 1));
+            let componentMat = this.getComponent(f.ComponentMaterial);
+            componentMat.material = ammoMaterial;
+            let ComponentRigidbody = new f.ComponentRigidbody();
+            ComponentRigidbody.isTrigger = true;
+            ComponentRigidbody.effectGravity = 0;
+            ComponentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_2;
+            this.addComponent(ComponentRigidbody);
+        }
+    }
+    HotlineLA.Ammo = Ammo;
+})(HotlineLA || (HotlineLA = {}));
+var HotlineLA;
+(function (HotlineLA) {
+    var fAid = FudgeAid;
+    var f = FudgeCore;
     class BulletNode extends fAid.NodeSprite {
         constructor(gunNode, rayHit) {
             super("bullet");
@@ -134,7 +161,6 @@ var HotlineLA;
                 this.cmpListener = new ƒ.ComponentAudioListener();
                 this.node.addComponent(this.cmpListener);
                 ƒ.AudioManager.default.listenWith(this.cmpListener);
-                this.audioShot = new f.Audio("./Sounds/9mmshot.mp3");
                 this.cmpAudio = new ƒ.ComponentAudio(this.audioShot);
                 this.cmpAudio.volume = 0.25;
                 this.node.addComponent(this.cmpAudio);
@@ -180,6 +206,8 @@ var HotlineLA;
                     // Apply damage or destruction to the object that was hit
                     this.avatarSprites.shootAnim();
                     HotlineLA.branch.addChild(new HotlineLA.BulletNode(this.gunNode, raycast));
+                    HotlineLA.avatarCmp.cmpAudio.setAudio(HotlineLA.audioShot);
+                    HotlineLA.avatarCmp.cmpAudio.play(true);
                     this.cmpAudio.play(true);
                     //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);
                     if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
@@ -312,6 +340,10 @@ var HotlineLA;
                 }
                 return false;
             };
+            this.dropAmmo = () => {
+                let ammo1 = new HotlineLA.Ammo(this.mtxWorld.translation);
+                HotlineLA.itemBranch.addChild(ammo1);
+            };
             this.addComponent(new f.ComponentTransform((new f.Matrix4x4())));
             this.rdgBody = new f.ComponentRigidbody();
             this.rdgBody.effectGravity = 0;
@@ -320,7 +352,7 @@ var HotlineLA;
             this.rdgBody.effectRotation.x = 0;
             this.rdgBody.effectRotation.y = 0;
             this.addComponent(this.rdgBody);
-            this.rdgBody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
+            this.rdgBody.collisionGroup = f.COLLISION_GROUP.GROUP_2;
         }
         initializeAnimations(sheetWalk, sheetShotDeath, sheetShotDeathFront) {
             let coatWalk = new f.CoatTextured(undefined, sheetWalk);
@@ -332,7 +364,7 @@ var HotlineLA;
             let coatDeathShotFront = new f.CoatTextured(undefined, sheetShotDeathFront);
             this.animShotDeathFront = new fAid.SpriteSheetAnimation("Walk", coatDeathShotFront);
             this.animShotDeathFront.generateByGrid(f.Rectangle.GET(6, 0, 72, 35), 5, 11, f.ORIGIN2D.CENTERLEFT, f.Vector2.X(72));
-            this.mtxLocal.translateZ(-0.1);
+            //this.mtxLocal.translation =new f.Vector3(this.mtxLocal.translation.x,this.mtxLocal.translation.y,-0.1) ;
             //this.mtxLocal.scale(new f.Vector3(1,1,1));
             this.setAnimation(this.animWalk);
             this.animState = AnimationState.WALK;
@@ -360,9 +392,11 @@ var HotlineLA;
         }
         patroll(deltaTime) {
             let posNode = this.getParent();
-            let rcast1 = f.Physics.raycast(posNode.mtxWorld.translation, posNode.mtxWorld.getX(), 1.5, true, f.COLLISION_GROUP.GROUP_2);
+            let rcast1 = f.Physics.raycast(posNode.mtxWorld.translation, posNode.mtxWorld.getX(), 1.5, true);
             if (rcast1.hit) {
-                posNode.mtxLocal.rotateZ(-90);
+                if (rcast1.rigidbodyComponent.typeBody == f.BODY_TYPE.STATIC) {
+                    posNode.mtxLocal.rotateZ(-90);
+                }
             }
             else {
                 if (deltaTime) {
@@ -389,7 +423,6 @@ var HotlineLA;
             let angleRad = Math.atan2(-collisionDirection.y, -collisionDirection.x);
             let angleDeg = angleRad * (180.0 / Math.PI);
             let direction = new f.Vector3(0, 0, angleDeg);
-            this.mtxLocal.translateZ(-0.2);
             let onBack = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
             let rcast1 = f.Physics.raycast(this.mtxWorld.translation, new f.Vector3(-collisionDirection.x, -collisionDirection.y, 0), 7, true);
@@ -405,6 +438,8 @@ var HotlineLA;
             let directionVecto = new f.Vector3(1, 0, 0);
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
             new f.Timer(new f.Time, 300, 1, this.addBlood.bind(this, directionVecto));
+            new f.Timer(new f.Time, 800, 1, this.dropAmmo);
+            this.mtxLocal.translateZ(-0.3);
         }
         setFallinganimation(onBack) {
             if (onBack) {
@@ -480,6 +515,7 @@ var HotlineLA;
         HotlineLA.branch = viewport.getBranch();
         HotlineLA.avatarNode = HotlineLA.branch.getChildrenByName("avatar")[0];
         HotlineLA.avatarCmp = HotlineLA.avatarNode.getComponent(HotlineLA.CharacterMovementScript);
+        HotlineLA.itemBranch = HotlineLA.branch.getChildrenByName("items")[0];
         cmpCamera = viewport.camera;
         let wallParent = HotlineLA.branch.getChildrenByName("Walls")[0];
         walls = wallParent.getChildren();
@@ -493,12 +529,28 @@ var HotlineLA;
         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         document.addEventListener("mousedown", hndClick);
         document.addEventListener("mousemove", HotlineLA.avatarCmp.rotateToMousePointer);
-        f.Loop.start();
         HotlineLA.branch.addEventListener("PlayerHit", killPlayer);
+        let rigid = HotlineLA.avatarNode.getComponent(f.ComponentRigidbody);
+        rigid.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, pickupItem);
+        f.Loop.start();
         // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+    }
+    function pickupItem(event) {
+        console.log("why isnt it possible?");
+        if (event.cmpRigidbody.node.name == "ammo") {
+            HotlineLA.avatarCmp.cmpAudio.setAudio(HotlineLA.audioRefill);
+            HotlineLA.avatarCmp.cmpAudio.play(true);
+            HotlineLA.avatarCmp.reloadBullets(1);
+            let node = event.cmpRigidbody.node;
+            setTimeout(removeItem.bind(this, node), 1);
+        }
+    }
+    function removeItem(node) {
+        HotlineLA.itemBranch.removeChild(node);
     }
     function killPlayer() {
         HotlineLA.avatarCmp.die();
+        setTimeout(ResetLevel, 1000);
     }
     async function loadEnemys() {
         let imgSpriteSheetWalk = new f.TextureImage();
@@ -511,6 +563,8 @@ var HotlineLA;
         await HotlineLA.bloodSprite.load("./Images/EnemySprites/BloodPuddle.png");
         HotlineLA.BulletImage = new f.TextureImage();
         await HotlineLA.BulletImage.load("./Images/FX/CharacterBullet.png");
+        HotlineLA.AmmoImage = new f.TextureImage();
+        await HotlineLA.AmmoImage.load("./Images/avatarSprites/ammo.png");
         let avatarShootSprite = new f.TextureImage();
         await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
         let avatarDeathShotSprite = new f.TextureImage();
@@ -528,6 +582,10 @@ var HotlineLA;
             enemys.push(enemyNode);
             enemyP.appendChild(enemyNode);
         }
+        HotlineLA.audioShot = new f.Audio();
+        await HotlineLA.audioShot.load("./Sounds/9mmshot.mp3");
+        HotlineLA.audioRefill = new f.Audio();
+        await HotlineLA.audioRefill.load("./Sounds/ammoRefill.mp3");
     }
     function updateCamera() {
         cmpCamera.mtxPivot.translation = new f.Vector3(HotlineLA.avatarNode.mtxLocal.translation.x, HotlineLA.avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
@@ -551,6 +609,7 @@ var HotlineLA;
         });
         resetEnemyPositions();
         HotlineLA.avatarCmp.reset();
+        HotlineLA.itemBranch.removeAllChildren();
     }
     function update(_event) {
         HotlineLA.gameState.bulletCount = HotlineLA.avatarCmp.bulletCount;
@@ -560,9 +619,6 @@ var HotlineLA;
         f.AudioManager.default.update();
         //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
         //viewport.physicsDebugMode = 2;
-        if (HotlineLA.avatarCmp.dead) {
-            setTimeout(ResetLevel, 1000);
-        }
         if (!HotlineLA.avatarCmp.dead) {
             if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
                 HotlineLA.avatarCmp.moveY(1);
@@ -659,10 +715,11 @@ var HotlineLA;
                 }
             };
             this.hndShotDead = (normal) => {
-                this.enemy.handleHeadshotCollision(normal);
                 if (this.timer != null) {
                     this.timer.active = false;
+                    this.timer = null;
                 }
+                this.enemy.handleHeadshotCollision(normal);
                 this.transit(JOB.DEAD);
             };
             this.update = (_event) => {
@@ -697,7 +754,7 @@ var HotlineLA;
             return setup;
         }
         static transitDefault(_machine) {
-            console.log("Transit to", _machine.stateNext);
+            //   console.log("Transit to", _machine.stateNext);
         }
         static async actDefault(_machine) {
             if (_machine.enemy.isPlayerInFOV()) {
@@ -705,7 +762,7 @@ var HotlineLA;
             }
         }
         static async actPatroll(_machine) {
-            console.log("Patrolling");
+            // console.log("Patrolling");
             if (_machine.timer == null) {
                 _machine.timer = new f.Timer(new f.Time, _machine.PATROLL_TIME, 1, _machine.hndSwitchToIdle);
             }
@@ -723,14 +780,14 @@ var HotlineLA;
                 _machine.transit(JOB.IDLE);
             }
             _machine.enemy.chasePlayer();
-            console.log("Attack");
+            //console.log("Attack");
         }
         static async actDead(_machine) {
             if (_machine.timer != null) {
                 _machine.timer = null;
             }
             _machine.enemy.cleanUpAfterDeath();
-            console.log("im Dead");
+            //  console.log("im Dead");
         }
         static async actIdle(_machine) {
             // if(distance.magnitude <10){

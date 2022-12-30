@@ -36,7 +36,7 @@ namespace HotlineLA {
             this.rdgBody.effectRotation.y = 0;
 
             this.addComponent(this.rdgBody);
-            this.rdgBody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
+            this.rdgBody.collisionGroup = f.COLLISION_GROUP.GROUP_2;
         }
 
 
@@ -61,7 +61,7 @@ namespace HotlineLA {
             this.animShotDeathFront.generateByGrid(f.Rectangle.GET(6, 0, 72, 35), 5, 11, f.ORIGIN2D.CENTERLEFT, f.Vector2.X(72));
 
 
-            this.mtxLocal.translateZ(-0.1);
+            //this.mtxLocal.translation =new f.Vector3(this.mtxLocal.translation.x,this.mtxLocal.translation.y,-0.1) ;
             //this.mtxLocal.scale(new f.Vector3(1,1,1));
             this.setAnimation(this.animWalk);
             this.animState = AnimationState.WALK;
@@ -129,10 +129,12 @@ namespace HotlineLA {
         patroll(deltaTime: number) {
 
             let posNode: f.Node = this.getParent();
-            let rcast1: f.RayHitInfo = f.Physics.raycast(posNode.mtxWorld.translation, posNode.mtxWorld.getX(), 1.5, true, f.COLLISION_GROUP.GROUP_2);
-            if (rcast1.hit) {
-
-                posNode.mtxLocal.rotateZ(-90);
+            let rcast1: f.RayHitInfo = f.Physics.raycast(posNode.mtxWorld.translation, posNode.mtxWorld.getX(), 1.5, true);
+            if (rcast1.hit ) {
+                if (rcast1.rigidbodyComponent.typeBody == f.BODY_TYPE.STATIC){
+                    posNode.mtxLocal.rotateZ(-90);
+                }
+                
             } else {
                 if (deltaTime) {
                     posNode.mtxLocal.translateX(this.walkspeed * deltaTime);
@@ -168,7 +170,7 @@ namespace HotlineLA {
             let angleDeg: number = angleRad * (180.0 / Math.PI);
 
             let direction: f.Vector3 = new f.Vector3(0, 0, angleDeg)
-            this.mtxLocal.translateZ(-0.2);
+           
 
             let onBack: boolean = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
@@ -189,6 +191,16 @@ namespace HotlineLA {
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
 
             new f.Timer(new f.Time, 300, 1, this.addBlood.bind(this, directionVecto));
+            new f.Timer(new f.Time, 800, 1, this.dropAmmo);
+            this.mtxLocal.translateZ(-0.3);
+
+
+        }
+
+        dropAmmo=():void=>{
+            
+            let ammo1: Ammo = new Ammo(this.mtxWorld.translation);
+            itemBranch.addChild(ammo1);
 
         }
 

@@ -53,7 +53,7 @@ namespace HotlineLA {
         }
 
         private static transitDefault(_machine: enemyStateMachine): void {
-            console.log("Transit to", _machine.stateNext);
+         //   console.log("Transit to", _machine.stateNext);
         }
 
         private static async actDefault(_machine: enemyStateMachine): Promise<void> {
@@ -65,7 +65,7 @@ namespace HotlineLA {
         }
 
         private static async actPatroll(_machine: enemyStateMachine): Promise<void> {
-            console.log("Patrolling");
+           // console.log("Patrolling");
 
             if (_machine.timer == null) {
                 _machine.timer = new f.Timer(new f.Time, _machine.PATROLL_TIME, 1, _machine.hndSwitchToIdle);
@@ -89,7 +89,7 @@ namespace HotlineLA {
                 _machine.enemy.chasePlayer();
             
                
-            console.log("Attack");
+            //console.log("Attack");
 
         }
 
@@ -99,7 +99,7 @@ namespace HotlineLA {
                 _machine.timer = null;
             }
             _machine.enemy.cleanUpAfterDeath();
-            console.log("im Dead");
+          //  console.log("im Dead");
         }
 
 
@@ -151,25 +151,20 @@ namespace HotlineLA {
         public hndShotDead = (normal: f.Vector3): void => {
 
 
-            this.enemy.handleHeadshotCollision(normal);
+            
             if (this.timer != null) {
                 this.timer.active = false;
+                this.timer = null;
             }
-
+            this.enemy.handleHeadshotCollision(normal);
             this.transit(JOB.DEAD);
-
+            
         }
 
 
         private update = (_event: Event): void => {
             this.act();
             this.deltaTime = f.Loop.timeFrameGame / 1000;
-
-
-
-
-
-
         }
 
         private hndSwitchToPatroll = (): void => {

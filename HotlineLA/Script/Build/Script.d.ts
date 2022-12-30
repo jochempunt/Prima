@@ -1,6 +1,13 @@
 declare namespace HotlineLA {
     import fAid = FudgeAid;
     import f = FudgeCore;
+    class Ammo extends fAid.NodeSprite {
+        constructor(position: f.Vector3);
+    }
+}
+declare namespace HotlineLA {
+    import fAid = FudgeAid;
+    import f = FudgeCore;
     class BulletNode extends fAid.NodeSprite {
         startPos: f.Vector3;
         endPos: f.Vector3;
@@ -41,7 +48,7 @@ declare namespace HotlineLA {
         dead: boolean;
         cmpListener: ƒ.ComponentAudioListener;
         private audioShot;
-        private cmpAudio;
+        cmpAudio: f.ComponentAudio;
         initialiseAnimations(shootingImg: f.TextureImage, deathImg: f.TextureImage): void;
         hndEvent: (_event: Event) => void;
         setup: () => void;
@@ -92,6 +99,7 @@ declare namespace HotlineLA {
         patroll(deltaTime: number): void;
         addBlood(direction: f.Vector3): void;
         handleHeadshotCollision(collisionDirection: f.Vector3): void;
+        dropAmmo: () => void;
         setFallinganimation(onBack: boolean): void;
         cleanUpAfterDeath(): void;
         reset(): void;
@@ -111,8 +119,12 @@ declare namespace HotlineLA {
     let branch: f.Node;
     let avatarCmp: CharacterMovementScript;
     let avatarNode: f.Node;
+    let itemBranch: f.Node;
     let gameState: GameState;
     let BulletImage: f.TextureImage;
+    let AmmoImage: f.TextureImage;
+    let audioShot: ƒ.Audio;
+    let audioRefill: ƒ.Audio;
     let bloodSprite: f.TextureImage;
 }
 declare namespace HotlineLA {
