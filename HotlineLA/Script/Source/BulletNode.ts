@@ -8,7 +8,7 @@ namespace HotlineLA {
 
         startPos: f.Vector3;
         endPos: f.Vector3;
-        bulletSpeed: number = 27;
+        bulletSpeed: number = 37;
 
         constructor(gunNode: f.Node,rayHit:f.RayHitInfo) {
             super("bullet");

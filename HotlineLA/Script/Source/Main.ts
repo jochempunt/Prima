@@ -73,7 +73,6 @@ namespace HotlineLA {
 
 
   function pickupItem(event:f.EventPhysics){
-  console.log("why isnt it possible?");
     if(event.cmpRigidbody.node.name == "ammo"){
       avatarCmp.cmpAudio.setAudio(audioRefill);
       avatarCmp.cmpAudio.play(true);
@@ -131,7 +130,8 @@ namespace HotlineLA {
     for(let enemyP of enemyPositionNodes){
       intialenemyTransforms.push(enemyP.mtxLocal.clone);
       enemyP.removeComponent(enemyP.getComponent(f.ComponentMesh));
-      let enemyNode: Enemy = new Enemy();
+      let gun:f.Node = enemyP.getChildrenByName("Gun")[0];
+      let enemyNode: Enemy = new Enemy(gun);
       enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
       enemys.push(enemyNode);
       enemyP.appendChild(enemyNode);
@@ -169,6 +169,7 @@ namespace HotlineLA {
   function resetEnemyPositions(){
     for( let i: number = 0; i< enemyPositionNodes.length;i++){
       enemyPositionNodes[i].mtxLocal.set(intialenemyTransforms[i]);
+     
     }
   }
 

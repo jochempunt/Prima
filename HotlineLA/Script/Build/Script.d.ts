@@ -91,13 +91,25 @@ declare namespace HotlineLA {
         viewRadius: number;
         viewAngle: number;
         statemachine: enemyStateMachine;
-        constructor();
+        isArmed: boolean;
+        shootAgain: boolean;
+        reloadTime: number;
+        gunNode: f.Node;
+        audioComp: f.ComponentAudio;
+        constructor(_gun: f.Node, _armed?: boolean);
         initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage, sheetShotDeathFront: f.TextureImage): void;
         isPlayerInFOV: () => boolean;
         chasePlayer(): void;
+        playerHitEvent: () => void;
         getPlayerAngle(): number;
         patroll(deltaTime: number): void;
         addBlood(direction: f.Vector3): void;
+        getCoordinatesFromAngle(angle: number): {
+            x: number;
+            y: number;
+        };
+        shootBulletsR: () => void;
+        enableShooting: () => void;
         handleHeadshotCollision(collisionDirection: f.Vector3): void;
         dropAmmo: () => void;
         setFallinganimation(onBack: boolean): void;
@@ -150,7 +162,7 @@ declare namespace HotlineLA {
         ATTACK = 2,
         DEAD = 3
     }
-    export class enemyStateMachine extends ƒAid.ComponentStateMachine<JOB> {
+    class enemyStateMachine extends ƒAid.ComponentStateMachine<JOB> {
         static readonly iSubclass: number;
         private static instructions;
         private enemy;
@@ -173,5 +185,4 @@ declare namespace HotlineLA {
         private hndSwitchToPatroll;
         private hndSwitchToIdle;
     }
-    export {};
 }

@@ -3,7 +3,7 @@ namespace HotlineLA {
     import ƒAid = FudgeAid;
     f.Project.registerScriptNamespace(HotlineLA);  // Register the namespace to FUDGE for serialization
 
-    enum JOB {
+    export enum JOB {
         IDLE, PATROLL, ATTACK, DEAD
     }
 
@@ -127,7 +127,7 @@ namespace HotlineLA {
                     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.update);
 
                     this.enemy = <Enemy>this.node;
-
+                  
                     this.transit(JOB.IDLE);
                     this.timer = new f.Timer(new f.Time, this.IDLE_TIME, 1, this.hndSwitchToPatroll);
                     break;
@@ -137,7 +137,6 @@ namespace HotlineLA {
                     f.Loop.removeEventListener(f.EVENT.LOOP_FRAME, this.update);
                     break;
                 case f.EVENT.NODE_DESERIALIZED:
-
                     break;
             }
         }

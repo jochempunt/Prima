@@ -57,6 +57,7 @@ namespace HotlineLA {
         reset():void{
             this.setAnimation(this.armedAnimation);
             this.showFrame(0);
+            this.mtxLocal.translation = new f.Vector3(this.mtxLocal.translation.x,this.mtxLocal.translation.y,0);
         }
     }
 

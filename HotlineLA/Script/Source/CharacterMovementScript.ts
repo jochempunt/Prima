@@ -74,6 +74,7 @@ namespace HotlineLA {
       this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
       this.rgdBody.effectRotation.x = 0;
       this.rgdBody.effectRotation.y = 0;
+      this.rgdBody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
       this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
       this.torsoNode = this.node.getChild(0);
       this.gunNode = this.torsoNode.getChild(0);
@@ -87,7 +88,7 @@ namespace HotlineLA {
       ƒ.AudioManager.default.listenWith(this.cmpListener);
 
 
-      this.cmpAudio = new ƒ.ComponentAudio(this.audioShot);
+      this.cmpAudio = new ƒ.ComponentAudio(audioShot);
       this.cmpAudio.volume = 0.25;
       this.node.addComponent(this.cmpAudio);
       if (gameState) {
