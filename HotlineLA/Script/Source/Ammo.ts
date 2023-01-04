@@ -10,8 +10,9 @@ namespace HotlineLA{
             super("ammo");
             let componentTransf: f.ComponentTransform = new f.ComponentTransform();
             componentTransf.mtxLocal.translation = position;
-            componentTransf.mtxLocal.translateZ(-0.1);
-            componentTransf.mtxLocal.scaling =new f.Vector3(1.5,1.5,3);
+            componentTransf.mtxLocal.translateZ(0.1);
+            componentTransf.mtxLocal.scaling =new f.Vector3(1.5,1.5,1);
+
             this.addComponent(componentTransf);
 
             let ammoMaterial: f.Material = new f.Material("ammoMaterial", f.ShaderLitTextured);

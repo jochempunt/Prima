@@ -10,11 +10,11 @@ namespace HotlineLA {
   export let avatarNode: f.Node;
 
   let enemyBranch: f.Node[];
-  let enemys:Enemy[] = [];
+  let enemys: Enemy[] = [];
   let enemyPositionNodes: f.Node[];
-  let intialenemyTransforms:f.Matrix4x4[] = [];
-  export let itemBranch:f.Node;
-  
+  let intialenemyTransforms: f.Matrix4x4[] = [];
+  export let itemBranch: f.Node;
+
   let walls: f.Node[];
 
   let cmpCamera: f.ComponentCamera;
@@ -49,7 +49,7 @@ namespace HotlineLA {
     }
 
     loadEnemys();
-   
+
     cmpCamera.mtxPivot.rotateY(180);
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
 
@@ -57,13 +57,14 @@ namespace HotlineLA {
 
     document.addEventListener("mousedown", hndClick);
     document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
-    
-    
-    branch.addEventListener("PlayerHit",killPlayer);  
-    
+
+
+    branch.addEventListener("PlayerHit", killPlayer);
+    branch.addEventListener("shotEnemy", hndEnemyKilled);
+
     let rigid = avatarNode.getComponent(f.ComponentRigidbody);
-    rigid.addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER,pickupItem);  
-    f.Loop.start(); 
+    rigid.addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, pickupItem);
+    f.Loop.start();
     // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
@@ -72,29 +73,63 @@ namespace HotlineLA {
 
 
 
-  function pickupItem(event:f.EventPhysics){
-    if(event.cmpRigidbody.node.name == "ammo"){
+  function hndEnemyKilled(event: Event) {
+    let enemy: Enemy = event.target as Enemy;
+    let enemyPos: f.Vector3 = enemy.mtxWorld.translation;
+    console.log(enemyPos);
+
+    let points: number = 400;
+    let newPos: f.Vector2 = viewport.pointWorldToClient(enemyPos);
+    console.log("x: " + newPos.x + "px y: " + newPos.y + "px");
+    let pointText: HTMLDivElement = document.createElement("div");
+    pointText.textContent = points + "";
+
+    pointText.className = "pointPop";
+
+    pointText.style.position = "absolute";
+    pointText.style.left = newPos.x + "px";
+    pointText.style.top = newPos.y - 40 + "px";
+
+
+
+
+
+
+    // Add text element to DOM
+    document.body.appendChild(pointText);
+    new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, pointText));
+    gameState.points = gameState.points + points;
+
+  }
+
+  function deleteLastPoint(point: HTMLDivElement): void {
+    document.body.removeChild(point);
+  }
+
+
+  function pickupItem(event: f.EventPhysics) {
+    if (event.cmpRigidbody.node.name == "ammo") {
       avatarCmp.cmpAudio.setAudio(audioRefill);
       avatarCmp.cmpAudio.play(true);
       avatarCmp.reloadBullets(1);
-  
-      let node: f.Node =event.cmpRigidbody.node;
-      setTimeout(removeItem.bind(this,node),1);
-      
+
+      let node: f.Node = event.cmpRigidbody.node;
+      setTimeout(removeItem.bind(this, node), 1);
+
     }
   }
-  function removeItem(node:f.Node){
+  function removeItem(node: f.Node) {
     itemBranch.removeChild(node);
   }
 
-  function killPlayer():void{
+  function killPlayer(): void {
     avatarCmp.die();
-    setTimeout(ResetLevel,1000);
+    setTimeout(ResetLevel, 1000);
   }
 
   async function loadEnemys(): Promise<void> {
-    
-    
+
+
     let imgSpriteSheetWalk: f.TextureImage = new f.TextureImage();
     await imgSpriteSheetWalk.load("./Images/EnemySprites/EnemyArmed.png");
 
@@ -116,21 +151,22 @@ namespace HotlineLA {
 
     let avatarShootSprite = new f.TextureImage();
     await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
-   
+
 
     let avatarDeathShotSprite = new f.TextureImage();
     await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
-    avatarCmp.initialiseAnimations(avatarShootSprite,avatarDeathShotSprite);
+    avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
     gameState.bulletCount = avatarCmp.bulletCount;
+    gameState.points = 0;
     showVui();
-    
-    
+
+
     enemyBranch = branch.getChildrenByName("Enemys");
-    enemyPositionNodes= enemyBranch[0].getChildrenByName("EnemyPos");
-    for(let enemyP of enemyPositionNodes){
+    enemyPositionNodes = enemyBranch[0].getChildrenByName("EnemyPos");
+    for (let enemyP of enemyPositionNodes) {
       intialenemyTransforms.push(enemyP.mtxLocal.clone);
       enemyP.removeComponent(enemyP.getComponent(f.ComponentMesh));
-      let gun:f.Node = enemyP.getChildrenByName("Gun")[0];
+      let gun: f.Node = enemyP.getChildrenByName("Gun")[0];
       let enemyNode: Enemy = new Enemy(gun);
       enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
       enemys.push(enemyNode);
@@ -139,10 +175,10 @@ namespace HotlineLA {
 
     audioShot = new f.Audio();
     await audioShot.load("./Sounds/9mmshot.mp3");
-  
+
     audioRefill = new f.Audio();
     await audioRefill.load("./Sounds/ammoRefill.mp3");
-   
+
 
 
 
@@ -161,20 +197,20 @@ namespace HotlineLA {
     avatarCmp.shootBulletsR();
   }
 
-  function showVui(){
+  function showVui() {
     document.getElementById("vui").className = "";
   }
 
 
-  function resetEnemyPositions(){
-    for( let i: number = 0; i< enemyPositionNodes.length;i++){
+  function resetEnemyPositions() {
+    for (let i: number = 0; i < enemyPositionNodes.length; i++) {
       enemyPositionNodes[i].mtxLocal.set(intialenemyTransforms[i]);
-     
+
     }
   }
 
 
-  function ResetLevel():void{
+  function ResetLevel(): void {
     avatarCmp.dead = false;
     enemys.forEach(enemy => {
       enemy.reset();
@@ -182,25 +218,27 @@ namespace HotlineLA {
     resetEnemyPositions();
     avatarCmp.reset();
     itemBranch.removeAllChildren();
+    gameState.points = 0;
   }
 
- 
+
 
 
 
   function update(_event: Event): void {
     gameState.bulletCount = avatarCmp.bulletCount;
+
     f.Physics.settings.solverIterations = 5000;
     f.Physics.simulate();  // if physics is included and used
     viewport.draw();
     f.AudioManager.default.update();
     //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
     //viewport.physicsDebugMode = 2;
-   
 
 
-      
- 
+
+
+
 
     if (!avatarCmp.dead) {
       if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {

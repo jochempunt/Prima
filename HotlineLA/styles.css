@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Righteous&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Coda+Caption&family=Righteous&family=VT323&display=swap');
 html,
 body {
     padding: 0px;
@@ -72,6 +72,7 @@ canvas.fullscreen {
     background: transparent;
     color: white;
     text-shadow: 2px 2px black;
+    width: 70px;
 }
 
 #bulletVui {
@@ -83,9 +84,63 @@ canvas.fullscreen {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    width: min-content;
 }
 
 #bulletVui>img {
     height: 35px;
     margin: 10px;
+}
+
+#pointVui {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 3rem;
+    color: white;
+}
+
+#pointVui>input {
+    background-color: transparent;
+    border: none;
+    font-size: 4em;
+    font-family: 'Righteous', cursive;
+    background: -webkit-linear-gradient(rgb(240, 198, 47), rgb(247, 51, 224));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-text-stroke: 2px rgba(14, 14, 14, 0.909);
+    filter: drop-shadow(4px 4px rgb(41, 41, 41));
+    text-align: right;
+    margin-right: 5rem;
+    width: 200px;
+}
+
+.pointPop {
+    font-family: 'Righteous', sans-serif;
+    font-weight: 800;
+    background: -webkit-linear-gradient(45deg, rgb(255, 233, 154), rgb(247, 51, 224), rgb(253, 220, 99));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-text-stroke: 1px rgba(28, 28, 28, 0.909);
+    filter: drop-shadow(3px 3px rgb(44, 44, 44));
+    text-align: center;
+    font-size: 1.8em;
+    animation: shine .85s linear infinite, appear .45s ease-in-out forwards;
+    opacity: 0.5;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+@keyframes appear {
+    to {
+        opacity: 100;
+        font-size: 3em;
+    }
 }

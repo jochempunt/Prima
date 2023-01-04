@@ -191,6 +191,7 @@ namespace HotlineLA {
 
 
         addBlood(direction: f.Vector3) {
+            this.dispatchEvent(new Event("shotEnemy",{bubbles:true}));
             let bloodNode: f.Node = new f.Node("blood");
             let spriteMaterial: f.Material = new f.Material("bloodmaterial", f.ShaderLitTextured);
             let coatBlood: f.CoatTextured = new f.CoatTextured(undefined, bloodSprite);
@@ -298,7 +299,7 @@ namespace HotlineLA {
             }
 
             this.mtxLocal.translateZ(-0.3);
-
+            
 
         }
 

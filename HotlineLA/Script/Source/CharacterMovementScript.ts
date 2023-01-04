@@ -63,13 +63,13 @@ namespace HotlineLA {
           break;
         case f.EVENT.NODE_DESERIALIZED:
           this.setup();
-          //this.rgdBody.addEventListener(f.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollison);
+         
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
     }
 
-    setup=():void=>{
+    setup = (): void => {
       this.initialtransform = this.node.mtxLocal.clone;
       this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
       this.rgdBody.effectRotation.x = 0;
@@ -95,13 +95,13 @@ namespace HotlineLA {
         gameState.bulletCount = this.bulletCount;
       }
 
-     
+
     }
 
 
 
 
-   
+
 
     moveY = (direction: number): void => {
       this.rgdBody.applyForce(new f.Vector3(0, direction * this.PLAYER_SPEED, 0))
@@ -149,14 +149,10 @@ namespace HotlineLA {
       if (!this.shootAgain || this.bulletCount <= 0 || this.dead) {
         return;
       }
-      //let bullet: f.Node = new BulletNode(this.gunNode)
-      //branch.addChild(bullet);
+
 
       this.bulletCount--;
-      // TODO: make the bullet precisely go from the initial position to the target point 
-
-
-
+      
       // Cast a ray from the starting position of the bullet to the target position
       let startPos: f.Vector3 = this.gunNode.mtxWorld.translation;
       let endPos: f.Vector3 = new f.Vector3(this.targetX, -this.targetY, 0);
@@ -164,19 +160,20 @@ namespace HotlineLA {
       let maxDistance: number = this.BULLETSPEED * 0.1; // Set the maximum distance of the raycast based on the bullet speed
       let raycast: f.RayHitInfo = f.Physics.raycast(startPos, direction, maxDistance);
 
-      // If the ray intersects with an object, apply appropriate effects
+
       if (raycast.hit) {
-        // Apply damage or destruction to the object that was hit
+
         this.avatarSprites.shootAnim();
         branch.addChild(new BulletNode(this.gunNode, raycast));
-        
+
         avatarCmp.cmpAudio.setAudio(audioShot);
         avatarCmp.cmpAudio.play(true);
         this.cmpAudio.play(true);
 
-        //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);
+     
         if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
           console.log("hit enemy");
+
           let enemy: Enemy = raycast.rigidbodyComponent.node as Enemy;
           enemy.getComponent(enemyStateMachine).hndShotDead(raycast.hitNormal);
         }
@@ -210,7 +207,6 @@ namespace HotlineLA {
 
       this.avatarSprites.reset();
 
-      // Update the game state with the reset bullet count
       if (gameState) {
         gameState.bulletCount = this.bulletCount;
       }

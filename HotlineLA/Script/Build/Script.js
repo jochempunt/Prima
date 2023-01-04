@@ -8,8 +8,8 @@ var HotlineLA;
             super("ammo");
             let componentTransf = new f.ComponentTransform();
             componentTransf.mtxLocal.translation = position;
-            componentTransf.mtxLocal.translateZ(-0.1);
-            componentTransf.mtxLocal.scaling = new f.Vector3(1.5, 1.5, 3);
+            componentTransf.mtxLocal.translateZ(0.1);
+            componentTransf.mtxLocal.scaling = new f.Vector3(1.5, 1.5, 1);
             this.addComponent(componentTransf);
             let ammoMaterial = new f.Material("ammoMaterial", f.ShaderLitTextured);
             let coatAmmo = new f.CoatTextured(undefined, HotlineLA.AmmoImage);
@@ -140,7 +140,6 @@ var HotlineLA;
                         break;
                     case "nodeDeserialized" /* NODE_DESERIALIZED */:
                         this.setup();
-                        //this.rgdBody.addEventListener(f.EVENT_PHYSICS.COLLISION_ENTER, this.hndCollison);
                         // if deserialized the node is now fully reconstructed and access to all its components and children is possible
                         break;
                 }
@@ -192,25 +191,19 @@ var HotlineLA;
                 if (!this.shootAgain || this.bulletCount <= 0 || this.dead) {
                     return;
                 }
-                //let bullet: f.Node = new BulletNode(this.gunNode)
-                //branch.addChild(bullet);
                 this.bulletCount--;
-                // TODO: make the bullet precisely go from the initial position to the target point 
                 // Cast a ray from the starting position of the bullet to the target position
                 let startPos = this.gunNode.mtxWorld.translation;
                 let endPos = new f.Vector3(this.targetX, -this.targetY, 0);
                 let direction = f.Vector3.DIFFERENCE(endPos, startPos);
                 let maxDistance = this.BULLETSPEED * 0.1; // Set the maximum distance of the raycast based on the bullet speed
                 let raycast = f.Physics.raycast(startPos, direction, maxDistance);
-                // If the ray intersects with an object, apply appropriate effects
                 if (raycast.hit) {
-                    // Apply damage or destruction to the object that was hit
                     this.avatarSprites.shootAnim();
                     HotlineLA.branch.addChild(new HotlineLA.BulletNode(this.gunNode, raycast));
                     HotlineLA.avatarCmp.cmpAudio.setAudio(HotlineLA.audioShot);
                     HotlineLA.avatarCmp.cmpAudio.play(true);
                     this.cmpAudio.play(true);
-                    //new f.Timer(new f.Time,10,1,this.returnToNormalSprite);
                     if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
                         console.log("hit enemy");
                         let enemy = raycast.rigidbodyComponent.node;
@@ -252,7 +245,6 @@ var HotlineLA;
             this.shootAgain = true;
             this.dead = false;
             this.avatarSprites.reset();
-            // Update the game state with the reset bullet count
             if (HotlineLA.gameState) {
                 HotlineLA.gameState.bulletCount = this.bulletCount;
             }
@@ -458,6 +450,7 @@ var HotlineLA;
             }
         }
         addBlood(direction) {
+            this.dispatchEvent(new Event("shotEnemy", { bubbles: true }));
             let bloodNode = new f.Node("blood");
             let spriteMaterial = new f.Material("bloodmaterial", f.ShaderLitTextured);
             let coatBlood = new f.CoatTextured(undefined, HotlineLA.bloodSprite);
@@ -593,10 +586,32 @@ var HotlineLA;
         document.addEventListener("mousedown", hndClick);
         document.addEventListener("mousemove", HotlineLA.avatarCmp.rotateToMousePointer);
         HotlineLA.branch.addEventListener("PlayerHit", killPlayer);
+        HotlineLA.branch.addEventListener("shotEnemy", hndEnemyKilled);
         let rigid = HotlineLA.avatarNode.getComponent(f.ComponentRigidbody);
         rigid.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, pickupItem);
         f.Loop.start();
         // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+    }
+    function hndEnemyKilled(event) {
+        let enemy = event.target;
+        let enemyPos = enemy.mtxWorld.translation;
+        console.log(enemyPos);
+        let points = 400;
+        let newPos = viewport.pointWorldToClient(enemyPos);
+        console.log("x: " + newPos.x + "px y: " + newPos.y + "px");
+        let pointText = document.createElement("div");
+        pointText.textContent = points + "";
+        pointText.className = "pointPop";
+        pointText.style.position = "absolute";
+        pointText.style.left = newPos.x + "px";
+        pointText.style.top = newPos.y - 40 + "px";
+        // Add text element to DOM
+        document.body.appendChild(pointText);
+        new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, pointText));
+        HotlineLA.gameState.points = HotlineLA.gameState.points + points;
+    }
+    function deleteLastPoint(point) {
+        document.body.removeChild(point);
     }
     function pickupItem(event) {
         if (event.cmpRigidbody.node.name == "ammo") {
@@ -633,6 +648,7 @@ var HotlineLA;
         await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
         HotlineLA.avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
         HotlineLA.gameState.bulletCount = HotlineLA.avatarCmp.bulletCount;
+        HotlineLA.gameState.points = 0;
         showVui();
         enemyBranch = HotlineLA.branch.getChildrenByName("Enemys");
         enemyPositionNodes = enemyBranch[0].getChildrenByName("EnemyPos");
@@ -673,6 +689,7 @@ var HotlineLA;
         resetEnemyPositions();
         HotlineLA.avatarCmp.reset();
         HotlineLA.itemBranch.removeAllChildren();
+        HotlineLA.gameState.points = 0;
     }
     function update(_event) {
         HotlineLA.gameState.bulletCount = HotlineLA.avatarCmp.bulletCount;

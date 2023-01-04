@@ -122,6 +122,7 @@ declare namespace HotlineLA {
     class GameState extends f.Mutable {
         protected reduceMutator(_mutator: f.Mutator): void;
         bulletCount: number;
+        points: number;
         private controller;
         constructor();
     }
