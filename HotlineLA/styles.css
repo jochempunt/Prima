@@ -92,6 +92,38 @@ canvas.fullscreen {
     margin: 10px;
 }
 
+#multiplierVui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    margin: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: min-content;
+}
+
+#multiplierVui>input {
+    font-family: 'Helvetica', sans-serif;
+    background-color: transparent;
+    border: none;
+    color: rgb(194, 0, 16);
+    font-size: 4em;
+    width: .6em;
+    text-shadow: 2px 2px rgb(33, 33, 33);
+    font-weight: bolder;
+}
+
+#multiplierVui>p {
+    font-family: 'Helvetica', sans-serif;
+    color: rgb(194, 0, 16);
+    font-size: 4em;
+    width: .2em;
+    text-shadow: 2px 2px rgb(33, 33, 33);
+    font-weight: bolder;
+}
+
 #pointVui {
     position: absolute;
     top: 0;

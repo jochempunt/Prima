@@ -565,6 +565,7 @@ var HotlineLA;
     let intialenemyTransforms = [];
     let walls;
     let cmpCamera;
+    let lastTimeKill;
     function start(_event) {
         HotlineLA.gameState = new HotlineLA.GameState();
         viewport = _event.detail;
@@ -601,7 +602,15 @@ var HotlineLA;
         let newPos = viewport.pointWorldToClient(enemyPos);
         console.log("x: " + newPos.x + "px y: " + newPos.y + "px");
         let pointText = document.createElement("div");
-        pointText.textContent = points + "";
+        let now = Date.now();
+        if (lastTimeKill) {
+            let elapsedTimeInSeconds = (now - lastTimeKill) / 1000;
+            if (elapsedTimeInSeconds <= 3) {
+                HotlineLA.gameState.multiplier++;
+            }
+        }
+        lastTimeKill = now;
+        pointText.textContent = points * HotlineLA.gameState.multiplier + "";
         pointText.className = "pointPop";
         pointText.style.position = "absolute";
         pointText.style.left = newPos.x + "px";
@@ -611,7 +620,16 @@ var HotlineLA;
         let p = new HotlineLA.Point(enemyPos, pointText);
         activePoints.push(p);
         new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, p));
-        HotlineLA.gameState.points = HotlineLA.gameState.points + points;
+        HotlineLA.gameState.points = HotlineLA.gameState.points + (points * HotlineLA.gameState.multiplier);
+    }
+    function updateMultiplier() {
+        let now = Date.now();
+        if (lastTimeKill) {
+            let elapsedTimeInSeconds = (now - lastTimeKill) / 1000;
+            if (elapsedTimeInSeconds > 3) {
+                HotlineLA.gameState.multiplier = 1;
+            }
+        }
     }
     function deleteLastPoint(point) {
         activePoints.slice(activePoints.indexOf(point), 1);
@@ -662,6 +680,7 @@ var HotlineLA;
         HotlineLA.avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
         HotlineLA.gameState.bulletCount = HotlineLA.avatarCmp.bulletCount;
         HotlineLA.gameState.points = 0;
+        HotlineLA.gameState.multiplier = 1;
         showVui();
         enemyBranch = HotlineLA.branch.getChildrenByName("Enemys");
         enemyPositionNodes = enemyBranch[0].getChildrenByName("EnemyPos");
@@ -713,6 +732,7 @@ var HotlineLA;
         //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
         //viewport.physicsDebugMode = 2;
         updatePointPositions();
+        updateMultiplier();
         if (!HotlineLA.avatarCmp.dead) {
             if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
                 HotlineLA.avatarCmp.moveY(1);

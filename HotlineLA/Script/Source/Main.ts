@@ -27,6 +27,7 @@ namespace HotlineLA {
   export let audioRefill: ƒ.Audio;
 
 
+  let lastTimeKill: number;
 
   function start(_event: CustomEvent): void {
     gameState = new GameState();
@@ -83,7 +84,16 @@ namespace HotlineLA {
     let newPos: f.Vector2 = viewport.pointWorldToClient(enemyPos);
     console.log("x: " + newPos.x + "px y: " + newPos.y + "px");
     let pointText: HTMLDivElement = document.createElement("div");
-    pointText.textContent = points + "";
+    let now: number = Date.now();
+    if (lastTimeKill) {
+      let elapsedTimeInSeconds: number = (now - lastTimeKill) / 1000;
+      if (elapsedTimeInSeconds <= 3) {
+        gameState.multiplier++;
+      }
+    }
+    lastTimeKill = now;
+
+    pointText.textContent = points * gameState.multiplier + "";
 
     pointText.className = "pointPop";
 
@@ -101,8 +111,20 @@ namespace HotlineLA {
     let p: Point = new Point(enemyPos, pointText);
     activePoints.push(p);
     new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, p));
-    gameState.points = gameState.points + points;
+    gameState.points = gameState.points + (points * gameState.multiplier);
 
+  }
+
+
+
+  function updateMultiplier() {
+    let now:number = Date.now();
+    if(lastTimeKill){
+      let elapsedTimeInSeconds:number = (now- lastTimeKill) / 1000;
+      if(elapsedTimeInSeconds > 3){
+        gameState.multiplier = 1;
+      }
+    }
   }
 
   function deleteLastPoint(point: Point): void {
@@ -174,6 +196,7 @@ namespace HotlineLA {
     avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
     gameState.bulletCount = avatarCmp.bulletCount;
     gameState.points = 0;
+    gameState.multiplier = 1;
     showVui();
 
 
@@ -243,7 +266,7 @@ namespace HotlineLA {
 
   function update(_event: Event): void {
     gameState.bulletCount = avatarCmp.bulletCount;
-    
+
     f.Physics.settings.solverIterations = 5000;
     f.Physics.simulate();  // if physics is included and used
     viewport.draw();
@@ -252,7 +275,7 @@ namespace HotlineLA {
     //viewport.physicsDebugMode = 2;
 
     updatePointPositions();
-
+    updateMultiplier();
 
 
 
