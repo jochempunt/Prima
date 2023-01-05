@@ -592,6 +592,7 @@ var HotlineLA;
         f.Loop.start();
         // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
+    let activePoints = [];
     function hndEnemyKilled(event) {
         let enemy = event.target;
         let enemyPos = enemy.mtxWorld.translation;
@@ -607,11 +608,23 @@ var HotlineLA;
         pointText.style.top = newPos.y - 40 + "px";
         // Add text element to DOM
         document.body.appendChild(pointText);
-        new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, pointText));
+        let p = new HotlineLA.Point(enemyPos, pointText);
+        activePoints.push(p);
+        new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, p));
         HotlineLA.gameState.points = HotlineLA.gameState.points + points;
     }
     function deleteLastPoint(point) {
-        document.body.removeChild(point);
+        activePoints.slice(activePoints.indexOf(point), 1);
+        document.body.removeChild(point.divElement);
+    }
+    function updatePointPositions() {
+        for (let p of activePoints) {
+            if (p) {
+                let newPos = viewport.pointWorldToClient(p.gameCoordinates);
+                p.divElement.style.left = newPos.x + "px";
+                p.divElement.style.top = newPos.y - 40 + "px";
+            }
+        }
     }
     function pickupItem(event) {
         if (event.cmpRigidbody.node.name == "ammo") {
@@ -699,6 +712,7 @@ var HotlineLA;
         f.AudioManager.default.update();
         //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
         //viewport.physicsDebugMode = 2;
+        updatePointPositions();
         if (!HotlineLA.avatarCmp.dead) {
             if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
                 HotlineLA.avatarCmp.moveY(1);
@@ -887,5 +901,15 @@ var HotlineLA;
     enemyStateMachine.iSubclass = f.Component.registerSubclass(enemyStateMachine);
     enemyStateMachine.instructions = enemyStateMachine.get();
     HotlineLA.enemyStateMachine = enemyStateMachine;
+})(HotlineLA || (HotlineLA = {}));
+var HotlineLA;
+(function (HotlineLA) {
+    class Point {
+        constructor(_gCoordinates, _divElement) {
+            this.gameCoordinates = _gCoordinates;
+            this.divElement = _divElement;
+        }
+    }
+    HotlineLA.Point = Point;
 })(HotlineLA || (HotlineLA = {}));
 //# sourceMappingURL=Script.js.map

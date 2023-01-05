@@ -70,6 +70,7 @@ namespace HotlineLA {
 
   export let bloodSprite: f.TextureImage;
 
+  let activePoints: Point[] = [];
 
 
 
@@ -97,15 +98,30 @@ namespace HotlineLA {
 
     // Add text element to DOM
     document.body.appendChild(pointText);
-    new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, pointText));
+    let p: Point = new Point(enemyPos, pointText);
+    activePoints.push(p);
+    new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, p));
     gameState.points = gameState.points + points;
 
   }
 
-  function deleteLastPoint(point: HTMLDivElement): void {
-    document.body.removeChild(point);
+  function deleteLastPoint(point: Point): void {
+    activePoints.slice(activePoints.indexOf(point), 1)
+    document.body.removeChild(point.divElement);
   }
 
+
+
+  function updatePointPositions() {
+    for (let p of activePoints) {
+      if (p) {
+        let newPos: f.Vector2 = viewport.pointWorldToClient(p.gameCoordinates);
+
+        p.divElement.style.left = newPos.x + "px";
+        p.divElement.style.top = newPos.y - 40 + "px";
+      }
+    }
+  }
 
   function pickupItem(event: f.EventPhysics) {
     if (event.cmpRigidbody.node.name == "ammo") {
@@ -227,7 +243,7 @@ namespace HotlineLA {
 
   function update(_event: Event): void {
     gameState.bulletCount = avatarCmp.bulletCount;
-
+    
     f.Physics.settings.solverIterations = 5000;
     f.Physics.simulate();  // if physics is included and used
     viewport.draw();
@@ -235,7 +251,7 @@ namespace HotlineLA {
     //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
     //viewport.physicsDebugMode = 2;
 
-
+    updatePointPositions();
 
 
 

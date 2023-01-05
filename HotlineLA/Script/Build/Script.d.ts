@@ -187,3 +187,11 @@ declare namespace HotlineLA {
         private hndSwitchToIdle;
     }
 }
+declare namespace HotlineLA {
+    import f = FudgeCore;
+    class Point {
+        gameCoordinates: f.Vector3;
+        divElement: HTMLDivElement;
+        constructor(_gCoordinates: f.Vector3, _divElement: HTMLDivElement);
+    }
+}
