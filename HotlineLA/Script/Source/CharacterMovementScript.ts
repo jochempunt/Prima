@@ -74,8 +74,8 @@ namespace HotlineLA {
       this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
       this.rgdBody.effectRotation.x = 0;
       this.rgdBody.effectRotation.y = 0;
-      this.rgdBody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
-      this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
+      this.rgdBody.collisionGroup = f.COLLISION_GROUP.GROUP_2;
+      //this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
       this.torsoNode = this.node.getChild(0);
       this.gunNode = this.torsoNode.getChild(0);
       this.bulletCount = 10;
@@ -157,12 +157,14 @@ namespace HotlineLA {
       let startPos: f.Vector3 = this.gunNode.mtxWorld.translation;
       let endPos: f.Vector3 = new f.Vector3(this.targetX, -this.targetY, 0);
       let direction: f.Vector3 = f.Vector3.DIFFERENCE(endPos, startPos);
-      let maxDistance: number = this.BULLETSPEED * 0.1; // Set the maximum distance of the raycast based on the bullet speed
-      let raycast: f.RayHitInfo = f.Physics.raycast(startPos, direction, maxDistance);
-
+  
+     
+      let maxDistance: number = this.BULLETSPEED * 0.1; 
+    
+      let raycast: f.RayHitInfo = f.Physics.raycast(startPos, direction, 30);
 
       if (raycast.hit) {
-
+        console.log(raycast.hitPoint);
         this.avatarSprites.shootAnim();
         branch.addChild(new BulletNode(this.gunNode, raycast));
 
@@ -175,7 +177,8 @@ namespace HotlineLA {
           console.log("hit enemy");
 
           let enemy: Enemy = raycast.rigidbodyComponent.node as Enemy;
-          enemy.getComponent(enemyStateMachine).hndShotDead(raycast.hitNormal);
+          raycast.hitNormal.normalize();
+          enemy.getComponent(enemyStateMachine).hndShotDead(direction);
         }
       }
       this.shootAgain = false;

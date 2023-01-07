@@ -29,7 +29,7 @@ namespace HotlineLA{
             ComponentRigidbody.isTrigger = true;
             ComponentRigidbody.effectGravity = 0
    
-            ComponentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_2;
+            ComponentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
           
             this.addComponent(ComponentRigidbody);
 

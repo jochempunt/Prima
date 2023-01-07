@@ -103,7 +103,7 @@ namespace HotlineLA {
 
                 if (playerRange <= this.viewRadius) {
                     // Use a raycast to check if the player is behind a wall or not
-                    let rCast: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true);
+                    let rCast: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true,f.COLLISION_GROUP.GROUP_2);
                     if (rCast.hit) {
                         if (rCast.rigidbodyComponent.node.name == "avatar") {
 
@@ -272,15 +272,15 @@ namespace HotlineLA {
             let angleRad: number = Math.atan2(-collisionDirection.y, -collisionDirection.x);
             let angleDeg: number = angleRad * (180.0 / Math.PI);
 
-            let direction: f.Vector3 = new f.Vector3(0, 0, angleDeg)
-
+            let direction: f.Vector3 = new f.Vector3(0, 0, angleDeg +180)
+            collisionDirection.normalize();
 
             let onBack: boolean = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
-            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation, new f.Vector3(-collisionDirection.x, -collisionDirection.y, 0), 7, true);
+            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation,collisionDirection, 2, true);
             if (rcast1.hit) {
                 if (rcast1.rigidbodyComponent.node.name.includes("Wall")) {
-                    direction = new f.Vector3(0, 0, angleDeg + 180);
+                    //direction = new f.Vector3(0, 0,angleDeg + 180);
                     onBack = false;
                 }
 

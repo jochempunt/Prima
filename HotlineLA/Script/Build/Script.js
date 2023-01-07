@@ -20,7 +20,7 @@ var HotlineLA;
             let ComponentRigidbody = new f.ComponentRigidbody();
             ComponentRigidbody.isTrigger = true;
             ComponentRigidbody.effectGravity = 0;
-            ComponentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_2;
+            ComponentRigidbody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
             this.addComponent(ComponentRigidbody);
         }
     }
@@ -149,8 +149,8 @@ var HotlineLA;
                 this.rgdBody = this.node.getComponent(f.ComponentRigidbody);
                 this.rgdBody.effectRotation.x = 0;
                 this.rgdBody.effectRotation.y = 0;
-                this.rgdBody.collisionGroup = f.COLLISION_GROUP.GROUP_1;
-                this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
+                this.rgdBody.collisionGroup = f.COLLISION_GROUP.GROUP_2;
+                //this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
                 this.torsoNode = this.node.getChild(0);
                 this.gunNode = this.torsoNode.getChild(0);
                 this.bulletCount = 10;
@@ -196,9 +196,10 @@ var HotlineLA;
                 let startPos = this.gunNode.mtxWorld.translation;
                 let endPos = new f.Vector3(this.targetX, -this.targetY, 0);
                 let direction = f.Vector3.DIFFERENCE(endPos, startPos);
-                let maxDistance = this.BULLETSPEED * 0.1; // Set the maximum distance of the raycast based on the bullet speed
-                let raycast = f.Physics.raycast(startPos, direction, maxDistance);
+                let maxDistance = this.BULLETSPEED * 0.1;
+                let raycast = f.Physics.raycast(startPos, direction, 30);
                 if (raycast.hit) {
+                    console.log(raycast.hitPoint);
                     this.avatarSprites.shootAnim();
                     HotlineLA.branch.addChild(new HotlineLA.BulletNode(this.gunNode, raycast));
                     HotlineLA.avatarCmp.cmpAudio.setAudio(HotlineLA.audioShot);
@@ -207,7 +208,8 @@ var HotlineLA;
                     if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
                         console.log("hit enemy");
                         let enemy = raycast.rigidbodyComponent.node;
-                        enemy.getComponent(HotlineLA.enemyStateMachine).hndShotDead(raycast.hitNormal);
+                        raycast.hitNormal.normalize();
+                        enemy.getComponent(HotlineLA.enemyStateMachine).hndShotDead(direction);
                     }
                 }
                 this.shootAgain = false;
@@ -325,7 +327,7 @@ var HotlineLA;
                 if (angleDeg < this.viewAngle / 2) {
                     if (playerRange <= this.viewRadius) {
                         // Use a raycast to check if the player is behind a wall or not
-                        let rCast = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true);
+                        let rCast = f.Physics.raycast(this.mtxWorld.translation, playerDir, 50, true, f.COLLISION_GROUP.GROUP_2);
                         if (rCast.hit) {
                             if (rCast.rigidbodyComponent.node.name == "avatar") {
                                 return true;
@@ -475,13 +477,14 @@ var HotlineLA;
         handleHeadshotCollision(collisionDirection) {
             let angleRad = Math.atan2(-collisionDirection.y, -collisionDirection.x);
             let angleDeg = angleRad * (180.0 / Math.PI);
-            let direction = new f.Vector3(0, 0, angleDeg);
+            let direction = new f.Vector3(0, 0, angleDeg + 180);
+            collisionDirection.normalize();
             let onBack = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
-            let rcast1 = f.Physics.raycast(this.mtxWorld.translation, new f.Vector3(-collisionDirection.x, -collisionDirection.y, 0), 7, true);
+            let rcast1 = f.Physics.raycast(this.mtxWorld.translation, collisionDirection, 2, true);
             if (rcast1.hit) {
                 if (rcast1.rigidbodyComponent.node.name.includes("Wall")) {
-                    direction = new f.Vector3(0, 0, angleDeg + 180);
+                    //direction = new f.Vector3(0, 0,angleDeg + 180);
                     onBack = false;
                 }
             }
