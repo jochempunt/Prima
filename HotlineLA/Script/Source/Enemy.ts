@@ -133,7 +133,7 @@ namespace HotlineLA {
             let endP: f.Vector3 = new f.Vector3(coordinates.x,coordinates.y,0);
 
 
-            let ray1: f.RayHitInfo = f.Physics.raycast(this.gunNode.mtxWorld.translation,endP,20,true);
+            let ray1: f.RayHitInfo = f.Physics.raycast(this.gunNode.mtxWorld.translation,endP,20,true,f.COLLISION_GROUP.GROUP_2);
             posNode.mtxLocal.rotation = new f.Vector3(0, 0, this.getPlayerAngle()+5);
             
             if(ray1.rigidbodyComponent.node.name.includes("Wall")){
@@ -298,7 +298,7 @@ namespace HotlineLA {
                 new f.Timer(new f.Time, 800, 1, this.dropAmmo);
             }
 
-            this.mtxLocal.translateZ(-0.3);
+            this.mtxLocal.translateZ(-0.03);
             
 
         }

@@ -52,7 +52,7 @@ namespace HotlineLA {
     loadEnemys();
 
     cmpCamera.mtxPivot.rotateY(180);
-    cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
+    cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 40);
 
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
 
@@ -191,6 +191,16 @@ namespace HotlineLA {
     await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
 
 
+
+    let backgroundSong:f.Audio = new f.Audio();
+    //await backgroundSong.load("./Sounds/DinoShadix-Hydra Subsidia.mp3");
+    await backgroundSong.load("./Sounds/KLOUD-PRIMAL.mp3");
+    let cmpAudioSong:f.ComponentAudio = new f.ComponentAudio(backgroundSong);
+    avatarNode.addComponent(cmpAudioSong);
+    cmpAudioSong.volume = 0.3;
+    cmpAudioSong.play(true);
+
+
     let avatarDeathShotSprite = new f.TextureImage();
     await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
     avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
@@ -218,7 +228,7 @@ namespace HotlineLA {
     audioRefill = new f.Audio();
     await audioRefill.load("./Sounds/ammoRefill.mp3");
 
-
+ 
 
 
   }

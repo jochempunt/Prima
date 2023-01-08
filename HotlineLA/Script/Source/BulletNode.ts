@@ -29,7 +29,7 @@ namespace HotlineLA {
 
             let componentTransf: f.ComponentTransform = new f.ComponentTransform();
             componentTransf.mtxLocal.translation = gunNode.mtxWorld.translation;
-            componentTransf.mtxLocal.translateZ(-0.1);
+            componentTransf.mtxLocal.translateZ(-0.02);
 
             componentTransf.mtxLocal.rotation = gunNode.mtxWorld.rotation;
             componentTransf.mtxLocal.scale(new f.Vector3(1.5,1.5, 1.5));

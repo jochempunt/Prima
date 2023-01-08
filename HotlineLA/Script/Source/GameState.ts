@@ -7,6 +7,7 @@ namespace HotlineLA {
 
         public bulletCount:number;
         public points:number;
+        public multiplier:number;
         private controller: fui.Controller;
 
         constructor() {

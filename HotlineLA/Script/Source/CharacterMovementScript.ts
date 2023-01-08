@@ -35,7 +35,7 @@ namespace HotlineLA {
     private targetX: number;
     private targetY: number;
 
-    private BULLETSPEED: number = 20;
+    private BULLETSPEED: number = 25;
 
     private shootAgain: boolean = true;
 
@@ -108,7 +108,7 @@ namespace HotlineLA {
     }
 
     die() {
-      this.avatarSprites.mtxLocal.translateZ(-0.1);
+      this.avatarSprites.mtxLocal.translateZ(-0.01);
       this.avatarSprites.setDeathSprite();
       this.rgdBody.activate(false);
       this.dead = true;

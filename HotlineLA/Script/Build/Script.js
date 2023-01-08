@@ -54,7 +54,7 @@ var HotlineLA;
             //componentMat.clrPrimary = f.Color.CSS("black");
             let componentTransf = new f.ComponentTransform();
             componentTransf.mtxLocal.translation = gunNode.mtxWorld.translation;
-            componentTransf.mtxLocal.translateZ(-0.1);
+            componentTransf.mtxLocal.translateZ(-0.02);
             componentTransf.mtxLocal.rotation = gunNode.mtxWorld.rotation;
             componentTransf.mtxLocal.scale(new f.Vector3(1.5, 1.5, 1.5));
             this.addComponent(componentTransf);
@@ -126,7 +126,7 @@ var HotlineLA;
         constructor() {
             super();
             this.PLAYER_SPEED = 200;
-            this.BULLETSPEED = 20;
+            this.BULLETSPEED = 25;
             this.shootAgain = true;
             this.MAX_BULLETS = 10;
             // Activate the functions of this component as response to events
@@ -234,7 +234,7 @@ var HotlineLA;
             this.avatarSprites.initaliseAnimations(shootingImg, deathImg);
         }
         die() {
-            this.avatarSprites.mtxLocal.translateZ(-0.1);
+            this.avatarSprites.mtxLocal.translateZ(-0.01);
             this.avatarSprites.setDeathSprite();
             this.rgdBody.activate(false);
             this.dead = true;
@@ -415,7 +415,7 @@ var HotlineLA;
             let posNode = this.getParent();
             let coordinates = this.getCoordinatesFromAngle(this.mtxWorld.rotation.z);
             let endP = new f.Vector3(coordinates.x, coordinates.y, 0);
-            let ray1 = f.Physics.raycast(this.gunNode.mtxWorld.translation, endP, 20, true);
+            let ray1 = f.Physics.raycast(this.gunNode.mtxWorld.translation, endP, 20, true, f.COLLISION_GROUP.GROUP_2);
             posNode.mtxLocal.rotation = new f.Vector3(0, 0, this.getPlayerAngle() + 5);
             if (ray1.rigidbodyComponent.node.name.includes("Wall")) {
                 this.statemachine.transit(HotlineLA.JOB.PATROLL);
@@ -497,7 +497,7 @@ var HotlineLA;
             if (this.isArmed) {
                 new f.Timer(new f.Time, 800, 1, this.dropAmmo);
             }
-            this.mtxLocal.translateZ(-0.3);
+            this.mtxLocal.translateZ(-0.03);
         }
         setFallinganimation(onBack) {
             if (onBack) {
@@ -585,7 +585,7 @@ var HotlineLA;
         }
         loadEnemys();
         cmpCamera.mtxPivot.rotateY(180);
-        cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 35);
+        cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 40);
         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         document.addEventListener("mousedown", hndClick);
         document.addEventListener("mousemove", HotlineLA.avatarCmp.rotateToMousePointer);
@@ -678,6 +678,13 @@ var HotlineLA;
         await HotlineLA.AmmoImage.load("./Images/avatarSprites/ammo.png");
         let avatarShootSprite = new f.TextureImage();
         await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
+        let backgroundSong = new f.Audio();
+        //await backgroundSong.load("./Sounds/DinoShadix-Hydra Subsidia.mp3");
+        await backgroundSong.load("./Sounds/KLOUD-PRIMAL.mp3");
+        let cmpAudioSong = new f.ComponentAudio(backgroundSong);
+        HotlineLA.avatarNode.addComponent(cmpAudioSong);
+        cmpAudioSong.volume = 0.3;
+        cmpAudioSong.play(true);
         let avatarDeathShotSprite = new f.TextureImage();
         await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
         HotlineLA.avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);

@@ -123,6 +123,7 @@ declare namespace HotlineLA {
         protected reduceMutator(_mutator: f.Mutator): void;
         bulletCount: number;
         points: number;
+        multiplier: number;
         private controller;
         constructor();
     }
