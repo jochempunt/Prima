@@ -281,8 +281,8 @@ namespace HotlineLA {
     f.Physics.simulate();  // if physics is included and used
     viewport.draw();
     f.AudioManager.default.update();
-    //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-    //viewport.physicsDebugMode = 2;
+    f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+    viewport.physicsDebugMode = 2;
 
     updatePointPositions();
     updateMultiplier();

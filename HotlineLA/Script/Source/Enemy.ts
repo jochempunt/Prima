@@ -186,6 +186,8 @@ namespace HotlineLA {
                     posNode.mtxLocal.translateX(this.walkspeed * deltaTime);
                 }
             }
+
+
         }
 
 
@@ -277,16 +279,37 @@ namespace HotlineLA {
 
             let onBack: boolean = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
-            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation,collisionDirection, 2, true);
-            if (rcast1.hit) {
-                if (rcast1.rigidbodyComponent.node.name.includes("Wall")) {
-                    //direction = new f.Vector3(0, 0,angleDeg + 180);
-                    onBack = false;
+            
+            let checkDirections: f.Vector3[] = [
+                new f.Vector3(1, 0, 0), 
+                new f.Vector3(-1, 0, 0), 
+                new f.Vector3(0, 1, 0), 
+                new f.Vector3(0, -1, 0)
+            ];
+            let rayCastlenghts:number[] = [];
+            for(let dir of checkDirections){
+                let wordl: f.Vector3 = f.Vector3.TRANSFORMATION(dir,this.mtxLocal);
+                let raycast: f.RayHitInfo =  f.Physics.raycast(this.mtxWorld.translation,dir,10,true);
+                if(raycast.hit){
+                    rayCastlenghts.push(raycast.hitDistance);
+                }else{
+                    rayCastlenghts.push(11);
                 }
+            }
+            let maxDistance = Math.max(...rayCastlenghts);
+            let maxDistanceIndex = rayCastlenghts.indexOf(maxDistance);
+            let thisDir:f.Vector3 = checkDirections[maxDistanceIndex];
+            let angle = Math.atan2(thisDir.y, thisDir.x);
+            //this.mtxLocal.rotation = new f.Vector3(0,0, angle * 180 / Math.PI);
+
+            this.getParent().mtxLocal.rotation = new f.Vector3(0,0, angle * 180 / Math.PI);
+            let rcast1: f.RayHitInfo = f.Physics.raycast(this.mtxWorld.translation,collisionDirection, 5, true,f.COLLISION_GROUP.GROUP_2);
+            if (rcast1.hit) {
+               
 
             }
             //TODO do this after the bullet has hit, not before
-            this.mtxLocal.rotation = direction;
+          
 
             new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));
             let directionVecto: f.Vector3 = new f.Vector3(1, 0, 0);

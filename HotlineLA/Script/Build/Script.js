@@ -481,15 +481,33 @@ var HotlineLA;
             collisionDirection.normalize();
             let onBack = true;
             // falls enemy durch eine wand durchfallen würde, lass ihn nach "vorne" fallen
-            let rcast1 = f.Physics.raycast(this.mtxWorld.translation, collisionDirection, 2, true);
-            if (rcast1.hit) {
-                if (rcast1.rigidbodyComponent.node.name.includes("Wall")) {
-                    //direction = new f.Vector3(0, 0,angleDeg + 180);
-                    onBack = false;
+            let checkDirections = [
+                new f.Vector3(1, 0, 0),
+                new f.Vector3(-1, 0, 0),
+                new f.Vector3(0, 1, 0),
+                new f.Vector3(0, -1, 0)
+            ];
+            let rayCastlenghts = [];
+            for (let dir of checkDirections) {
+                let wordl = f.Vector3.TRANSFORMATION(dir, this.mtxLocal);
+                let raycast = f.Physics.raycast(this.mtxWorld.translation, dir, 10, true);
+                if (raycast.hit) {
+                    rayCastlenghts.push(raycast.hitDistance);
+                }
+                else {
+                    rayCastlenghts.push(11);
                 }
             }
+            let maxDistance = Math.max(...rayCastlenghts);
+            let maxDistanceIndex = rayCastlenghts.indexOf(maxDistance);
+            let thisDir = checkDirections[maxDistanceIndex];
+            let angle = Math.atan2(thisDir.y, thisDir.x);
+            //this.mtxLocal.rotation = new f.Vector3(0,0, angle * 180 / Math.PI);
+            this.getParent().mtxLocal.rotation = new f.Vector3(0, 0, angle * 180 / Math.PI);
+            let rcast1 = f.Physics.raycast(this.mtxWorld.translation, collisionDirection, 5, true, f.COLLISION_GROUP.GROUP_2);
+            if (rcast1.hit) {
+            }
             //TODO do this after the bullet has hit, not before
-            this.mtxLocal.rotation = direction;
             new f.Timer(new f.Time, 135, 1, this.setFallinganimation.bind(this, onBack));
             let directionVecto = new f.Vector3(1, 0, 0);
             f.Vector3.TRANSFORMATION(directionVecto, f.Matrix4x4.ROTATION(new f.Vector3(0, 0, angleDeg)));
@@ -739,8 +757,8 @@ var HotlineLA;
         f.Physics.simulate(); // if physics is included and used
         viewport.draw();
         f.AudioManager.default.update();
-        //f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-        //viewport.physicsDebugMode = 2;
+        f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
+        viewport.physicsDebugMode = 2;
         updatePointPositions();
         updateMultiplier();
         if (!HotlineLA.avatarCmp.dead) {
