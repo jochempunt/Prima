@@ -57,6 +57,9 @@ namespace HotlineLA {
         }
 
         private static async actDefault(_machine: enemyStateMachine): Promise<void> {
+            
+            
+
 
             if (_machine.enemy.isPlayerInFOV()) {
                 _machine.transit(JOB.ATTACK);
@@ -127,7 +130,7 @@ namespace HotlineLA {
                     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.update);
 
                     this.enemy = <Enemy>this.node;
-                  
+                
                     this.transit(JOB.IDLE);
                     this.timer = new f.Timer(new f.Time, this.IDLE_TIME, 1, this.hndSwitchToPatroll);
                     break;

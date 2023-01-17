@@ -190,8 +190,6 @@ namespace HotlineLA {
     let avatarShootSprite = new f.TextureImage();
     await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
 
-
-
     let backgroundSong:f.Audio = new f.Audio();
     //await backgroundSong.load("./Sounds/DinoShadix-Hydra Subsidia.mp3");
     await backgroundSong.load("./Sounds/KLOUD-PRIMAL.mp3");
@@ -200,7 +198,6 @@ namespace HotlineLA {
     cmpAudioSong.volume = 0.3;
     cmpAudioSong.play(true);
 
-
     let avatarDeathShotSprite = new f.TextureImage();
     await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
     avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
@@ -208,15 +205,19 @@ namespace HotlineLA {
     gameState.points = 0;
     gameState.multiplier = 1;
     showVui();
-
-
+    //load enemys
     enemyBranch = branch.getChildrenByName("Enemys");
     enemyPositionNodes = enemyBranch[0].getChildrenByName("EnemyPos");
     for (let enemyP of enemyPositionNodes) {
       intialenemyTransforms.push(enemyP.mtxLocal.clone);
       enemyP.removeComponent(enemyP.getComponent(f.ComponentMesh));
-      let gun: f.Node = enemyP.getChildrenByName("Gun")[0];
-      let enemyNode: Enemy = new Enemy(gun);
+      let enemyRgdBody: f.ComponentRigidbody = enemyP.getComponent(f.ComponentRigidbody);
+      enemyRgdBody.effectRotation.x = 0;
+      enemyRgdBody.effectRotation.y = 0;
+    
+      let GunN: f.Node = enemyP.getChildrenByName("Gun")[0];
+
+      let enemyNode: Enemy = new Enemy();
       enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
       enemys.push(enemyNode);
       enemyP.appendChild(enemyNode);
@@ -228,15 +229,7 @@ namespace HotlineLA {
     audioRefill = new f.Audio();
     await audioRefill.load("./Sounds/ammoRefill.mp3");
 
- 
-
-
   }
-
-
-
-
-
 
   function updateCamera(): void {
     cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x, avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
@@ -253,8 +246,9 @@ namespace HotlineLA {
 
   function resetEnemyPositions() {
     for (let i: number = 0; i < enemyPositionNodes.length; i++) {
+      enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(false);
       enemyPositionNodes[i].mtxLocal.set(intialenemyTransforms[i]);
-
+      enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(true);
     }
   }
 

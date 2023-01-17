@@ -99,10 +99,6 @@ namespace HotlineLA {
     }
 
 
-
-
-
-
     moveY = (direction: number): void => {
       this.rgdBody.applyForce(new f.Vector3(0, direction * this.PLAYER_SPEED, 0))
     }
@@ -166,6 +162,7 @@ namespace HotlineLA {
       if (raycast.hit) {
         console.log(raycast.hitPoint);
         this.avatarSprites.shootAnim();
+      
         branch.addChild(new BulletNode(this.gunNode, raycast));
 
         avatarCmp.cmpAudio.setAudio(audioShot);
@@ -173,10 +170,10 @@ namespace HotlineLA {
         this.cmpAudio.play(true);
 
      
-        if (raycast.rigidbodyComponent.node.name.includes("enemy")) {
+        if (raycast.rigidbodyComponent.node.name.includes("Enemy")) {
           console.log("hit enemy");
 
-          let enemy: Enemy = raycast.rigidbodyComponent.node as Enemy;
+          let enemy: Enemy = raycast.rigidbodyComponent.node.getChildrenByName("enemy")[0] as Enemy;
           raycast.hitNormal.normalize();
           enemy.getComponent(enemyStateMachine).hndShotDead(direction);
         }
@@ -199,6 +196,7 @@ namespace HotlineLA {
     }
     reset(): void {
 
+      this.node.getParent().getComponent(f.ComponentRigidbody);
       this.node.mtxLocal.set(this.initialtransform);
       this.rgdBody.setVelocity(f.Vector3.ZERO());
       this.rgdBody.activate(true);

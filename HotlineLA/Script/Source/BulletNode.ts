@@ -9,7 +9,7 @@ namespace HotlineLA {
         startPos: f.Vector3;
         endPos: f.Vector3;
         bulletSpeed: number = 37;
-
+        m:number = 0;
         constructor(gunNode: f.Node,rayHit:f.RayHitInfo) {
             super("bullet");
 
@@ -28,21 +28,39 @@ namespace HotlineLA {
             //componentMat.clrPrimary = f.Color.CSS("black");
 
             let componentTransf: f.ComponentTransform = new f.ComponentTransform();
+            
+            console.log("gun node translation: "+ gunNode.mtxWorld.translation);
+            
+            
             componentTransf.mtxLocal.translation = gunNode.mtxWorld.translation;
-            componentTransf.mtxLocal.translateZ(-0.02);
+            
+           
+            //componentTransf.mtxLocal.translateZ(-2);
 
-            componentTransf.mtxLocal.rotation = gunNode.mtxWorld.rotation;
+            componentTransf.mtxLocal.rotation = new f.Vector3(0,0,gunNode.mtxWorld.rotation.z);
+
+            console.log("rotation: "+gunNode.mtxWorld.rotation);
             componentTransf.mtxLocal.scale(new f.Vector3(1.5,1.5, 1.5));
             this.addComponent(componentTransf);
 
+            
+
             this.startPos = gunNode.mtxWorld.translation;
+      
+            console.log(this.startPos);
             this.endPos = rayHit.hitPoint;
-
-
+            this.endPos = new f.Vector3(this.endPos.x,this.endPos.y,0);
+            console.log(this.mtxLocal);
             f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.moveBullet);
 
         }
         moveBullet = (): void => {
+           
+            if(this.m >= 40){
+                console.log(this.mtxLocal);
+                return;
+            }
+            
             // Calculate the direction the bullet should travel
             let distanceTravelled: number = this.startPos.getDistance(this.mtxWorld.translation);
            
@@ -54,7 +72,10 @@ namespace HotlineLA {
             // Update the position of the bullet
             this.mtxLocal.translateX(this.bulletSpeed * (f.Loop.timeFrameGame/1000));
 
-            
+            this.m++;
+
+           
+
         }
 
 

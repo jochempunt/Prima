@@ -12,6 +12,7 @@ declare namespace HotlineLA {
         startPos: f.Vector3;
         endPos: f.Vector3;
         bulletSpeed: number;
+        m: number;
         constructor(gunNode: f.Node, rayHit: f.RayHitInfo);
         moveBullet: () => void;
     }
@@ -86,8 +87,9 @@ declare namespace HotlineLA {
         rdgBody: f.ComponentRigidbody;
         bloodNode: f.Node;
         isDead: boolean;
-        walkspeed: number;
-        attackSpeed: number;
+        walkSpeedPhysics: number;
+        chaseSpeed: number;
+        currentDirection: f.Vector3;
         viewRadius: number;
         viewAngle: number;
         statemachine: enemyStateMachine;
@@ -96,12 +98,13 @@ declare namespace HotlineLA {
         reloadTime: number;
         gunNode: f.Node;
         audioComp: f.ComponentAudio;
-        constructor(_gun: f.Node, _armed?: boolean);
+        constructor(_armed?: boolean);
         initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage, sheetShotDeathFront: f.TextureImage): void;
         isPlayerInFOV: () => boolean;
         chasePlayer(): void;
         playerHitEvent: () => void;
         getPlayerAngle(): number;
+        firstTimePatrol: boolean;
         patroll(deltaTime: number): void;
         addBlood(direction: f.Vector3): void;
         getCoordinatesFromAngle(angle: number): {
