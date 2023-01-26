@@ -11,6 +11,7 @@ namespace HotlineLA {
 
   let enemyBranch: f.Node[];
   let enemys: Enemy[] = [];
+  let enemysKilled: number = 0;
   let enemyPositionNodes: f.Node[];
   let intialenemyTransforms: f.Matrix4x4[] = [];
   export let itemBranch: f.Node;
@@ -25,11 +26,26 @@ namespace HotlineLA {
 
   export let audioShot: ƒ.Audio;
   export let audioRefill: ƒ.Audio;
-
+  let cmpAudioSong: f.ComponentAudio;
+  let endsong: f.Audio;
+  let backgroundSong: f.Audio;
+ 
 
   let lastTimeKill: number;
 
-  function start(_event: CustomEvent): void {
+  const dataFileCount:number = 10;
+  let progress:number;
+  let progressBar: HTMLDivElement;
+
+  async function start(_event: CustomEvent): Promise<void> {
+    
+    let progressDiv:HTMLDivElement = document.querySelector('.progress-bar');
+    progressDiv.classList.remove("hidden");
+
+
+    progressBar = document.querySelector('.progress-bar .progress')
+    progress = 0;
+    
     gameState = new GameState();
     viewport = _event.detail;
     branch = viewport.getBranch();
@@ -49,8 +65,8 @@ namespace HotlineLA {
       wall.getComponent(f.ComponentRigidbody).collisionGroup = f.COLLISION_GROUP.GROUP_2;
     }
 
-    loadEnemys();
-
+    await loadData();
+    progressDiv.classList.add("hidden");
     cmpCamera.mtxPivot.rotateY(180);
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 40);
 
@@ -74,6 +90,18 @@ namespace HotlineLA {
   let activePoints: Point[] = [];
 
 
+
+function updateProgress():void{
+  progress++;
+
+  let percentage = (100/ dataFileCount) * progress;
+  progressBar.style.width = percentage + '%';
+  
+}
+
+function viewEndNote(){
+  document.getElementById("endText").classList.remove("hidden");
+}
 
   function hndEnemyKilled(event: Event) {
     let enemy: Enemy = event.target as Enemy;
@@ -106,6 +134,7 @@ namespace HotlineLA {
 
 
 
+
     // Add text element to DOM
     document.body.appendChild(pointText);
     let p: Point = new Point(enemyPos, pointText);
@@ -113,15 +142,31 @@ namespace HotlineLA {
     new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, p));
     gameState.points = gameState.points + (points * gameState.multiplier);
 
+
+    enemysKilled++;
+    if (enemysKilled == enemys.length) {
+      console.log("finished the level");
+      cmpAudioSong.setAudio(endsong);
+      cmpAudioSong.volume= 1;
+      cmpAudioSong.play(true);
+   
+      let canvas: HTMLCanvasElement = viewport.canvas;
+      canvas.classList.add("hue");
+      document.getElementById("clearLevelHeading").classList.remove("hidden");
+      setTimeout(viewEndNote,300);
+    }
+
+
+
   }
 
 
 
   function updateMultiplier() {
-    let now:number = Date.now();
-    if(lastTimeKill){
-      let elapsedTimeInSeconds:number = (now- lastTimeKill) / 1000;
-      if(elapsedTimeInSeconds > 3){
+    let now: number = Date.now();
+    if (lastTimeKill) {
+      let elapsedTimeInSeconds: number = (now - lastTimeKill) / 1000;
+      if (elapsedTimeInSeconds > 3) {
         gameState.multiplier = 1;
       }
     }
@@ -165,41 +210,46 @@ namespace HotlineLA {
     setTimeout(ResetLevel, 1000);
   }
 
-  async function loadEnemys(): Promise<void> {
+  async function loadData(): Promise<void> {
 
 
     let imgSpriteSheetWalk: f.TextureImage = new f.TextureImage();
     await imgSpriteSheetWalk.load("./Images/EnemySprites/EnemyArmed.png");
-
+    updateProgress();
     let imgSpriteSheehtShotDead: f.TextureImage = new f.TextureImage();
     await imgSpriteSheehtShotDead.load("./Images/EnemySprites/EnemyDeath1.png");
-
+    updateProgress();
 
     let imgSpriteSheehtShotDeadF: f.TextureImage = new f.TextureImage();
     await imgSpriteSheehtShotDeadF.load("./Images/EnemySprites/EnemyDeadFront.png");
-
+    updateProgress();
     bloodSprite = new f.TextureImage();
     await bloodSprite.load("./Images/EnemySprites/BloodPuddle.png");
-
+    updateProgress();
     BulletImage = new f.TextureImage();
     await BulletImage.load("./Images/FX/CharacterBullet.png");
-
+    updateProgress();
     AmmoImage = new f.TextureImage();
     await AmmoImage.load("./Images/avatarSprites/ammo.png")
-
+    updateProgress();
     let avatarShootSprite = new f.TextureImage();
     await avatarShootSprite.load("./Images/avatarSprites/shootAnimation.png");
-
-    let backgroundSong:f.Audio = new f.Audio();
-    //await backgroundSong.load("./Sounds/DinoShadix-Hydra Subsidia.mp3");
+    updateProgress();
+    backgroundSong = new f.Audio();
     await backgroundSong.load("./Sounds/KLOUD-PRIMAL.mp3");
-    let cmpAudioSong:f.ComponentAudio = new f.ComponentAudio(backgroundSong);
+    updateProgress();
+
+    endsong = new f.Audio("");
+    await endsong.load("./Sounds/you_dont_even_smile_anymore.mp3");
+    updateProgress();
+    cmpAudioSong = new f.ComponentAudio(backgroundSong);
     avatarNode.addComponent(cmpAudioSong);
     cmpAudioSong.volume = 0.3;
     cmpAudioSong.play(true);
 
     let avatarDeathShotSprite = new f.TextureImage();
     await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
+    updateProgress();
     avatarCmp.initialiseAnimations(avatarShootSprite, avatarDeathShotSprite);
     gameState.bulletCount = avatarCmp.bulletCount;
     gameState.points = 0;
@@ -214,7 +264,7 @@ namespace HotlineLA {
       let enemyRgdBody: f.ComponentRigidbody = enemyP.getComponent(f.ComponentRigidbody);
       enemyRgdBody.effectRotation.x = 0;
       enemyRgdBody.effectRotation.y = 0;
-    
+
       let GunN: f.Node = enemyP.getChildrenByName("Gun")[0];
 
       let enemyNode: Enemy = new Enemy();
@@ -255,6 +305,7 @@ namespace HotlineLA {
 
   function ResetLevel(): void {
     avatarCmp.dead = false;
+    enemysKilled = 0;
     enemys.forEach(enemy => {
       enemy.reset();
     });
