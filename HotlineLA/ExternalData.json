@@ -1,0 +1,9 @@
+{
+    "avatarSpeed": 200,
+    "enemyPatrollSpeed": 100,
+    "enemyChaseSpeed": 150,
+    "enemyReloadSpeed": 2000,
+    "enemyFOV": 120,
+    "enemyShotRange": 10,
+    "startingBulletAmount": 3
+}

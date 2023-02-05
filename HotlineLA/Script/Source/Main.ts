@@ -4,18 +4,15 @@ namespace HotlineLA {
 
   let viewport: f.Viewport;
   export let branch: f.Node;
-  document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   export let avatarCmp: CharacterMovementScript;
   export let avatarNode: f.Node;
-
   let enemyBranch: f.Node[];
   let enemys: Enemy[] = [];
   let enemysKilled: number = 0;
   let enemyPositionNodes: f.Node[];
   let intialenemyTransforms: f.Matrix4x4[] = [];
   export let itemBranch: f.Node;
-
   let walls: f.Node[];
 
   let cmpCamera: f.ComponentCamera;
@@ -23,91 +20,100 @@ namespace HotlineLA {
 
   export let BulletImage: f.TextureImage;
   export let AmmoImage: f.TextureImage;
+  export let bloodSprite: f.TextureImage;
 
   export let audioShot: ƒ.Audio;
   export let audioRefill: ƒ.Audio;
   let cmpAudioSong: f.ComponentAudio;
   let endsong: f.Audio;
   let backgroundSong: f.Audio;
- 
 
+  let activePoints: Point[] = [];
   let lastTimeKill: number;
 
-  const dataFileCount:number = 10;
-  let progress:number;
+  let extParameters: XData;
+
+  const dataFileCount: number = 10;
+  let progress: number;
+  let progressDiv: HTMLDivElement;
   let progressBar: HTMLDivElement;
 
-  async function start(_event: CustomEvent): Promise<void> {
-    
-    let progressDiv:HTMLDivElement = document.querySelector('.progress-bar');
+  document.addEventListener("interactiveViewportStarted", <EventListener>start);
+
+  function start(_event: CustomEvent): void {
+    progressDiv = document.querySelector('.progress-bar');
     progressDiv.classList.remove("hidden");
-
-
     progressBar = document.querySelector('.progress-bar .progress')
     progress = 0;
-    
     gameState = new GameState();
     viewport = _event.detail;
     branch = viewport.getBranch();
+    setup(_event);
+  }
 
+
+
+  interface XData {
+    avatarSpeed: number,
+    enemyPatrollSpeed: number,
+    enemyChaseSpeed: number,
+    enemyReloadSpeed: number,
+    enemyFOV: number,
+    enemyShotRange: number,
+    startingBulletAmount: number
+  }
+
+
+
+  async function fetchXData(_path: string): Promise<XData> {
+    let response: Response = await fetch(_path);
+    let data: XData = await response.json();
+    return data;
+  }
+
+
+  async function setup(_event: CustomEvent): Promise<void> {
     avatarNode = branch.getChildrenByName("avatar")[0];
     avatarCmp = avatarNode.getComponent(CharacterMovementScript);
-
     itemBranch = branch.getChildrenByName("items")[0];
     cmpCamera = viewport.camera;
-
-
     let wallParent = branch.getChildrenByName("Walls")[0];
-
     walls = wallParent.getChildren();
     for (let wall of walls) {
-      //collisiongroup2 is for walls // for raycasts
       wall.getComponent(f.ComponentRigidbody).collisionGroup = f.COLLISION_GROUP.GROUP_2;
     }
-
+    extParameters = await fetchXData("./ExternalData.json");
+    avatarCmp.initParams(extParameters.avatarSpeed,extParameters.startingBulletAmount);
     await loadData();
     progressDiv.classList.add("hidden");
     cmpCamera.mtxPivot.rotateY(180);
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 40);
-
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
-
     document.addEventListener("mousedown", hndClick);
     document.addEventListener("mousemove", avatarCmp.rotateToMousePointer);
-
-
     branch.addEventListener("PlayerHit", killPlayer);
     branch.addEventListener("shotEnemy", hndEnemyKilled);
-
     let rigid = avatarNode.getComponent(f.ComponentRigidbody);
     rigid.addEventListener(f.EVENT_PHYSICS.TRIGGER_ENTER, pickupItem);
     f.Loop.start();
     // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
-  export let bloodSprite: f.TextureImage;
 
-  let activePoints: Point[] = [];
+  function updateProgress(): void {
+    progress++;
+    let percentage = (100 / dataFileCount) * progress;
+    progressBar.style.width = percentage + '%';
+  }
 
-
-
-function updateProgress():void{
-  progress++;
-
-  let percentage = (100/ dataFileCount) * progress;
-  progressBar.style.width = percentage + '%';
-  
-}
-
-function viewEndNote(){
-  document.getElementById("endText").classList.remove("hidden");
-}
+  function viewEndNote() {
+    document.getElementById("endText").classList.remove("hidden");
+  }
 
   function hndEnemyKilled(event: Event) {
     let enemy: Enemy = event.target as Enemy;
     let enemyPos: f.Vector3 = enemy.mtxWorld.translation;
     console.log(enemyPos);
-
     let points: number = 400;
     let newPos: f.Vector2 = viewport.pointWorldToClient(enemyPos);
     console.log("x: " + newPos.x + "px y: " + newPos.y + "px");
@@ -120,46 +126,37 @@ function viewEndNote(){
       }
     }
     lastTimeKill = now;
-
     pointText.textContent = points * gameState.multiplier + "";
-
-    pointText.className = "pointPop";
-
+    pointText.className = "pointPop"
     pointText.style.position = "absolute";
     pointText.style.left = newPos.x + "px";
     pointText.style.top = newPos.y - 40 + "px";
-
-
-
-
-
-
-
-    // Add text element to DOM
     document.body.appendChild(pointText);
     let p: Point = new Point(enemyPos, pointText);
     activePoints.push(p);
     new f.Timer(new f.Time, 1000, 1, deleteLastPoint.bind(this, p));
     gameState.points = gameState.points + (points * gameState.multiplier);
 
-
     enemysKilled++;
     if (enemysKilled == enemys.length) {
-      console.log("finished the level");
-      cmpAudioSong.setAudio(endsong);
-      cmpAudioSong.volume= 1;
-      cmpAudioSong.play(true);
-   
-      let canvas: HTMLCanvasElement = viewport.canvas;
-      canvas.classList.add("hue");
-      document.getElementById("clearLevelHeading").classList.remove("hidden");
-      setTimeout(viewEndNote,300);
+      finish();
     }
-
-
-
   }
 
+  function finish(){
+    console.log("finished the level");
+    cmpAudioSong.setAudio(endsong);
+    cmpAudioSong.volume = 1;
+    cmpAudioSong.play(true);
+
+    let canvas: HTMLCanvasElement = viewport.canvas;
+    canvas.classList.add("hue");
+    document.getElementById("clearLevelHeading").classList.remove("hidden");
+    setTimeout(viewEndNote, 300);
+    for(let enemyPos of enemyPositionNodes){
+      enemyPos.removeComponent(enemyPos.getComponent(f.ComponentRigidbody));
+    }
+  }
 
 
   function updateMultiplier() {
@@ -177,13 +174,10 @@ function viewEndNote(){
     document.body.removeChild(point.divElement);
   }
 
-
-
   function updatePointPositions() {
     for (let p of activePoints) {
       if (p) {
         let newPos: f.Vector2 = viewport.pointWorldToClient(p.gameCoordinates);
-
         p.divElement.style.left = newPos.x + "px";
         p.divElement.style.top = newPos.y - 40 + "px";
       }
@@ -195,10 +189,8 @@ function viewEndNote(){
       avatarCmp.cmpAudio.setAudio(audioRefill);
       avatarCmp.cmpAudio.play(true);
       avatarCmp.reloadBullets(1);
-
       let node: f.Node = event.cmpRigidbody.node;
       setTimeout(removeItem.bind(this, node), 1);
-
     }
   }
   function removeItem(node: f.Node) {
@@ -206,20 +198,18 @@ function viewEndNote(){
   }
 
   function killPlayer(): void {
+    avatarCmp.dead = true;
     avatarCmp.die();
     setTimeout(ResetLevel, 1000);
   }
 
   async function loadData(): Promise<void> {
-
-
     let imgSpriteSheetWalk: f.TextureImage = new f.TextureImage();
     await imgSpriteSheetWalk.load("./Images/EnemySprites/EnemyArmed.png");
     updateProgress();
     let imgSpriteSheehtShotDead: f.TextureImage = new f.TextureImage();
     await imgSpriteSheehtShotDead.load("./Images/EnemySprites/EnemyDeath1.png");
     updateProgress();
-
     let imgSpriteSheehtShotDeadF: f.TextureImage = new f.TextureImage();
     await imgSpriteSheehtShotDeadF.load("./Images/EnemySprites/EnemyDeadFront.png");
     updateProgress();
@@ -238,7 +228,6 @@ function viewEndNote(){
     backgroundSong = new f.Audio();
     await backgroundSong.load("./Sounds/KLOUD-PRIMAL.mp3");
     updateProgress();
-
     endsong = new f.Audio("");
     await endsong.load("./Sounds/you_dont_even_smile_anymore.mp3");
     updateProgress();
@@ -246,7 +235,6 @@ function viewEndNote(){
     avatarNode.addComponent(cmpAudioSong);
     cmpAudioSong.volume = 0.3;
     cmpAudioSong.play(true);
-
     let avatarDeathShotSprite = new f.TextureImage();
     await avatarDeathShotSprite.load("./Images/avatarSprites/deathShotA.png");
     updateProgress();
@@ -264,10 +252,7 @@ function viewEndNote(){
       let enemyRgdBody: f.ComponentRigidbody = enemyP.getComponent(f.ComponentRigidbody);
       enemyRgdBody.effectRotation.x = 0;
       enemyRgdBody.effectRotation.y = 0;
-
-      let GunN: f.Node = enemyP.getChildrenByName("Gun")[0];
-
-      let enemyNode: Enemy = new Enemy();
+      let enemyNode: Enemy = new Enemy(extParameters.enemyPatrollSpeed, extParameters.enemyChaseSpeed, extParameters.enemyReloadSpeed, extParameters.enemyFOV, extParameters.enemyShotRange);
       enemyNode.initializeAnimations(imgSpriteSheetWalk, imgSpriteSheehtShotDead, imgSpriteSheehtShotDeadF);
       enemys.push(enemyNode);
       enemyP.appendChild(enemyNode);
@@ -275,24 +260,21 @@ function viewEndNote(){
 
     audioShot = new f.Audio();
     await audioShot.load("./Sounds/9mmshot.mp3");
-
     audioRefill = new f.Audio();
     await audioRefill.load("./Sounds/ammoRefill.mp3");
-
   }
 
   function updateCamera(): void {
     cmpCamera.mtxPivot.translation = new f.Vector3(avatarNode.mtxLocal.translation.x, avatarNode.mtxLocal.translation.y, cmpCamera.mtxPivot.translation.z);
   }
+
   function hndClick(event: Event): void {
-    //avatarCmp.shootBullet();
     avatarCmp.shootBulletsR();
   }
 
   function showVui() {
     document.getElementById("vui").className = "";
   }
-
 
   function resetEnemyPositions() {
     for (let i: number = 0; i < enemyPositionNodes.length; i++) {
@@ -301,7 +283,6 @@ function viewEndNote(){
       enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(true);
     }
   }
-
 
   function ResetLevel(): void {
     avatarCmp.dead = false;
@@ -315,24 +296,16 @@ function viewEndNote(){
     gameState.points = 0;
   }
 
-
-
-
-
   function update(_event: Event): void {
     gameState.bulletCount = avatarCmp.bulletCount;
-
     f.Physics.settings.solverIterations = 5000;
-    f.Physics.simulate();  // if physics is included and used
+    f.Physics.simulate();
     viewport.draw();
     f.AudioManager.default.update();
     f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-    viewport.physicsDebugMode = 2;
-
+    //viewport.physicsDebugMode = 2;
     updatePointPositions();
     updateMultiplier();
-
-
 
     if (!avatarCmp.dead) {
       if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.W, f.KEYBOARD_CODE.ARROW_UP])) {
@@ -347,15 +320,7 @@ function viewEndNote(){
       if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.A, f.KEYBOARD_CODE.ARROW_LEFT])) {
         avatarCmp.moveX(-1);
       }
-      if (f.Keyboard.isPressedOne([f.KEYBOARD_CODE.L])) {
-        avatarCmp.die();
-      }
     }
-
-
-
     updateCamera();
-
-
   }
 }

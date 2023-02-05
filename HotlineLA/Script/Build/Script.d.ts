@@ -19,18 +19,6 @@ declare namespace HotlineLA {
 }
 declare namespace HotlineLA {
     import f = FudgeCore;
-    class BulletScript extends f.ComponentScript {
-        static readonly iSubclass: number;
-        private rgdBody;
-        constructor();
-        hndEvent: (_event: Event) => void;
-        init(): void;
-        bulletDeath: () => void;
-        hndCollision: (event: f.EventPhysics) => void;
-    }
-}
-declare namespace HotlineLA {
-    import f = FudgeCore;
     class CharacterMovementScript extends f.ComponentScript {
         static readonly iSubclass: number;
         private avatarSprites;
@@ -42,14 +30,13 @@ declare namespace HotlineLA {
         private gunNode;
         private targetX;
         private targetY;
-        private BULLETSPEED;
         private shootAgain;
         bulletCount: number;
-        private MAX_BULLETS;
+        private INIT_BULLETS;
         dead: boolean;
         cmpListener: ƒ.ComponentAudioListener;
-        private audioShot;
         cmpAudio: f.ComponentAudio;
+        initParams(_playerSpeed: number, _numberOfBulletsStarting: number): void;
         initialiseAnimations(shootingImg: f.TextureImage, deathImg: f.TextureImage): void;
         hndEvent: (_event: Event) => void;
         setup: () => void;
@@ -87,18 +74,18 @@ declare namespace HotlineLA {
         rdgBody: f.ComponentRigidbody;
         bloodNode: f.Node;
         isDead: boolean;
-        walkSpeedPhysics: number;
+        patrollSpeed: number;
         chaseSpeed: number;
         currentDirection: f.Vector3;
         viewRadius: number;
         viewAngle: number;
+        shotRange: number;
         statemachine: enemyStateMachine;
-        isArmed: boolean;
         shootAgain: boolean;
         reloadTime: number;
         gunNode: f.Node;
         audioComp: f.ComponentAudio;
-        constructor(_armed?: boolean);
+        constructor(_enemyPatrollSpeed: number, _enemyChaseSpeed: number, _enemyReloadSpeed: number, _enemyFOV: number, _enemyShotRange: number);
         initializeAnimations(sheetWalk: f.TextureImage, sheetShotDeath: f.TextureImage, sheetShotDeathFront: f.TextureImage): void;
         isPlayerInFOV: () => boolean;
         chasePlayer(): void;
@@ -140,9 +127,9 @@ declare namespace HotlineLA {
     let gameState: GameState;
     let BulletImage: f.TextureImage;
     let AmmoImage: f.TextureImage;
+    let bloodSprite: f.TextureImage;
     let audioShot: ƒ.Audio;
     let audioRefill: ƒ.Audio;
-    let bloodSprite: f.TextureImage;
 }
 declare namespace HotlineLA {
     import fAid = FudgeAid;
