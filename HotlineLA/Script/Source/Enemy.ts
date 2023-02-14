@@ -285,6 +285,7 @@ namespace HotlineLA {
                 this.framerate = 5;
             }
             this.animState = AnimationState.DEADSHOT;
+            this.getParent().getComponent(f.ComponentRigidbody).activate(false);
         }
 
         // remove the rigidbody instantly after death, and stop the animation when it came to the last frame

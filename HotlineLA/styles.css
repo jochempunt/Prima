@@ -231,6 +231,18 @@ canvas {
     z-index: 1;
 }
 
+#loadingText {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -70%);
+    color: white;
+    font-size: 4.5em;
+    width: max-content;
+    z-index: 1;
+    font-family: monospace;
+}
+
 .hidden {
     display: none;
 }

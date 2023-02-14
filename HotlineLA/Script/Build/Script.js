@@ -498,6 +498,7 @@ var HotlineLA;
                 this.framerate = 5;
             }
             this.animState = AnimationState.DEADSHOT;
+            this.getParent().getComponent(f.ComponentRigidbody).activate(false);
         }
         // remove the rigidbody instantly after death, and stop the animation when it came to the last frame
         cleanUpAfterDeath() {
@@ -571,9 +572,12 @@ var HotlineLA;
     const dataFileCount = 10;
     let progress;
     let progressDiv;
+    let loadingText;
     let progressBar;
     document.addEventListener("interactiveViewportStarted", start);
     function start(_event) {
+        loadingText = document.querySelector('#loadingText');
+        loadingText.classList.remove("hidden");
         progressDiv = document.querySelector('.progress-bar');
         progressDiv.classList.remove("hidden");
         progressBar = document.querySelector('.progress-bar .progress');
@@ -602,6 +606,7 @@ var HotlineLA;
         HotlineLA.avatarCmp.initParams(extParameters.avatarSpeed, extParameters.startingBulletAmount);
         await loadData();
         progressDiv.classList.add("hidden");
+        loadingText.classList.add("hidden");
         cmpCamera.mtxPivot.rotateY(180);
         cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 40);
         f.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
@@ -775,7 +780,7 @@ var HotlineLA;
     }
     function resetEnemyPositions() {
         for (let i = 0; i < enemyPositionNodes.length; i++) {
-            enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(false);
+            //enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(false);
             enemyPositionNodes[i].mtxLocal.set(intialenemyTransforms[i]);
             enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(true);
         }

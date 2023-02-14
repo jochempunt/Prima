@@ -36,11 +36,14 @@ namespace HotlineLA {
   const dataFileCount: number = 10;
   let progress: number;
   let progressDiv: HTMLDivElement;
+  let loadingText:HTMLDivElement;
   let progressBar: HTMLDivElement;
 
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   function start(_event: CustomEvent): void {
+    loadingText = document.querySelector('#loadingText');
+    loadingText.classList.remove("hidden");
     progressDiv = document.querySelector('.progress-bar');
     progressDiv.classList.remove("hidden");
     progressBar = document.querySelector('.progress-bar .progress')
@@ -86,6 +89,7 @@ namespace HotlineLA {
     avatarCmp.initParams(extParameters.avatarSpeed,extParameters.startingBulletAmount);
     await loadData();
     progressDiv.classList.add("hidden");
+    loadingText.classList.add("hidden");
     cmpCamera.mtxPivot.rotateY(180);
     cmpCamera.mtxPivot.translation = new f.Vector3(0, 0, 40);
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
@@ -278,7 +282,7 @@ namespace HotlineLA {
 
   function resetEnemyPositions() {
     for (let i: number = 0; i < enemyPositionNodes.length; i++) {
-      enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(false);
+      //enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(false);
       enemyPositionNodes[i].mtxLocal.set(intialenemyTransforms[i]);
       enemyPositionNodes[i].getComponent(f.ComponentRigidbody).activate(true);
     }
