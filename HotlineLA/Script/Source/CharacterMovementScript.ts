@@ -7,7 +7,7 @@ namespace HotlineLA {
     public static readonly iSubclass: number = f.Component.registerSubclass(CharacterMovementScript);
     // Properties may be mutated by users in the editor via the automatically created user interface
 
-    private avatarSprites: avatar;
+    private avatarSprites: AvatarSpriteNode;
     private initialtransform: f.Matrix4x4;
 
     constructor() {
@@ -83,7 +83,7 @@ namespace HotlineLA {
       this.torsoNode = this.node.getChild(0);
       this.gunNode = this.torsoNode.getChild(0);
       
-      this.avatarSprites = new avatar();
+      this.avatarSprites = new AvatarSpriteNode();
       this.torsoNode.removeComponent(this.torsoNode.getComponent(f.ComponentMaterial));
       this.torsoNode.addChild(this.avatarSprites);
       this.dead = false;

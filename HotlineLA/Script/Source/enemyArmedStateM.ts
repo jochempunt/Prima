@@ -57,10 +57,6 @@ namespace HotlineLA {
         }
 
         private static async actDefault(_machine: enemyStateMachine): Promise<void> {
-            
-            
-
-
             if (_machine.enemy.isPlayerInFOV()) {
                 _machine.transit(JOB.ATTACK);
             }

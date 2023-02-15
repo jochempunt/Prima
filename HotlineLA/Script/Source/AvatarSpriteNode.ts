@@ -6,7 +6,7 @@ namespace HotlineLA {
     import f = FudgeCore;
 
 
-    export class avatar extends fAid.NodeSprite {
+    export class AvatarSpriteNode extends fAid.NodeSprite {
         armedAnimation: fAid.SpriteSheetAnimation;
         deathSprite: fAid.SpriteSheetAnimation;
         constructor() {

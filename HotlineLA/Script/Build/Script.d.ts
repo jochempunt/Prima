@@ -8,6 +8,20 @@ declare namespace HotlineLA {
 declare namespace HotlineLA {
     import fAid = FudgeAid;
     import f = FudgeCore;
+    class AvatarSpriteNode extends fAid.NodeSprite {
+        armedAnimation: fAid.SpriteSheetAnimation;
+        deathSprite: fAid.SpriteSheetAnimation;
+        constructor();
+        initaliseAnimations(sheetShot: f.TextureImage, deathImg: f.TextureImage): void;
+        shootAnim(): void;
+        setDeathSprite(): void;
+        returnToNormal: () => void;
+        reset(): void;
+    }
+}
+declare namespace HotlineLA {
+    import fAid = FudgeAid;
+    import f = FudgeCore;
     class BulletNode extends fAid.NodeSprite {
         startPos: f.Vector3;
         endPos: f.Vector3;
@@ -130,20 +144,6 @@ declare namespace HotlineLA {
     let bloodSprite: f.TextureImage;
     let audioShot: ƒ.Audio;
     let audioRefill: ƒ.Audio;
-}
-declare namespace HotlineLA {
-    import fAid = FudgeAid;
-    import f = FudgeCore;
-    class avatar extends fAid.NodeSprite {
-        armedAnimation: fAid.SpriteSheetAnimation;
-        deathSprite: fAid.SpriteSheetAnimation;
-        constructor();
-        initaliseAnimations(sheetShot: f.TextureImage, deathImg: f.TextureImage): void;
-        shootAnim(): void;
-        setDeathSprite(): void;
-        returnToNormal: () => void;
-        reset(): void;
-    }
 }
 declare namespace HotlineLA {
     import f = FudgeCore;

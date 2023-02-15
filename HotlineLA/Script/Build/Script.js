@@ -30,6 +30,46 @@ var HotlineLA;
 (function (HotlineLA) {
     var fAid = FudgeAid;
     var f = FudgeCore;
+    class AvatarSpriteNode extends fAid.NodeSprite {
+        constructor() {
+            super("avatarSprite");
+            this.returnToNormal = () => {
+                this.showFrame(0);
+            };
+        }
+        initaliseAnimations(sheetShot, deathImg) {
+            let coatShot = new f.CoatTextured(undefined, sheetShot);
+            let cmpTransf = new f.ComponentTransform();
+            this.armedAnimation = new fAid.SpriteSheetAnimation("Shot", coatShot);
+            this.armedAnimation.generateByGrid(f.Rectangle.GET(0, 0, 50, 30), 2, 11, f.ORIGIN2D.CENTER, f.Vector2.X(50));
+            let coatDeath = new f.CoatTextured(undefined, deathImg);
+            this.deathSprite = new fAid.SpriteSheetAnimation("Death", coatDeath);
+            this.deathSprite.generateByGrid(f.Rectangle.GET(0, 0, 55, 30), 1, 11, f.ORIGIN2D.CENTERLEFT, f.Vector2.X(55));
+            this.addComponent(cmpTransf);
+            this.mtxLocal.translateX(1);
+            this.setAnimation(this.armedAnimation);
+            this.setFrameDirection(0);
+            this.framerate = 0;
+        }
+        shootAnim() {
+            this.showFrame(1);
+            new f.Timer(new f.Time, 120, 1, this.returnToNormal);
+        }
+        setDeathSprite() {
+            this.setAnimation(this.deathSprite);
+        }
+        reset() {
+            this.setAnimation(this.armedAnimation);
+            this.showFrame(0);
+            this.mtxLocal.translation = new f.Vector3(this.mtxLocal.translation.x, this.mtxLocal.translation.y, 0);
+        }
+    }
+    HotlineLA.AvatarSpriteNode = AvatarSpriteNode;
+})(HotlineLA || (HotlineLA = {}));
+var HotlineLA;
+(function (HotlineLA) {
+    var fAid = FudgeAid;
+    var f = FudgeCore;
     class BulletNode extends fAid.NodeSprite {
         constructor(gunNode, rayHit) {
             super("bullet");
@@ -110,7 +150,7 @@ var HotlineLA;
                 //this.rgdBody.collisionMask = f.COLLISION_GROUP.GROUP_2;
                 this.torsoNode = this.node.getChild(0);
                 this.gunNode = this.torsoNode.getChild(0);
-                this.avatarSprites = new HotlineLA.avatar();
+                this.avatarSprites = new HotlineLA.AvatarSpriteNode();
                 this.torsoNode.removeComponent(this.torsoNode.getComponent(f.ComponentMaterial));
                 this.torsoNode.addChild(this.avatarSprites);
                 this.dead = false;
@@ -822,46 +862,6 @@ var HotlineLA;
         }
         updateCamera();
     }
-})(HotlineLA || (HotlineLA = {}));
-var HotlineLA;
-(function (HotlineLA) {
-    var fAid = FudgeAid;
-    var f = FudgeCore;
-    class avatar extends fAid.NodeSprite {
-        constructor() {
-            super("avatarSprite");
-            this.returnToNormal = () => {
-                this.showFrame(0);
-            };
-        }
-        initaliseAnimations(sheetShot, deathImg) {
-            let coatShot = new f.CoatTextured(undefined, sheetShot);
-            let cmpTransf = new f.ComponentTransform();
-            this.armedAnimation = new fAid.SpriteSheetAnimation("Shot", coatShot);
-            this.armedAnimation.generateByGrid(f.Rectangle.GET(0, 0, 50, 30), 2, 11, f.ORIGIN2D.CENTER, f.Vector2.X(50));
-            let coatDeath = new f.CoatTextured(undefined, deathImg);
-            this.deathSprite = new fAid.SpriteSheetAnimation("Death", coatDeath);
-            this.deathSprite.generateByGrid(f.Rectangle.GET(0, 0, 55, 30), 1, 11, f.ORIGIN2D.CENTERLEFT, f.Vector2.X(55));
-            this.addComponent(cmpTransf);
-            this.mtxLocal.translateX(1);
-            this.setAnimation(this.armedAnimation);
-            this.setFrameDirection(0);
-            this.framerate = 0;
-        }
-        shootAnim() {
-            this.showFrame(1);
-            new f.Timer(new f.Time, 120, 1, this.returnToNormal);
-        }
-        setDeathSprite() {
-            this.setAnimation(this.deathSprite);
-        }
-        reset() {
-            this.setAnimation(this.armedAnimation);
-            this.showFrame(0);
-            this.mtxLocal.translation = new f.Vector3(this.mtxLocal.translation.x, this.mtxLocal.translation.y, 0);
-        }
-    }
-    HotlineLA.avatar = avatar;
 })(HotlineLA || (HotlineLA = {}));
 var HotlineLA;
 (function (HotlineLA) {
