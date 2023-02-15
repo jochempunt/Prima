@@ -1,24 +1,26 @@
-
-#Prima Wise 22/23
+# Prima Wise 22/23
 
 *Persöhnliches Repository für das Modul "Prototyping interactive media-applications and games"an der HFU*
 
 
 **Inhalt**
+- [Infos](#Infos)
+- [Erläuterungen Zum Spiel](#Erläuterungen_Zum_Spiel)
+- [Links](#Links)
+- [Bewertungskriterien und deren Ausführung](#BewertungsKriterien_und_Ausführung)
 
-[TOC]
 
-#Endabgabe
+# Endabgabe
 
-##Infos
+## Infos
 
-**Titel:** Hotline LA
-**Author:** Jochem Punt
-**Modul & Jahr**: Prima WiSe 22/23
-**Studiengang und Semester:** Medieninformatik 5 (MIB 5)
-**Dozent:** Prof. Jirka Dell´Oro-Friedl
+- **Titel:** Hotline LA
+- **Author:** Jochem Punt
+- **Modul & Jahr**: Prima WiSe 22/23
+- **Studiengang und Semester:** Medieninformatik 5 (MIB 5)
+- **Dozent:** Prof. Jirka Dell´Oro-Friedl
 
-##Erläuterungen zum Spiel
+## Erläuterungen_zum_Spiel
 **Ziel des Spiels**
 Ziel ist es, alle gegner im Level zu eliminieren.
 
@@ -26,19 +28,19 @@ Ziel ist es, alle gegner im Level zu eliminieren.
 Der Avatar kann mit WASD nach links/rechts oben/unten gesteuert werden. Um zu zielen bewegt man den Mauscursor, und schießen kann man mit Linksclick.
 
 **Hinweise**
-*⚠️**WARNUNG:**⚠️ 
-Dieses Spiel kann bei Menschen mit lichtempfindlicher Epilepsie möglicherweise Anfälle auslösen. Der Spieler wird um Vorsicht gebeten.*
+- ⚠️ **WARNUNG:** ⚠️ 
+    Dieses Spiel kann bei Menschen mit lichtempfindlicher Epilepsie möglicherweise Anfälle auslösen. Der Spieler wird um Vorsicht gebeten.*
 
-*❗**Achtung**❗ 
-Dieses Spiel enthält  grafische Darstellungen von Gewalt und Blut*
+❗**Achtung**❗ 
+    Dieses Spiel enthält  grafische Darstellungen von Gewalt und Blut*
 
-##Links
+## Links
 
-**[Zum Spiel](https://jochempunt.github.io/Prima/HotlineLA/index.html)**
-[Quellcode](https://github.com/jochempunt/Prima/tree/main/HotlineLA)
-[Konzept](https://github.com/jochempunt/Prima/blob/main/HotlineLA/Prima_Konzept.pdf)
+- **[Zum Spiel](https://jochempunt.github.io/Prima/HotlineLA/index.html)**
+- [Quellcode](https://github.com/jochempunt/Prima/tree/main/HotlineLA)
+- [Konzept](https://github.com/jochempunt/Prima/blob/main/HotlineLA/Prima_Konzept.pdf)
 
-##BewertungsKriterien und deren Ausführung
+## BewertungsKriterien_und_Ausführung
 |NR   | Kriterium  |Erläuterung   |
 | :------------ | :------------ | :------------ |
 |1   |Units and Positions   |Die 0 bzw der Ursprung meines Levels (/Spiels) befindet sich in der mitte des Levels. Die 1 ist die Höhe/Länge der Rigidbodys der "Enemys". Alles ist auf zirka diesen Wert (der in diesem fall sogar 1 beträgt) abgestimm bzw er gibt die proportionen des Spiels an. |
@@ -55,10 +57,4 @@ Dieses Spiel enthält  grafische Darstellungen von Gewalt und Blut*
 |C   |Net   | ❌ ich habe keine Multiplayerfuntkion Vorgesehen  |
 |D  |State Machines   |  Ich benutze ComponentStateMachines✔️ für das Behaviour meiner Enemys. Da ich zuerst mehrere Verhaltenstypen Vorgesehen hatte, habe ich es als ComponentStatemachine implementiert anstatt den Ganzen enemy mit einer Statemachine zu beschreiben, da ich hiermit einfach verschiedene Enemyverhalten austauschen hätte können. Die [Componentstatemachine](https://github.com/jochempunt/Prima/blob/main/HotlineLA/Script/Source/enemyArmedStateM.ts) beschreibt wie ein Enemy agieren soll, wenn er Patroulliert, Idle ist, ein Spieler in seinem sichtfeld ist oder der Enemy selbst Tod ist. Hierfür ruft er in den Verschiedenen States die Funktionen der EnemyNode auf.  |
 |E   |Animation   | Das Spiel nutzt SpriteAnimations✔️ für die Enemys und den Avatar.  Zum beispiel sind hier Animationen für das "Umfallen" der Entitäten wenn sie Sterben, oder beim Avatar eine Kurze animation des Rückstoßes, für wenn er einen Schuss abfeuert. |
-
-
-
-
-
-
 
