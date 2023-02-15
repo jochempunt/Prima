@@ -31,7 +31,7 @@ Der Avatar kann mit WASD nach links/rechts oben/unten gesteuert werden. Um zu zi
 - ⚠️ **WARNUNG:** ⚠️ 
     Dieses Spiel kann bei Menschen mit lichtempfindlicher Epilepsie möglicherweise Anfälle auslösen. Der Spieler wird um Vorsicht gebeten.*
 
-❗**Achtung**❗ 
+- ❗**Achtung**❗ 
     Dieses Spiel enthält  grafische Darstellungen von Gewalt und Blut*
 
 ## Links
